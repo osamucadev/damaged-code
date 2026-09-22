@@ -1,0 +1,21 @@
+.page {
+  display: grid;
+  gap: var(--dc-space-5);
+  margin: 0 auto;
+  max-width: 48rem;
+}
+
+.header {
+  display: grid;
+  gap: var(--dc-space-2);
+}
+
+.title {
+  color: var(--dc-color-accent-primary);
+  font-size: var(--dc-font-size-3xl);
+}
+
+.subtitle {
+  color: var(--dc-color-text-secondary);
+  margin: 0;
+}

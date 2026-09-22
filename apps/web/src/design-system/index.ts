@@ -10,3 +10,7 @@ export {
   type StatusIndicatorProps,
   type StatusTone,
 } from "./atoms/StatusIndicator/StatusIndicator";
+export {
+  PropertyRow,
+  type PropertyRowProps,
+} from "./molecules/PropertyRow/PropertyRow";

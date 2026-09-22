@@ -1,0 +1,30 @@
+.row {
+  border-bottom: var(--dc-border-width-hairline) solid var(--dc-color-border-hairline);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--dc-space-2) var(--dc-space-4);
+  justify-content: space-between;
+  padding: var(--dc-space-2) 0;
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.label {
+  color: var(--dc-color-text-secondary);
+  font-family: var(--dc-font-family-mono);
+  font-size: var(--dc-font-size-xs);
+  letter-spacing: var(--dc-letter-spacing-wide);
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.value {
+  color: var(--dc-color-text-primary);
+  font-size: var(--dc-font-size-sm);
+  margin: 0;
+  /* Long values wrap instead of pushing the row wider than its container. */
+  overflow-wrap: anywhere;
+  text-align: right;
+}
