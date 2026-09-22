@@ -1,3 +1,10 @@
 packages:
   - "apps/*"
   - "packages/*"
+
+allowBuilds:
+  esbuild: set this to true or false
+
+# Dependencies explicitly allowed to run install scripts.
+onlyBuiltDependencies:
+  - esbuild
