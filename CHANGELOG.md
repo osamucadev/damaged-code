@@ -26,6 +26,10 @@ Checkpoints are delivery workflow markers and do not map directly to minor or pa
 - Machine inspired interface style for the web application, with a control to run the API check again.
 - Storybook as part of the Docker development environment.
 - Optional Firebase emulator mode for local development, with no Firebase tooling required on the host.
+- Episode listing endpoint `GET /v1/episodes` in the project REST contract.
+- OpenAPI documentation with Swagger UI at `/docs`.
+- Episode list in the web client, with loading, empty, error, and retry states.
+- English and Portuguese, pt-BR, message catalogs for the web interface.
 
 ### Changed
 

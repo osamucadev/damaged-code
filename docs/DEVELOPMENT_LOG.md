@@ -253,3 +253,62 @@ Relevant commits:
 3. `fix(web): point storybook hot reload at the published host port`
 4. `feat: add containerized firebase emulator mode`
 5. `feat(api): validate the server side firebase target`
+
+## 2026-09-22: Episode listing vertical slice
+
+Checkpoint: 03, Episode listing vertical slice
+
+Goal:
+
+Show every Rick and Morty episode in the web client, through the project BFF only.
+
+What changed:
+
+1. An upstream adapter was added at `apps/api/src/upstream/rick-and-morty`, with a client, a validating mapper, upstream types, and stable error codes.
+2. `GET /v1/episodes` was implemented, returning the project episode model.
+3. OpenAPI documentation was added with `@fastify/swagger`, and Swagger UI is served at `/docs`.
+4. The localization foundation was added to the web client with `next-intl`, including English and Portuguese catalogs.
+5. TanStack Query was added for episode server state.
+6. A `Badge` atom and an `EpisodeListItem` molecule joined the design system, each with stories and tests.
+7. The home screen now lists every episode, with loading, empty, error, and retry states.
+
+Decisions:
+
+1. The episode list answers with a `data` and `meta` envelope instead of a bare array. A top level array cannot gain response metadata later without a breaking change, and the character work in the next checkpoint will extend this contract.
+2. Upstream character URLs are reduced to `characterCount`. Clients never receive provider URLs, which is what keeps the client boundary real rather than declared.
+3. Pagination follows the upstream `next` link rather than deriving page numbers from the reported page count, because the link is the authoritative chain. A page limit stops a malformed chain from looping forever.
+4. Contract ordering belongs to the service, not to each client, so web and Flutter see the same sequence.
+5. One error envelope with stable codes lives in the application error handler, so every future route inherits it. Unexpected failures are logged with detail and answered with a generic message.
+6. The localization foundation resolves the locale from a cookie with an English fallback, and has no locale prefixed routing yet. The visible language selector belongs to checkpoint 06. The goal here was only to stop introducing hardcoded product strings.
+7. Design system components receive already translated text. `EpisodeListItem` takes the code and the title as domain data, and the air date and character count as text the caller has translated.
+8. Episode names and air dates are not translated. They are domain data from the upstream API.
+9. No cache was implemented. Each request to `GET /v1/episodes` performs three upstream requests, which is deliberate and belongs to checkpoint 05.
+
+Validation:
+
+1. `pnpm check` passes with 81 tests, 38 on the API and 43 on the web client.
+2. `pnpm build` succeeds for both applications, and `pnpm build-storybook` completes.
+3. `GET /v1/episodes` was checked against the live upstream service and returned all 51 episodes across the three upstream pages, ordered by id, with no upstream URL in the payload.
+4. The documentation user interface answers at `/docs`, and `/docs/json` describes the endpoint with its 200, 500, and 502 responses.
+5. The feature was verified in the browser through the standard Docker environment. The page renders 51 episode rows, the badge reports 51 episodes, and the network panel shows requests only to the project API on port 17321, never to the upstream service.
+6. The Portuguese interface was verified in the browser through the locale cookie. Interface strings translate, and episode titles stay as published upstream.
+7. The error state was verified by stopping the API container, and the retry control recovered the full list once the API was running again.
+
+Known issues:
+
+1. Two Docker defects were found and fixed during this work. Dependency volumes were not updated when a dependency was added, so the containers failed to start with a missing module. A first fix introduced a second problem, because a filtered install inside one service also manages sibling workspace projects, and those paths were not covered by volumes, so the install wrote through the bind mount and emptied the host dependencies of the other application. Each development service now isolates every workspace module path.
+2. There is no cache, so every page load triggers three upstream requests from the API.
+3. The locale cannot be changed from the interface yet.
+4. `GET /v1/episodes/{id}` does not exist. It arrives with the character slice if the contract needs it.
+
+Relevant commits:
+
+1. `feat(api): add rick and morty upstream adapter`
+2. `feat(api): expose the episode listing endpoint`
+3. `feat(api): document the contract with openapi`
+4. `fix(docker): sync container dependencies on start`
+5. `fix(docker): isolate every workspace module path per service`
+6. `feat(web): add the localization foundation`
+7. `feat(web): add tanstack query foundation`
+8. `feat(web): add episode list components to the design system`
+9. `feat(web): display the episode list`

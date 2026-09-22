@@ -138,7 +138,7 @@ Delivered state:
 
 ## Checkpoint 03: Episode listing vertical slice
 
-Status: ACTIVE
+Status: DONE
 
 Goal: show all episodes in the web application through the project BFF.
 
@@ -155,9 +155,21 @@ Target outcomes:
 
 The feature should be visible before moving to the next slice.
 
+Delivered state:
+
+1. `GET /v1/episodes` returns all 51 episodes through the project contract.
+2. Upstream pagination is resolved by following the upstream next link.
+3. OpenAPI documents the contract, and Swagger UI is served at `/docs`.
+4. TanStack Query owns episode server state in the web client.
+5. The web client renders every episode with deliberate loading, empty, error, and retry behavior.
+6. A `Badge` atom and an `EpisodeListItem` molecule joined the design system.
+7. The localization foundation exists with English and Portuguese catalogs.
+
+Caching was deliberately not implemented. Every request to `GET /v1/episodes` currently performs three upstream requests, which is the subject of checkpoint 05.
+
 ## Checkpoint 04: Episode characters vertical slice
 
-Status: PENDING
+Status: ACTIVE
 
 Goal: complete the required challenge behavior.
 

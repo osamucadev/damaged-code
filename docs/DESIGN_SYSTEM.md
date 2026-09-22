@@ -113,13 +113,17 @@ CSS Modules were chosen because they ship with Next.js, need no extra runtime, k
 The first components exist and are documented in Storybook:
 
 ```text
-atoms/Button             machine key with primary, secondary, and danger variants
-atoms/Panel              mechanical panel with optional title, header action, and hardware
-atoms/DisplaySurface     CRT style surface for machine readouts
-atoms/StatusIndicator    lamp plus required status text
-atoms/Loader             busy indicator with an announced label
-molecules/PropertyRow    one labelled property of an object
+atoms/Badge                 short stamped label, such as an episode production code
+atoms/Button                machine key with primary, secondary, and danger variants
+atoms/Panel                 mechanical panel with optional title, header action, and hardware
+atoms/DisplaySurface        CRT style surface for machine readouts
+atoms/StatusIndicator       lamp plus required status text
+atoms/Loader                busy indicator with an announced label
+molecules/PropertyRow       one labelled property of an object
+molecules/EpisodeListItem   one episode in a list
 ```
+
+`EpisodeListItem` shows how the localization rule works in practice. It receives the production code and the title as domain data, and receives the air date and the character count as text the caller has already translated.
 
 `src/design-system/index.ts` is the public entry point. Application code imports from there rather than from individual component files.
 

@@ -121,6 +121,17 @@ Protect:
 
 The Flutter `integration_test` package is not part of the initial scope because full application testing is being treated as end-to-end work for this challenge.
 
+## Implemented coverage
+
+```text
+API    38 tests   upstream adapter, normalization, pagination, service rules,
+                  configuration, route integration through inject, OpenAPI document
+Web    43 tests   design system behavior, BFF client contract handling,
+                  episode list states, localization behavior
+```
+
+No test reaches the live Rick and Morty API. The upstream boundary is replaced with an injected fetch in the adapter tests, and the episode service is injected into the application factory for route tests. The web tests replace `fetch` at the browser boundary.
+
 ## External dependencies
 
 Automated tests should not depend on the live upstream API for basic correctness.

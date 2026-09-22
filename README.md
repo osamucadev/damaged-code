@@ -99,6 +99,7 @@ This starts the web client, the API, and Storybook. It needs no Firebase, no Goo
 | --- | --- | --- |
 | Web | http://localhost:17320 | 3000 |
 | API | http://localhost:17321 | 4000 |
+| API documentation | http://localhost:17321/docs | 4000 |
 | API health | http://localhost:17321/health | 4000 |
 | Storybook | http://localhost:17322 | 6006 |
 
@@ -151,7 +152,7 @@ Ports inside the Compose network stay conventional. Containers always reach each
 
 Source is bind mounted into the containers, and dependency directories live in container managed volumes so the host tree never shadows them. Editing a file on the host updates the running containers with no image rebuild, for the web client, the API, and Storybook. Native filesystem events are used, with no polling.
 
-Rebuild the images with `docker compose up --build` after changing dependencies.
+Dependencies live in container managed volumes, and a volume is only seeded when it is created. Each development service therefore synchronizes its dependencies against the lockfile when it starts, so `docker compose up --build` is enough after adding a dependency.
 
 ### Running without Docker
 
@@ -186,6 +187,30 @@ That runs linting, type checking, and the test suites of every workspace applica
 The same application code developed locally will be used for the Firebase production deployment. Docker is the local development and evaluation environment, not a separate implementation of the product.
 
 Each Dockerfile also has a `production` target that builds the deployable image for that application, so local and production execution share one source tree.
+
+## API contract
+
+The project REST API is documented with OpenAPI and served by Swagger UI.
+
+```text
+http://localhost:17321/docs        documentation user interface
+http://localhost:17321/docs/json   raw OpenAPI document
+```
+
+Implemented endpoints:
+
+```text
+GET /v1/episodes   every episode, in the project contract
+GET /health        operational, outside the versioned product contract
+```
+
+Clients consume only this API. The Rick and Morty API is reached by the BFF alone, and upstream pagination and character URLs never reach a client.
+
+## Interface languages
+
+The web client ships English and Portuguese, pt-BR, message catalogs. The locale currently comes from the `damaged-code-locale` cookie and falls back to English. A visible language selector arrives with the internationalization checkpoint.
+
+Episode names and air dates are domain data and stay exactly as the upstream API publishes them.
 
 ## Production demo
 

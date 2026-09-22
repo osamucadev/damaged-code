@@ -94,6 +94,52 @@ GET /v1/episodes/{episodeId}/characters
 
 Optional endpoints must not be added before their features leave backlog.
 
+### Implemented contract
+
+```text
+GET /health         operational, outside the versioned product contract
+GET /v1/episodes    every episode, in the project model
+GET /docs           OpenAPI documentation, with the raw document at /docs/json
+```
+
+The episode list answers with an envelope rather than a bare array:
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "code": "S01E01",
+      "name": "Pilot",
+      "airDate": "December 2, 2013",
+      "characterCount": 19
+    }
+  ],
+  "meta": { "total": 51 }
+}
+```
+
+The envelope exists so response metadata can grow without a breaking change. A bare top level array cannot gain metadata later.
+
+Upstream character URLs are reduced to `characterCount`. Provider specific URLs and upstream pagination never reach a client.
+
+Errors use one envelope with a stable code, because clients translate codes rather than server prose:
+
+```json
+{ "error": { "code": "UPSTREAM_UNAVAILABLE", "message": "developer facing detail" } }
+```
+
+### Upstream integration
+
+```text
+src/upstream/rick-and-morty/   adapter: client, mapper, types, error codes
+src/services/                  product rules, such as contract ordering
+src/routes/v1/                 transport, schemas, and documentation
+src/domain/                    the project model
+```
+
+Nothing outside the adapter directory knows the upstream payload shape. The adapter follows the upstream next link until it ends, with a page limit so a malformed chain cannot loop forever.
+
 ## OpenAPI
 
 The BFF contract must be represented through OpenAPI.
