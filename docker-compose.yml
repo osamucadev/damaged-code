@@ -1,0 +1,66 @@
+name: damaged-code
+
+services:
+  api:
+    container_name: damaged-code-api
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: development
+    environment:
+      NODE_ENV: development
+      HOST: 0.0.0.0
+      PORT: "4000"
+      LOG_LEVEL: info
+      CORS_ORIGINS: http://localhost:3000
+    ports:
+      - "4000:4000"
+    volumes:
+      # Source is bind mounted for hot reload; dependency directories stay in
+      # container managed volumes so the host tree never shadows them.
+      - .:/app
+      - api-root-modules:/app/node_modules
+      - api-app-modules:/app/apps/api/node_modules
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:4000/health').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  web:
+    container_name: damaged-code-web
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      target: development
+    environment:
+      NODE_ENV: development
+      PORT: "3000"
+      # Read by the browser, so it must resolve from the host, not the compose network.
+      NEXT_PUBLIC_API_URL: http://localhost:4000
+      # Reserved for server side rendering calls inside the compose network.
+      API_INTERNAL_URL: http://api:4000
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - web-root-modules:/app/node_modules
+      - web-app-modules:/app/apps/web/node_modules
+      - web-next-cache:/app/apps/web/.next
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  api-root-modules:
+  api-app-modules:
+  web-root-modules:
+  web-app-modules:
+  web-next-cache:
