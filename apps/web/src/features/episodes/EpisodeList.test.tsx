@@ -32,7 +32,7 @@ describe("EpisodeList", () => {
       vi.fn().mockReturnValue(new Promise(() => {})),
     );
 
-    renderWithIntl(<EpisodeList />);
+    renderWithIntl(<EpisodeList selectedEpisodeId={null} onSelectEpisode={() => {}} />);
 
     expect(screen.getByText("Loading episodes...")).toBeInTheDocument();
     expect(screen.getByRole("status")).toHaveTextContent("Loading episodes");
@@ -41,7 +41,7 @@ describe("EpisodeList", () => {
   it("renders every episode returned by the BFF", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(listResponse(episodes)));
 
-    renderWithIntl(<EpisodeList />);
+    renderWithIntl(<EpisodeList selectedEpisodeId={null} onSelectEpisode={() => {}} />);
 
     expect(await screen.findByText("Pilot")).toBeInTheDocument();
     expect(screen.getByText("Lawnmower Dog")).toBeInTheDocument();
@@ -55,7 +55,7 @@ describe("EpisodeList", () => {
   it("shows an empty state when the contract returns no episodes", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(listResponse([])));
 
-    renderWithIntl(<EpisodeList />);
+    renderWithIntl(<EpisodeList selectedEpisodeId={null} onSelectEpisode={() => {}} />);
 
     expect(
       await screen.findByText("No episodes were returned by the project API."),
@@ -66,7 +66,7 @@ describe("EpisodeList", () => {
   it("shows an error state when the request fails", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network down")));
 
-    renderWithIntl(<EpisodeList />);
+    renderWithIntl(<EpisodeList selectedEpisodeId={null} onSelectEpisode={() => {}} />);
 
     expect(
       await screen.findByText("The episode list could not be loaded."),
@@ -82,7 +82,7 @@ describe("EpisodeList", () => {
       .mockResolvedValue(listResponse(episodes));
     vi.stubGlobal("fetch", fetchMock);
 
-    renderWithIntl(<EpisodeList />);
+    renderWithIntl(<EpisodeList selectedEpisodeId={null} onSelectEpisode={() => {}} />);
 
     const retry = await screen.findByRole("button", { name: /try again/i });
 
@@ -101,7 +101,7 @@ describe("EpisodeList", () => {
     const fetchMock = vi.fn().mockResolvedValue(listResponse(episodes));
     vi.stubGlobal("fetch", fetchMock);
 
-    renderWithIntl(<EpisodeList />);
+    renderWithIntl(<EpisodeList selectedEpisodeId={null} onSelectEpisode={() => {}} />);
 
     await screen.findByText("Pilot");
 
@@ -113,7 +113,9 @@ describe("EpisodeList", () => {
   it("renders its own strings in Portuguese while leaving episode data untranslated", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(listResponse(episodes)));
 
-    renderWithIntl(<EpisodeList />, { locale: "pt-BR" });
+    renderWithIntl(<EpisodeList selectedEpisodeId={null} onSelectEpisode={() => {}} />, {
+      locale: "pt-BR",
+    });
 
     // Wait for loaded content, because the panel title is present while loading too.
     expect(await screen.findByText("Pilot")).toBeInTheDocument();
@@ -128,7 +130,7 @@ describe("EpisodeList", () => {
   it("stops showing the loading state once the episodes arrive", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(listResponse(episodes)));
 
-    renderWithIntl(<EpisodeList />);
+    renderWithIntl(<EpisodeList selectedEpisodeId={null} onSelectEpisode={() => {}} />);
 
     await waitForElementToBeRemoved(() => screen.queryByText("Loading episodes..."));
 

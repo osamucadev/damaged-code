@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 
 import { ApiHealthStatus } from "@/components/ApiHealthStatus";
-import { EpisodeList } from "@/features/episodes/EpisodeList";
+import { EpisodeExplorer } from "@/features/episodes/EpisodeExplorer";
 
 import styles from "./page.module.css";
 
@@ -16,7 +16,7 @@ export default async function HomePage() {
       </header>
 
       <ApiHealthStatus />
-      <EpisodeList />
+      <EpisodeExplorer />
     </main>
   );
 }

@@ -19,3 +19,7 @@ export {
   EpisodeListItem,
   type EpisodeListItemProps,
 } from "./molecules/EpisodeListItem/EpisodeListItem";
+export {
+  CharacterCard,
+  type CharacterCardProps,
+} from "./molecules/CharacterCard/CharacterCard";

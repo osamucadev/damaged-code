@@ -11,11 +11,19 @@ import {
   Panel,
 } from "@/design-system";
 
+import type { Episode } from "@/lib/episodes";
+
 import styles from "./EpisodeList.module.css";
 import { useEpisodes } from "./useEpisodes";
 
-export function EpisodeList() {
+export interface EpisodeListProps {
+  selectedEpisodeId: number | null;
+  onSelectEpisode: (episode: Episode) => void;
+}
+
+export function EpisodeList({ selectedEpisodeId, onSelectEpisode }: EpisodeListProps) {
   const t = useTranslations("episodes");
+  const selectLabel = useTranslations("characters");
   const { data, isPending, isError, refetch, isFetching } = useEpisodes();
 
   const total = data?.length ?? 0;
@@ -64,6 +72,11 @@ export function EpisodeList() {
               name={episode.name}
               airDate={t("airDate", { date: episode.airDate })}
               characters={t("characterCount", { count: episode.characterCount })}
+              isSelected={episode.id === selectedEpisodeId}
+              onSelect={() => {
+                onSelectEpisode(episode);
+              }}
+              selectLabel={selectLabel("selectEpisodeLabel", { name: episode.name })}
             />
           ))}
         </ul>

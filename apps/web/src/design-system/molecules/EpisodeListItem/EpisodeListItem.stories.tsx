@@ -67,3 +67,18 @@ export const List: Story = {
     </>
   ),
 };
+
+export const Selectable: Story = {
+  args: {
+    onSelect: () => {},
+    selectLabel: "Show characters of Pilot",
+  },
+};
+
+export const Selected: Story = {
+  args: {
+    onSelect: () => {},
+    isSelected: true,
+    selectLabel: "Show characters of Pilot",
+  },
+};

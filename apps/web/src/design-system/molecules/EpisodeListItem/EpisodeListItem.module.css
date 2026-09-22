@@ -37,3 +37,40 @@
   font-size: var(--dc-font-size-xs);
   gap: var(--dc-space-2) var(--dc-space-4);
 }
+
+/*
+ * The whole row is one control when the list is selectable. It is a real
+ * button, so keyboard access and focus come from the platform.
+ */
+.trigger {
+  align-items: center;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  flex: 1 1 100%;
+  flex-wrap: wrap;
+  font: inherit;
+  gap: var(--dc-space-2) var(--dc-space-4);
+  justify-content: space-between;
+  margin: 0;
+  padding: 0;
+  text-align: start;
+}
+
+.selectable:hover {
+  border-color: var(--dc-color-accent-primary-shade);
+}
+
+.selected {
+  background-color: var(--dc-color-surface-panel);
+  border-color: var(--dc-color-accent-primary);
+  box-shadow: var(--dc-shadow-raised), var(--dc-shadow-glow-accent);
+}
+
+/* Selection is also carried by a shape, never by color alone. */
+.selected .name::before {
+  color: var(--dc-color-accent-primary);
+  content: "> ";
+}

@@ -1,0 +1,4 @@
+.explorer {
+  display: grid;
+  gap: var(--dc-space-5);
+}

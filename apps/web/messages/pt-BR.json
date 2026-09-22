@@ -26,5 +26,26 @@
     "retryLoading": "Carregando episódios",
     "characterCount": "{count, plural, one {# personagem} other {# personagens}}",
     "airDate": "Exibido em {date}"
+  },
+  "characters": {
+    "panelTitle": "Personagens",
+    "selectEpisode": "Selecione um episódio para ver os personagens que aparecem nele.",
+    "selectEpisodeLabel": "Mostrar os personagens de {name}",
+    "forEpisode": "{code} {name}",
+    "count": "{total, plural, =0 {Nenhum personagem} one {# personagem} other {# personagens}}",
+    "loading": "Carregando personagens...",
+    "loadingLabel": "Carregando personagens",
+    "empty": "Este episódio não tem personagens na API do projeto.",
+    "error": "Não foi possível carregar os personagens.",
+    "notFound": "Esse episódio não existe.",
+    "retry": "Tentar novamente",
+    "retryLoading": "Carregando personagens",
+    "portraitAlt": "Retrato de {name}",
+    "statusLabel": "Status",
+    "speciesLabel": "Espécie",
+    "typeLabel": "Tipo",
+    "genderLabel": "Gênero",
+    "originLabel": "Origem",
+    "locationLabel": "Última localização conhecida"
   }
 }

@@ -1,0 +1,40 @@
+.card {
+  background-color: var(--dc-color-surface-panel-raised);
+  border: var(--dc-border-width-heavy) solid var(--dc-color-border-heavy);
+  border-radius: var(--dc-radius-md);
+  box-shadow: var(--dc-shadow-panel);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.image {
+  aspect-ratio: 1 / 1;
+  background-color: var(--dc-color-surface-recess);
+  border-bottom: var(--dc-border-width-heavy) solid var(--dc-color-border-heavy);
+  display: block;
+  height: auto;
+  object-fit: cover;
+  width: 100%;
+}
+
+.body {
+  display: grid;
+  gap: var(--dc-space-2);
+  padding: var(--dc-space-3);
+}
+
+.name {
+  color: var(--dc-color-text-primary);
+  font-family: var(--dc-font-family-display);
+  font-size: var(--dc-font-size-md);
+  letter-spacing: var(--dc-letter-spacing-wide);
+  margin: 0;
+  /* Long names wrap rather than overflowing the card. */
+  overflow-wrap: anywhere;
+}
+
+.details {
+  display: grid;
+  margin: 0;
+}

@@ -40,6 +40,12 @@ describe("HomePage", () => {
     expect(screen.getByRole("heading", { name: "Damaged Code" })).toBeInTheDocument();
   });
 
+  it("shows the episode explorer", async () => {
+    renderWithIntl(await HomePage());
+
+    expect(await screen.findByRole("heading", { name: "Episodes" })).toBeInTheDocument();
+  });
+
   it("shows the API status area", async () => {
     renderWithIntl(await HomePage());
 
