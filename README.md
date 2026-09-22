@@ -38,6 +38,8 @@ apps/
   mobile/    Flutter multiplatform client
 ```
 
+The web and API applications exist. The Flutter client arrives in its own checkpoint.
+
 The web and Flutter clients communicate exclusively with the project BFF.
 
 ```text
@@ -81,11 +83,43 @@ Flutter continues to use the standard Dart and Flutter package tooling.
 
 ## Local development
 
-The development environment will be reproducible through Docker Compose.
+The reproducible environment is Docker Compose. From the repository root:
 
-Once the foundation checkpoint is complete, the expected entry point will be documented here as a single command.
+```bash
+docker compose up --build
+```
+
+That starts both applications:
+
+| Service | URL | Notes |
+| --- | --- | --- |
+| Web | http://localhost:3000 | Next.js development server with hot reload |
+| API | http://localhost:4000 | Fastify development server with hot reload |
+| API health | http://localhost:4000/health | Used by the container health check and by the web client |
+
+Stop the environment with `docker compose down`, or add `-v` to also discard the dependency volumes.
+
+### Running without Docker
+
+Requires Node.js 22 LTS and PNPM. Corepack activates the pinned PNPM version from `package.json`.
+
+```bash
+corepack enable
+pnpm install
+pnpm dev
+```
+
+### Quality checks
+
+```bash
+pnpm check
+```
+
+That runs linting, type checking, and the test suites of every workspace application. The individual scripts are `pnpm lint`, `pnpm typecheck`, and `pnpm test`.
 
 The same application code developed locally will be used for the Firebase production deployment. Docker is the local development and evaluation environment, not a separate implementation of the product.
+
+Each Dockerfile also has a `production` target that builds the deployable image for that application, so local and production execution share one source tree.
 
 ## Production demo
 
@@ -120,7 +154,7 @@ The initial delivery intentionally excludes end-to-end tests. They remain availa
 
 ## Project status
 
-The repository is currently in the planning and foundation stage.
+The workspace foundation is in place: the web and API applications run together through Docker Compose, and the web client reports the API health state through the project BFF. Rick and Morty episode data is not integrated yet.
 
 Check [docs/CHECKPOINTS.md](./docs/CHECKPOINTS.md) for the current delivery checkpoint.
 

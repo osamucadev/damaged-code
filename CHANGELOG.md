@@ -18,3 +18,7 @@ Checkpoints are delivery workflow markers and do not map directly to minor or pa
 - Docker-based local development requirement.
 - OpenAPI documentation requirement.
 - Planned Flutter client and guided web onboarding.
+- PNPM workspace with the Next.js web client and the Fastify REST API.
+- Docker Compose environment that starts the web and API applications locally.
+- API health endpoint at `GET /health`.
+- Web home page reporting whether the project API is reachable.

@@ -18,7 +18,7 @@ BACKLOG
 
 ## Checkpoint 00: Repository governance
 
-Status: ACTIVE
+Status: DONE
 
 Goal: establish the rules and shared understanding before implementation starts.
 
@@ -42,7 +42,7 @@ This checkpoint may be committed as one documentation-only increment because the
 
 ## Checkpoint 01: Workspace and local foundation
 
-Status: PENDING
+Status: DONE
 
 Goal: make the repository reproducible and ready for vertical development.
 
@@ -72,9 +72,21 @@ chore: add docker development environment
 test(api): cover health endpoint
 ```
 
+Delivered state:
+
+1. PNPM 11.25.0 workspace with one root lockfile, `apps/*` and `packages/*` globs.
+2. Node.js 22 LTS pinned through `engines`, `.nvmrc`, and the Docker base image.
+3. Fastify 5 API in TypeScript with `GET /health`.
+4. Next.js 16 App Router client in TypeScript showing the API health state.
+5. Multi stage Dockerfiles for web and API with development and production targets.
+6. `docker compose up` starts the full local environment.
+7. ESLint, `tsc --noEmit`, and Vitest run for both applications through `pnpm check`.
+
+The `packages/` directory was not created because no shared code was needed yet.
+
 ## Checkpoint 02: Episode listing vertical slice
 
-Status: PENDING
+Status: ACTIVE
 
 Goal: show all episodes in the web application through the project BFF.
 

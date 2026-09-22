@@ -144,6 +144,29 @@ Flutter runs through normal Flutter tooling outside Docker.
 
 The local environment should make the architecture observable without requiring access to production.
 
+### Implemented foundation
+
+```text
+web   http://localhost:3000   Next.js App Router, React, TypeScript
+api   http://localhost:4000   Fastify, TypeScript
+```
+
+Runtime and tooling are pinned to Node.js 22 LTS and PNPM 11, locally and inside the containers.
+
+Each application has a multi stage Dockerfile with a development target used by Compose and a production target that builds the deployable image. Both targets build from the same source tree.
+
+### Client to BFF transport
+
+The browser calls the BFF directly, and the API enables CORS for the configured web origin through `CORS_ORIGINS`.
+
+The alternative was proxying every browser call through a Next.js route handler. That was rejected because it would add a second server hop, duplicate the contract, and hide the client boundary that the Flutter client will exercise anyway. Keeping the call direct also keeps the two applications independently deployable.
+
+Server side rendering inside the Compose network can reach the API through the internal address in `API_INTERNAL_URL`.
+
+### Operational endpoints
+
+`GET /health` reports whether the API is running. It is intentionally outside the versioned product namespace because it is operational, not part of the product contract offered to clients.
+
 ## Production
 
 The target production environment is Firebase managed infrastructure.
