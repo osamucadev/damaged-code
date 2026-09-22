@@ -22,3 +22,5 @@ Checkpoints are delivery workflow markers and do not map directly to minor or pa
 - Docker Compose environment that starts the web and API applications locally.
 - API health endpoint at `GET /health`.
 - Web home page reporting whether the project API is reachable.
+- Frontend design system with semantic tokens, Atomic Design structure, and Storybook documentation.
+- Machine inspired interface style for the web application, with a control to run the API check again.

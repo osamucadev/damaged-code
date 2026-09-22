@@ -79,6 +79,25 @@ Protect behavior such as:
 
 Tests should interact with the interface in a user-oriented way.
 
+### Design system components
+
+Design system components are tested for behavior and accessibility semantics, not for styling.
+
+Appropriate assertions include:
+
+```text
+the control activates by mouse and by keyboard
+a disabled or busy control cannot be activated
+a busy control announces itself
+status meaning is available as text, not only as color
+decorative detail is hidden from assistive technology
+content of different lengths is preserved
+```
+
+Inappropriate assertions include class names, token values, and the internal element structure of a component.
+
+Storybook documents visual states. It is not a test runner, and a story is not a substitute for a behavior test.
+
 ## Flutter
 
 ### Unit tests

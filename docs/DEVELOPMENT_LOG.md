@@ -146,3 +146,57 @@ Relevant commits:
 6. `feat(web): display api health state`
 7. `test: add foundation coverage and workspace quality script`
 8. `fix(web): keep the container build directory out of the host .next`
+
+## 2026-09-22: Design system foundation
+
+Checkpoint: 02, Design system foundation
+
+Goal:
+
+Create the frontend design system that the product interface will be built from, before the Rick and Morty integration starts.
+
+What changed:
+
+1. A new checkpoint was inserted as checkpoint 02. Every checkpoint from the episode listing onward moved forward by one number, so release review is now checkpoint 11.
+2. `docs/DESIGN_SYSTEM.md` was created.
+3. A semantic token layer was added at `apps/web/src/design-system/tokens/tokens.css`, covering color, typography, spacing, radius, border, shadow, motion, and layering.
+4. Storybook 10 was added to the web workspace with the accessibility and docs addons.
+5. Five atoms and one molecule were implemented, each with stories and behavior tests.
+6. The home screen was rebuilt from design system components and gained a control that runs the API check again.
+
+Decisions:
+
+1. Styling uses CSS Modules with token custom properties. CSS Modules ship with Next.js, need no runtime, and keep the token layer as plain CSS that the application and Storybook both read. A utility class framework was rejected because this interface is a small number of heavily styled physical objects rather than many one off layout combinations.
+2. Storybook uses `@storybook/nextjs-vite`. The workspace already runs Vite through Vitest, so Storybook reuses that pipeline instead of adding a parallel webpack toolchain.
+3. Tokens have two levels. Primitive palette values are private to the token layer, and components may only use semantic names.
+4. Reduced motion is handled once in the token layer, so components inherit it. The Loader additionally stops its continuous rotation, because collapsing a duration does not stop an infinite animation.
+5. The danger color was split into two tokens after checking contrast. A single red could not serve both as a surface behind light text and as text on a dark screen surface without failing the 4.5:1 requirement in one of the two cases.
+6. Design system components never contain user facing strings. Text arrives from the caller, which keeps the component layer ready for the localization checkpoint. Product strings currently sit in the home screen component and move to localization resources in checkpoint 06.
+7. The `PropertyRow` molecule was created because the home screen needed it, and because the future character dossier needs the same pattern. It was not created speculatively.
+8. Atomic Design is applied only inside `src/design-system`. Next.js routes and page components stay in `src/app`.
+9. Only atoms and molecules exist. No organism directory was created, because no organism exists yet.
+
+Validation:
+
+1. `pnpm check` passes: lint, type checking, and 33 tests across both applications, of which 25 are web tests.
+2. `pnpm build-storybook` completes successfully, and `pnpm storybook` was opened in a browser to confirm the stories render with the token layer.
+3. The Storybook accessibility addon reported no violations on the inspected stories.
+4. Contrast ratios for every text and surface pairing in the token layer were computed and clear 4.5:1.
+5. The application was loaded from the Docker environment at `http://localhost:3000`. It renders the new interface, reports the API as reachable, and the control that runs the check again works in the real browser.
+6. `pnpm build` produces a successful production build of the web application.
+
+Known issues:
+
+1. Storybook has no automated story or visual regression run. Stories are documentation, and behavior is covered by Vitest.
+2. The display typography stack uses system fonts. A licensed display face can replace the token later without touching components.
+3. Product strings in the home screen are English only until the localization checkpoint.
+4. Storybook is not part of the Docker environment. It runs through PNPM on the host.
+
+Relevant commits:
+
+1. `docs: insert design system checkpoint and renumber the delivery plan`
+2. `docs: add design system direction`
+3. `feat(web): establish design tokens`
+4. `chore(web): add storybook`
+5. `feat(web): add design system primitives`
+6. `feat(web): compose the home screen from design system components`

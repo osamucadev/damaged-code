@@ -86,7 +86,7 @@ The `packages/` directory was not created because no shared code was needed yet.
 
 ## Checkpoint 02: Design system foundation
 
-Status: ACTIVE
+Status: DONE
 
 Goal: establish the frontend design system that the product interface will be built from.
 
@@ -120,9 +120,18 @@ feat(web): add design system primitives
 test(web): cover design system primitives
 ```
 
+Delivered state:
+
+1. `docs/DESIGN_SYSTEM.md` documents goals, Atomic Design use, tokens, motion, accessibility, Storybook, and the future character dossier interaction.
+2. The Behance reference by Maksim Banshchikov is attributed in the design system document and in the README, with an explicit rule against copying its assets or layouts.
+3. Semantic tokens exist for color, typography, spacing, radius, border, shadow, motion, and layering, with reduced motion handled once at the token layer.
+4. Five atoms and one molecule exist, each with stories and behavior tests.
+5. Storybook 10 runs from the workspace through `pnpm storybook`.
+6. The home screen was rebuilt from design system components, so the system is proven in the running application.
+
 ## Checkpoint 03: Episode listing vertical slice
 
-Status: PENDING
+Status: ACTIVE
 
 Goal: show all episodes in the web application through the project BFF.
 

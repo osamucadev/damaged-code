@@ -95,6 +95,36 @@ Rules:
 4. A component earns promotion into the design system when it is used in more than one place, or when it carries visual rules that must stay consistent.
 5. Product specific data fetching never lives inside a design system component.
 
+## Implementation technique
+
+Components are styled with CSS Modules and the token custom properties.
+
+```text
+Component.tsx          behavior and markup
+Component.module.css   styling, built only from tokens
+Component.stories.tsx  documented states
+Component.test.tsx     behavior tests
+```
+
+CSS Modules were chosen because they ship with Next.js, need no extra runtime, keep class names scoped, and leave the token layer as plain CSS that Storybook, the application, and future tooling all read the same way. A utility class framework was not introduced, because this interface is built from a small number of heavily styled physical objects rather than from many one off layout combinations.
+
+## Implemented state
+
+The first components exist and are documented in Storybook:
+
+```text
+atoms/Button             machine key with primary, secondary, and danger variants
+atoms/Panel              mechanical panel with optional title, header action, and hardware
+atoms/DisplaySurface     CRT style surface for machine readouts
+atoms/StatusIndicator    lamp plus required status text
+atoms/Loader             busy indicator with an announced label
+molecules/PropertyRow    one labelled property of an object
+```
+
+`src/design-system/index.ts` is the public entry point. Application code imports from there rather than from individual component files.
+
+Color pairings were verified against the WCAG AA threshold of 4.5:1 for normal text. The danger tokens are split for that reason: `color.accent.danger` is the deeper red used as a surface behind light text, and `color.accent.danger.display` is the brighter red used as text on dark screen surfaces. Using a single red would have failed contrast on one of the two.
+
 ## Component boundaries
 
 Design system components:
@@ -169,6 +199,8 @@ pnpm build-storybook   build the static Storybook
 ```
 
 Both commands also exist inside the web application workspace.
+
+Storybook builds and runs with no application server, no API, and no network access.
 
 Integration:
 

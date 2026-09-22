@@ -33,15 +33,16 @@ The challenge will also demonstrate:
 1. a Node.js and Fastify REST BFF;
 2. OpenAPI documentation;
 3. TanStack Query in the web client;
-4. PNPM workspaces;
-5. English and Portuguese, pt-BR, localization;
-6. unit tests;
-7. integration tests;
-8. Firebase production deployment from the same codebase;
-9. a Flutter client consuming the same BFF;
-10. a production Android APK if the Flutter checkpoint is completed;
-11. a final guided onboarding tour in the web interface;
-12. a documented incremental Git history.
+4. a documented frontend design system with Storybook;
+5. PNPM workspaces;
+6. English and Portuguese, pt-BR, localization;
+7. unit tests;
+8. integration tests;
+9. Firebase production deployment from the same codebase;
+10. a Flutter client consuming the same BFF;
+11. a production Android APK if the Flutter checkpoint is completed;
+12. a final guided onboarding tour in the web interface;
+13. a documented incremental Git history.
 
 ## Product boundaries
 

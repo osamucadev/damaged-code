@@ -109,6 +109,16 @@ pnpm install
 pnpm dev
 ```
 
+### Design system
+
+The reusable interface components are documented in Storybook.
+
+```bash
+pnpm storybook
+```
+
+Storybook runs at http://localhost:6006 and needs no API, no database, and no network access. See [docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md) for the component rules and token philosophy.
+
 ### Quality checks
 
 ```bash
