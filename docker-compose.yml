@@ -43,6 +43,7 @@ services:
     environment:
       NODE_ENV: development
       PORT: "3000"
+      NEXT_DIST_DIR: .next-docker
       # Read by the browser, so it must resolve from the host, not the compose network.
       NEXT_PUBLIC_API_URL: http://localhost:4000
       # Reserved for server side rendering calls inside the compose network.
@@ -53,7 +54,7 @@ services:
       - .:/app
       - web-root-modules:/app/node_modules
       - web-app-modules:/app/apps/web/node_modules
-      - web-next-cache:/app/apps/web/.next
+      - web-next-cache:/app/apps/web/.next-docker
     depends_on:
       api:
         condition: service_healthy
