@@ -2,6 +2,7 @@ import cors from "@fastify/cors";
 import Fastify, { type FastifyError, type FastifyInstance } from "fastify";
 
 import { loadConfig, type AppConfig } from "./config/env.js";
+import { registerOpenApi } from "./docs/openapi.js";
 import { healthRoutes } from "./routes/health.js";
 import { episodeRoutes } from "./routes/v1/episodes.js";
 import { createEpisodeService, type EpisodeService } from "./services/episodes.js";
@@ -27,6 +28,9 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
     origin: config.corsOrigins,
     methods: ["GET", "HEAD", "OPTIONS"],
   });
+
+  // Registered before the routes, so every route schema reaches the document.
+  await registerOpenApi(app);
 
   /*
    * One error envelope for the whole API. Clients read the stable code, so the

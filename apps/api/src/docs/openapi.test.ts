@@ -1,0 +1,85 @@
+import type { FastifyInstance } from "fastify";
+import { afterEach, describe, expect, it } from "vitest";
+
+import { buildApp } from "../app.js";
+import { loadConfig } from "../config/env.js";
+
+let app: FastifyInstance;
+
+afterEach(async () => {
+  await app.close();
+});
+
+async function buildDocumentedApp(): Promise<FastifyInstance> {
+  app = await buildApp({
+    config: loadConfig({ NODE_ENV: "test" }),
+    episodeService: { listEpisodes: async () => [] },
+  });
+
+  await app.ready();
+
+  return app;
+}
+
+describe("OpenAPI document", () => {
+  it("documents the episode listing endpoint", async () => {
+    const server = await buildDocumentedApp();
+
+    const response = await server.inject({ method: "GET", url: "/docs/json" });
+
+    expect(response.statusCode).toBe(200);
+
+    const document = response.json();
+    const operation = document.paths["/v1/episodes"]?.get;
+
+    expect(operation).toBeDefined();
+    expect(operation.operationId).toBe("listEpisodes");
+    expect(operation.tags).toContain("episodes");
+  });
+
+  it("documents the episode response contract", async () => {
+    const server = await buildDocumentedApp();
+
+    const document = (await server.inject({ method: "GET", url: "/docs/json" })).json();
+    const success = document.paths["/v1/episodes"].get.responses["200"];
+    const episodeProperties =
+      success.content["application/json"].schema.properties.data.items.properties;
+
+    expect(Object.keys(episodeProperties)).toEqual([
+      "id",
+      "code",
+      "name",
+      "airDate",
+      "characterCount",
+    ]);
+  });
+
+  it("documents the upstream failure response", async () => {
+    const server = await buildDocumentedApp();
+
+    const document = (await server.inject({ method: "GET", url: "/docs/json" })).json();
+    const responses = document.paths["/v1/episodes"].get.responses;
+
+    expect(Object.keys(responses)).toEqual(expect.arrayContaining(["200", "500", "502"]));
+    expect(
+      responses["502"].content["application/json"].schema.properties.error.properties.code,
+    ).toBeDefined();
+  });
+
+  it("keeps the operational health route out of the versioned product paths", async () => {
+    const server = await buildDocumentedApp();
+
+    const document = (await server.inject({ method: "GET", url: "/docs/json" })).json();
+
+    expect(document.paths["/health"]?.get.tags).toContain("operations");
+    expect(document.paths["/v1/health"]).toBeUndefined();
+  });
+
+  it("serves the documentation user interface", async () => {
+    const server = await buildDocumentedApp();
+
+    const response = await server.inject({ method: "GET", url: "/docs" });
+
+    expect([200, 302]).toContain(response.statusCode);
+  });
+});
