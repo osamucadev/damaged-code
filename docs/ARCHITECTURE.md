@@ -147,13 +147,31 @@ The local environment should make the architecture observable without requiring 
 ### Implemented foundation
 
 ```text
-web   http://localhost:3000   Next.js App Router, React, TypeScript
-api   http://localhost:4000   Fastify, TypeScript
+web         http://localhost:17320   Next.js App Router, React, TypeScript
+api         http://localhost:17321   Fastify, TypeScript
+storybook   http://localhost:17322   design system documentation
 ```
+
+Published host ports use an uncommon project specific block so the environment does not collide with other work on a reviewer's machine. They are configurable. Ports inside the Compose network stay conventional, and services always reach each other through service DNS, for example `http://api:4000`.
 
 Runtime and tooling are pinned to Node.js 22 LTS and PNPM 11, locally and inside the containers.
 
-Each application has a multi stage Dockerfile with a development target used by Compose and a production target that builds the deployable image. Both targets build from the same source tree.
+Each application has a multi stage Dockerfile with a development target used by Compose and a production target that builds the deployable image. Both targets build from the same source tree. Storybook reuses the web application image and adds one target, rather than owning separate infrastructure.
+
+### Local modes
+
+```text
+standard   web, api, storybook
+firebase   standard plus the Cloud Firestore emulator and the Emulator Suite UI
+```
+
+The standard mode is the default and carries the required challenge behavior. It never needs Firebase, Google credentials, or a real project.
+
+The Firebase mode is an optional Compose overlay. Everything it needs runs in containers, including the Firebase CLI pinned in this repository and a Java runtime, so the host needs no `firebase-tools` and no Java installation. It uses the deliberately fake project id `demo-damaged-code-local`, and the `demo-` prefix keeps the Emulator Suite fully offline.
+
+Firebase mode is explicit on the API side. When it is requested, the API requires a project id, and outside production it requires an emulator address. A missing emulator makes the API refuse to start, so the system never falls back to another storage target without saying so.
+
+The Firestore emulator holds its data in memory, so local state is exported to a Docker named volume on shutdown and imported on the next start. No mutable emulator state is written into the Git working tree, and no local state is committed.
 
 ### Client to BFF transport
 
@@ -183,6 +201,34 @@ production deployment through Firebase
 ```
 
 The project should not maintain separate local and production implementations.
+
+### Planned production target
+
+Nothing below is provisioned or deployed yet. It is recorded so the local environment grows toward a known destination. Provisioning belongs to the Firebase deployment checkpoint.
+
+```text
+Firebase project   samuelcaetitedev
+
+Next.js web        Firebase App Hosting
+                   planned backend name: damaged-code-web
+
+BFF                Cloud Functions
+                   planned function name: damagedCodeApi
+
+Firestore          planned named database: damaged-code
+```
+
+The existing Firebase project already hosts unrelated work, so these constraints apply:
+
+1. Do not modify the existing Firebase Hosting sites.
+2. Do not modify the existing Cloud Functions.
+3. Do not use the existing default Firestore database for Damaged Code application data.
+4. Do not provision the named Firestore database before that checkpoint.
+5. Do not create App Hosting resources before that checkpoint.
+
+Firebase Hosting is not part of the local environment. The production web target is Firebase App Hosting, and the local environment models only the parts that affect development, which today means Firestore.
+
+The client boundary does not change in production. Clients talk to the BFF, and only the BFF talks to Firestore, using server side credentials.
 
 ## Testing boundaries
 

@@ -83,21 +83,75 @@ Flutter continues to use the standard Dart and Flutter package tooling.
 
 ## Local development
 
-The reproducible environment is Docker Compose. From the repository root:
+Docker and Docker Compose are the only requirements. No Node.js, no PNPM, no Firebase CLI, and no Java are needed on the host.
+
+There are two local modes.
+
+### Standard mode
 
 ```bash
 docker compose up --build
 ```
 
-That starts both applications:
+This starts the web client, the API, and Storybook. It needs no Firebase, no Google credentials, and no network access to any Google service. The required coding challenge behavior runs entirely in this mode.
 
-| Service | URL | Notes |
+| Service | URL | Container port |
 | --- | --- | --- |
-| Web | http://localhost:3000 | Next.js development server with hot reload |
-| API | http://localhost:4000 | Fastify development server with hot reload |
-| API health | http://localhost:4000/health | Used by the container health check and by the web client |
+| Web | http://localhost:17320 | 3000 |
+| API | http://localhost:17321 | 4000 |
+| API health | http://localhost:17321/health | 4000 |
+| Storybook | http://localhost:17322 | 6006 |
 
-Stop the environment with `docker compose down`, or add `-v` to also discard the dependency volumes.
+Stop it with `docker compose down`.
+
+### Firebase emulator mode
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.firebase.yml up --build
+```
+
+This adds the Cloud Firestore emulator and the Firebase Emulator Suite UI, and points the API at the emulator through Compose service DNS.
+
+| Service | URL | Container port |
+| --- | --- | --- |
+| Emulator Suite UI | http://localhost:17323 | 4000 |
+| Firestore emulator | http://localhost:17324 | 8080 |
+
+Everything the emulator needs lives inside its container, including the pinned Firebase CLI and a Java runtime. The reviewer never installs `firebase-tools`, never installs Java, and never logs in to Firebase. The local project id is the deliberately fake `demo-damaged-code-local`, and the `demo-` prefix keeps the Emulator Suite completely offline.
+
+Persistence is not implemented yet. This mode exists so the environment is ready for the checkpoint that introduces server side persistence.
+
+#### Local emulator state
+
+The Firestore emulator holds data in memory, so local state survives through export and import.
+
+```text
+first start            empty emulator, which is expected
+normal shutdown        state is exported into a Docker named volume
+next start             the previous export is imported automatically
+```
+
+Reset the local Firebase state on purpose:
+
+```bash
+docker volume rm damaged-code_firebase-emulator-data
+```
+
+`docker compose down -v` also resets it, together with every other local volume, including the container dependency directories.
+
+No emulator state is ever written into the Git working tree.
+
+### Ports
+
+Published host ports use an uncommon project specific block so the environment does not collide with other work on the reviewer's machine. Override them by copying [.env.example](./.env.example) to `.env`.
+
+Ports inside the Compose network stay conventional. Containers always reach each other through service names and internal ports, for example `http://api:4000`, never through a published port.
+
+### Hot reload
+
+Source is bind mounted into the containers, and dependency directories live in container managed volumes so the host tree never shadows them. Editing a file on the host updates the running containers with no image rebuild, for the web client, the API, and Storybook. Native filesystem events are used, with no polling.
+
+Rebuild the images with `docker compose up --build` after changing dependencies.
 
 ### Running without Docker
 
@@ -109,15 +163,17 @@ pnpm install
 pnpm dev
 ```
 
+Outside Docker the applications use their conventional ports, so the web client runs on 3000 and the API on 4000.
+
 ### Design system
 
-The reusable interface components are documented in Storybook.
+The reusable interface components are documented in Storybook, which runs as a Compose service at http://localhost:17322 and is also available on the host:
 
 ```bash
 pnpm storybook
 ```
 
-Storybook runs at http://localhost:6006 and needs no API, no database, and no network access. See [docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md) for the component rules and token philosophy.
+Storybook needs no API, no database, and no network access. See [docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md) for the component rules and token philosophy.
 
 ### Quality checks
 

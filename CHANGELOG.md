@@ -24,3 +24,9 @@ Checkpoints are delivery workflow markers and do not map directly to minor or pa
 - Web home page reporting whether the project API is reachable.
 - Frontend design system with semantic tokens, Atomic Design structure, and Storybook documentation.
 - Machine inspired interface style for the web application, with a control to run the API check again.
+- Storybook as part of the Docker development environment.
+- Optional Firebase emulator mode for local development, with no Firebase tooling required on the host.
+
+### Changed
+
+- Published local development ports moved to a project specific block starting at 17320, configurable through environment variables.

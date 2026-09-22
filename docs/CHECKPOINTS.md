@@ -84,6 +84,13 @@ Delivered state:
 
 The `packages/` directory was not created because no shared code was needed yet.
 
+This foundation was later hardened, before the episode work started:
+
+1. published host ports moved to an uncommon project specific block and became configurable;
+2. Storybook became a Compose service;
+3. an optional, fully containerized Firebase emulator mode was added;
+4. hot reload was explicitly verified for web, API, and Storybook.
+
 ## Checkpoint 02: Design system foundation
 
 Status: DONE
@@ -205,6 +212,17 @@ Target outcomes:
 Status: PENDING
 
 Goal: make the challenge easy to evaluate without local setup.
+
+Planned resources, documented in `docs/ARCHITECTURE.md` and not provisioned yet:
+
+```text
+project     samuelcaetitedev
+web         Firebase App Hosting, backend damaged-code-web
+api         Cloud Functions, function damagedCodeApi
+firestore   named database damaged-code
+```
+
+Existing Hosting sites, existing Functions, and the default Firestore database of that project must not be touched.
 
 Target outcomes:
 

@@ -200,3 +200,56 @@ Relevant commits:
 4. `chore(web): add storybook`
 5. `feat(web): add design system primitives`
 6. `feat(web): compose the home screen from design system components`
+
+## 2026-09-22: Local infrastructure hardening
+
+Checkpoint: between 02 and 03, local environment hardening
+
+Goal:
+
+Make the local environment friendly to a reviewer who has only Docker, and prepare an optional Firebase emulator mode, before the episode integration starts.
+
+What changed:
+
+1. Published host ports moved to the project block 17320 to 17324 and became configurable through environment variables documented in `.env.example`.
+2. Storybook became a Compose service that reuses the web application image through a new Dockerfile target.
+3. An optional `docker-compose.firebase.yml` overlay was added with the Cloud Firestore emulator and the Emulator Suite UI.
+4. The API learned to validate a server side Firebase target without implementing any persistence.
+5. Documentation now describes both local modes, ports, hot reload, emulator persistence, reset, and the planned production target.
+
+Decisions:
+
+1. Only published host ports moved. Ports inside the Compose network stay conventional, and services reach each other through service DNS such as `http://api:4000`.
+2. The local Firebase project id is `demo-damaged-code-local` rather than `damaged-code-local`. With a plain fake id the CLI still attempted a Google credential lookup and warned about not being authenticated. The `demo-` prefix is the Firebase convention that keeps the Emulator Suite completely offline, which is what the no login requirement actually needs.
+3. The emulator image is built on Debian 13 rather than the Debian 12 base used by the application images, because firebase-tools requires Java 21 or above and Debian 12 only offers Java 17.
+4. The Firebase CLI is pinned as a workspace dependency and installed into the emulator image with PNPM. Nothing depends on a globally installed CLI, and the emulator container mounts no host paths at all.
+5. Emulator state is exported into a subdirectory of the named volume rather than into the volume mount point, because the CLI clears the export directory before writing and cannot remove a mount point.
+6. Firebase mode is explicit on the API side. A requested Firebase mode without an emulator address fails at startup instead of falling back to another target.
+7. `verifyDepsBeforeRun` is set to `warn`. Development images install a filtered subset of the workspace, so pnpm considered the container modules directory out of sync and tried to purge it, which fails without a TTY and stopped the containers from starting.
+8. No polling was enabled for file watching. Native filesystem events work on this Linux host, verified for all three services.
+
+Validation:
+
+1. Standard mode was started from a clean Docker state after `docker compose down -v`. Web, API, and Storybook all answer, and the web container reaches the API through service DNS.
+2. Hot reload was verified by editing a source file on the host and observing the running container without an image rebuild, then reverting. Web and API were checked through HTTP responses, Storybook through a browser with the page open.
+3. Storybook hot reload was broken at first. The browser received a websocket URL built from the container internal port, so live updates never arrived. Vite is now told the published port, and a component style edit was seen applying live.
+4. Firebase mode was started from a clean state. The Firestore emulator and the Emulator Suite UI both answer, no authentication or credential lookup appears in the logs, and the API container resolves the emulator through service DNS.
+5. The emulator container was inspected and mounts only named volumes. Inside it, the CLI is the pinned 15.30.2 and Java is 21, while the host has Java 17, which firebase-tools rejects. The emulator therefore runs entirely on container tooling.
+6. Persistence was verified end to end. A document was written through the emulator REST interface, the environment was stopped normally, the export appeared in the named volume, and the document was present again after the next start.
+7. Reset was verified. Removing the `damaged-code_firebase-emulator-data` volume returned the emulator to empty local data, and the previously written document answered with 404. Dependency volumes survived that targeted reset.
+8. `pnpm check` passes with 38 tests, and `pnpm build` succeeds for both applications.
+
+Known issues:
+
+1. Firebase mode starts the emulator but nothing in the product reads or writes Firestore yet. That arrives with the checkpoint that needs persistence.
+2. Docker still creates an empty root owned `apps/web/.next-docker` directory in the working tree as a volume mount point. It is ignored by Git.
+3. The pnpm dependency check now warns inside containers on every run. The message is expected and explained in `pnpm-workspace.yaml`.
+4. No production Firebase resource was created, configured, or deployed. The target is documented only.
+
+Relevant commits:
+
+1. `chore: move published development ports to a project specific block`
+2. `chore(web): run storybook as a compose service`
+3. `fix(web): point storybook hot reload at the published host port`
+4. `feat: add containerized firebase emulator mode`
+5. `feat(api): validate the server side firebase target`
