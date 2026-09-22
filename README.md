@@ -147,6 +147,7 @@ The initial delivery intentionally excludes end-to-end tests. They remain availa
 | [docs/PROJECT.md](./docs/PROJECT.md) | Product scope and delivery boundaries |
 | [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) | Architecture and system boundaries |
 | [docs/CHECKPOINTS.md](./docs/CHECKPOINTS.md) | Incremental delivery plan |
+| [docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md) | Frontend design system, tokens, and component rules |
 | [docs/TESTING.md](./docs/TESTING.md) | Test strategy and quality gates |
 | [docs/BACKLOG.md](./docs/BACKLOG.md) | Optional work that must not block the core |
 | [docs/DEVELOPMENT_LOG.md](./docs/DEVELOPMENT_LOG.md) | Human-readable development journal |
@@ -157,6 +158,17 @@ The initial delivery intentionally excludes end-to-end tests. They remain availa
 The workspace foundation is in place: the web and API applications run together through Docker Compose, and the web client reports the API health state through the project BFF. Rick and Morty episode data is not integrated yet.
 
 Check [docs/CHECKPOINTS.md](./docs/CHECKPOINTS.md) for the current delivery checkpoint.
+
+## Acknowledgements
+
+The visual direction of this interface is inspired by the "Rick and Morty fanart UI" concept by Maksim Banshchikov.
+
+```text
+https://www.behance.net/gallery/101907237/Rick-and-Morty-fanart-UI
+https://www.behance.net/mechanizzer
+```
+
+That work is used as art direction only. Damaged Code implements its own layouts, components, tokens, interactions, and assets, and does not copy or redistribute any asset from the reference. See [docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md) for the full rule.
 
 ## License and attribution
 
