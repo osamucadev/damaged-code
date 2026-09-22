@@ -78,6 +78,9 @@ services:
       target: storybook
     environment:
       NODE_ENV: development
+      # The browser reaches Storybook on the published port, so the hot reload
+      # client has to be told that port instead of the internal one.
+      STORYBOOK_HMR_CLIENT_PORT: ${STORYBOOK_HOST_PORT:-17322}
     ports:
       - "${STORYBOOK_HOST_PORT:-17322}:6006"
     volumes:
