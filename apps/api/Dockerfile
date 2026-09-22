@@ -11,6 +11,8 @@ WORKDIR /app
 
 # Dependency layer: only manifests, so the pnpm store cache survives source edits.
 FROM base AS dependencies
+COPY docker/node/dev-entrypoint.sh /usr/local/bin/dev-entrypoint.sh
+RUN chmod +x /usr/local/bin/dev-entrypoint.sh
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/api/package.json apps/api/
 COPY apps/web/package.json apps/web/
@@ -19,8 +21,10 @@ RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
 
 # Development target: hot reload through tsx watch.
 FROM dependencies AS development
-ENV NODE_ENV=development
+ENV NODE_ENV=development \
+    PNPM_FILTER=@damaged-code/api
 COPY . .
+ENTRYPOINT ["/usr/local/bin/dev-entrypoint.sh"]
 EXPOSE 4000
 CMD ["pnpm", "--filter", "@damaged-code/api", "dev"]
 

@@ -31,6 +31,7 @@ services:
       - .:/app
       - api-root-modules:/app/node_modules
       - api-app-modules:/app/apps/api/node_modules
+      - pnpm-store:/pnpm/store
     healthcheck:
       test:
         [
@@ -66,6 +67,7 @@ services:
       - web-root-modules:/app/node_modules
       - web-app-modules:/app/apps/web/node_modules
       - web-next-cache:/app/apps/web/.next-docker
+      - pnpm-store:/pnpm/store
     depends_on:
       api:
         condition: service_healthy
@@ -87,10 +89,12 @@ services:
       - .:/app
       - storybook-root-modules:/app/node_modules
       - storybook-app-modules:/app/apps/web/node_modules
+      - pnpm-store:/pnpm/store
     # Storybook documents components in isolation. It must never depend on the
     # API, so it declares no dependency on that service.
 
 volumes:
+  pnpm-store:
   api-root-modules:
   api-app-modules:
   web-root-modules:

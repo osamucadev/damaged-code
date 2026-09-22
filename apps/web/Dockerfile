@@ -11,6 +11,8 @@ WORKDIR /app
 
 # Dependency layer: only manifests, so the pnpm store cache survives source edits.
 FROM base AS dependencies
+COPY docker/node/dev-entrypoint.sh /usr/local/bin/dev-entrypoint.sh
+RUN chmod +x /usr/local/bin/dev-entrypoint.sh
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/web/package.json apps/web/
 COPY apps/api/package.json apps/api/
@@ -19,16 +21,20 @@ RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
 
 # Development target: Next development server with hot reload.
 FROM dependencies AS development
-ENV NODE_ENV=development
+ENV NODE_ENV=development \
+    PNPM_FILTER=@damaged-code/web
 COPY . .
+ENTRYPOINT ["/usr/local/bin/dev-entrypoint.sh"]
 EXPOSE 3000
 CMD ["pnpm", "--filter", "@damaged-code/web", "dev"]
 
 # Storybook target: documents the design system with the same source tree and
 # the same dependency layer as the web application.
 FROM dependencies AS storybook
-ENV NODE_ENV=development
+ENV NODE_ENV=development \
+    PNPM_FILTER=@damaged-code/web
 COPY . .
+ENTRYPOINT ["/usr/local/bin/dev-entrypoint.sh"]
 EXPOSE 6006
 CMD ["pnpm", "--filter", "@damaged-code/web", "storybook:docker"]
 
