@@ -16,6 +16,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "storybook": "storybook dev --port 6006",
+    "storybook:docker": "storybook dev --port 6006 --host 0.0.0.0 --ci",
     "build-storybook": "storybook build"
   },
   "dependencies": {

@@ -24,6 +24,14 @@ COPY . .
 EXPOSE 3000
 CMD ["pnpm", "--filter", "@damaged-code/web", "dev"]
 
+# Storybook target: documents the design system with the same source tree and
+# the same dependency layer as the web application.
+FROM dependencies AS storybook
+ENV NODE_ENV=development
+COPY . .
+EXPOSE 6006
+CMD ["pnpm", "--filter", "@damaged-code/web", "storybook:docker"]
+
 # Build target: produces the standalone Next server bundle.
 FROM dependencies AS build
 ENV NODE_ENV=production

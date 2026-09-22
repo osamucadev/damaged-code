@@ -70,9 +70,28 @@ services:
       api:
         condition: service_healthy
 
+  storybook:
+    container_name: damaged-code-storybook
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      target: storybook
+    environment:
+      NODE_ENV: development
+    ports:
+      - "${STORYBOOK_HOST_PORT:-17322}:6006"
+    volumes:
+      - .:/app
+      - storybook-root-modules:/app/node_modules
+      - storybook-app-modules:/app/apps/web/node_modules
+    # Storybook documents components in isolation. It must never depend on the
+    # API, so it declares no dependency on that service.
+
 volumes:
   api-root-modules:
   api-app-modules:
   web-root-modules:
   web-app-modules:
   web-next-cache:
+  storybook-root-modules:
+  storybook-app-modules:
