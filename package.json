@@ -13,6 +13,8 @@
     "dev": "pnpm --parallel --filter \"./apps/*\" dev",
     "dev:docker": "docker compose up --build",
     "dev:docker:down": "docker compose down",
+    "storybook": "pnpm --filter @damaged-code/web storybook",
+    "build-storybook": "pnpm --filter @damaged-code/web build-storybook",
     "build": "pnpm --recursive build",
     "lint": "pnpm --recursive lint",
     "typecheck": "pnpm --recursive typecheck",

@@ -8,6 +8,7 @@ build/
 .next/
 .next-docker/
 out/
+storybook-static/
 
 # Test and coverage output
 coverage/
