@@ -2,6 +2,7 @@ import cors from "@fastify/cors";
 import Fastify, { type FastifyInstance } from "fastify";
 
 import { loadConfig, type AppConfig } from "./config/env.js";
+import { healthRoutes } from "./routes/health.js";
 
 export interface BuildAppOptions {
   config?: AppConfig;
@@ -20,6 +21,8 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
     origin: config.corsOrigins,
     methods: ["GET", "HEAD", "OPTIONS"],
   });
+
+  await app.register(healthRoutes);
 
   return app;
 }
