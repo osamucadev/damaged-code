@@ -42,7 +42,9 @@
   --dc-raw-acid-400: #b6e84f;
 
   --dc-raw-amber-500: #e8912a;
+  --dc-raw-red-300: #f4796a;
   --dc-raw-red-500: #d0442f;
+  --dc-raw-red-550: #bb3a24;
   --dc-raw-red-600: #a8331f;
 
   /* ---------------------------------------------------------------- */
@@ -72,8 +74,14 @@
   --dc-color-accent-primary-shade: var(--dc-raw-acid-600);
   --dc-color-accent-display: var(--dc-raw-cyan-400);
   --dc-color-accent-warning: var(--dc-raw-amber-500);
-  --dc-color-accent-danger: var(--dc-raw-red-500);
-  --dc-color-accent-danger-shade: var(--dc-raw-red-600);
+  /*
+   * The danger surface is the deeper red so that light text on it clears the
+   * 4.5:1 contrast requirement. The bright red is for text on dark screens,
+   * where the deeper red would be the one failing.
+   */
+  --dc-color-accent-danger: var(--dc-raw-red-600);
+  --dc-color-accent-danger-strong: var(--dc-raw-red-550);
+  --dc-color-accent-danger-display: var(--dc-raw-red-300);
 
   --dc-color-state-focus: var(--dc-raw-cyan-200);
   --dc-color-state-disabled-surface: var(--dc-raw-metal-600);

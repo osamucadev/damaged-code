@@ -1,0 +1,55 @@
+.loader {
+  align-items: center;
+  display: inline-flex;
+  gap: var(--dc-space-2);
+}
+
+.gear {
+  animation: spin 1.2s linear infinite;
+  border: var(--dc-border-width-thick) solid var(--dc-color-border-heavy);
+  border-radius: var(--dc-radius-pill);
+  border-top-color: var(--dc-color-accent-primary);
+  display: inline-block;
+}
+
+.small {
+  height: 1rem;
+  width: 1rem;
+}
+
+.medium {
+  height: 1.5rem;
+  width: 1.5rem;
+}
+
+.label {
+  color: var(--dc-color-text-secondary);
+  font-family: var(--dc-font-family-mono);
+  font-size: var(--dc-font-size-xs);
+  letter-spacing: var(--dc-letter-spacing-wide);
+}
+
+.labelHidden {
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/*
+ * The token layer already collapses durations, but a continuous spin has to be
+ * stopped outright so the control does not animate forever.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .gear {
+    animation: none;
+  }
+}

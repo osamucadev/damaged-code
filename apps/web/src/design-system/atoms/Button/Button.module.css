@@ -1,0 +1,74 @@
+.button {
+  align-items: center;
+  border: var(--dc-border-width-heavy) solid var(--dc-color-border-heavy);
+  border-radius: var(--dc-radius-md);
+  box-shadow: var(--dc-shadow-raised);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--dc-font-family-display);
+  font-weight: var(--dc-font-weight-bold);
+  gap: var(--dc-space-2);
+  justify-content: center;
+  letter-spacing: var(--dc-letter-spacing-wide);
+  line-height: var(--dc-line-height-tight);
+  text-transform: uppercase;
+  transition:
+    transform var(--dc-motion-fast) var(--dc-ease-mechanical),
+    box-shadow var(--dc-motion-fast) var(--dc-ease-mechanical),
+    background-color var(--dc-motion-fast) var(--dc-ease-mechanical);
+}
+
+/* The control physically sinks when pressed, like a machine key. */
+.button:not(:disabled):active {
+  box-shadow: var(--dc-shadow-pressed);
+  transform: translateY(3px);
+}
+
+.primary {
+  background-color: var(--dc-color-accent-primary);
+  color: var(--dc-color-text-on-accent);
+}
+
+.primary:not(:disabled):hover {
+  background-color: var(--dc-color-accent-primary-strong);
+}
+
+.secondary {
+  background-color: var(--dc-color-surface-panel-raised);
+  color: var(--dc-color-text-primary);
+}
+
+.secondary:not(:disabled):hover {
+  background-color: var(--dc-color-surface-panel);
+}
+
+.danger {
+  background-color: var(--dc-color-accent-danger);
+  color: var(--dc-color-text-primary);
+}
+
+.danger:not(:disabled):hover {
+  background-color: var(--dc-color-accent-danger-strong);
+}
+
+.small {
+  font-size: var(--dc-font-size-xs);
+  padding: var(--dc-space-2) var(--dc-space-3);
+}
+
+.medium {
+  font-size: var(--dc-font-size-sm);
+  padding: var(--dc-space-3) var(--dc-space-5);
+}
+
+.button:disabled {
+  background-color: var(--dc-color-state-disabled-surface);
+  box-shadow: none;
+  color: var(--dc-color-state-disabled-text);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.fullWidth {
+  width: 100%;
+}

@@ -1,0 +1,61 @@
+.panel {
+  background-color: var(--dc-color-surface-panel);
+  border: var(--dc-border-width-thick) solid var(--dc-color-border-heavy);
+  border-radius: var(--dc-radius-lg);
+  box-shadow: var(--dc-shadow-panel);
+  padding: var(--dc-space-5);
+  position: relative;
+}
+
+.raised {
+  background-color: var(--dc-color-surface-panel-raised);
+  box-shadow: var(--dc-shadow-raised);
+}
+
+.header {
+  align-items: baseline;
+  border-bottom: var(--dc-border-width-heavy) solid var(--dc-color-border-heavy);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--dc-space-3);
+  justify-content: space-between;
+  margin-bottom: var(--dc-space-4);
+  padding-bottom: var(--dc-space-3);
+}
+
+.title {
+  color: var(--dc-color-text-primary);
+  font-size: var(--dc-font-size-lg);
+  /* Long Portuguese labels wrap instead of overflowing the panel. */
+  overflow-wrap: anywhere;
+}
+
+/* Decorative hardware. Hidden from assistive technology. */
+.screw {
+  background-color: var(--dc-color-hardware-screw);
+  border: var(--dc-border-width-hairline) solid var(--dc-color-border-heavy);
+  border-radius: var(--dc-radius-pill);
+  height: 0.5rem;
+  position: absolute;
+  width: 0.5rem;
+}
+
+.screwTopLeft {
+  left: var(--dc-space-2);
+  top: var(--dc-space-2);
+}
+
+.screwTopRight {
+  right: var(--dc-space-2);
+  top: var(--dc-space-2);
+}
+
+.screwBottomLeft {
+  bottom: var(--dc-space-2);
+  left: var(--dc-space-2);
+}
+
+.screwBottomRight {
+  bottom: var(--dc-space-2);
+  right: var(--dc-space-2);
+}
