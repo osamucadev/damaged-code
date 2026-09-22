@@ -10,6 +10,9 @@ packages:
 
 # Dependencies explicitly allowed to run install scripts.
 allowBuilds:
+  # next-intl build tooling.
+  '@parcel/watcher': true
+  '@swc/core': true
   esbuild: true
   # Firebase CLI dependencies, used by the emulator image.
   protobufjs: true

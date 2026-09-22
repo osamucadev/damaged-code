@@ -1,7 +1,19 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import enMessages from "../../messages/en.json";
+import { renderWithIntl } from "@/test/intl";
+
 import HomePage from "./page";
+
+/*
+ * The page is a server component, so the server side translation boundary is
+ * replaced with the real English catalog.
+ */
+vi.mock("next-intl/server", () => ({
+  getTranslations: async (namespace: "home") => (key: keyof typeof enMessages.home) =>
+    enMessages[namespace][key],
+}));
 
 beforeEach(() => {
   vi.stubGlobal(
@@ -22,14 +34,14 @@ afterEach(() => {
 });
 
 describe("HomePage", () => {
-  it("renders the product heading", () => {
-    render(<HomePage />);
+  it("renders the product heading", async () => {
+    renderWithIntl(await HomePage());
 
     expect(screen.getByRole("heading", { name: "Damaged Code" })).toBeInTheDocument();
   });
 
   it("shows the API status area", async () => {
-    render(<HomePage />);
+    renderWithIntl(await HomePage());
 
     expect(
       await screen.findByRole("heading", { name: "API status" }),

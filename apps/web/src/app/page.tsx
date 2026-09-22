@@ -1,13 +1,17 @@
+import { getTranslations } from "next-intl/server";
+
 import { ApiHealthStatus } from "@/components/ApiHealthStatus";
 
 import styles from "./page.module.css";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const t = await getTranslations("home");
+
   return (
     <main className={styles.page}>
       <header className={styles.header}>
-        <h1 className={styles.title}>Damaged Code</h1>
-        <p className={styles.subtitle}>A Rick and Morty coding challenge.</p>
+        <h1 className={styles.title}>{t("title")}</h1>
+        <p className={styles.subtitle}>{t("subtitle")}</p>
       </header>
 
       <ApiHealthStatus />

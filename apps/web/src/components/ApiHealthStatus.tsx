@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 
 import {
@@ -23,25 +24,8 @@ const statusTone: Record<HealthState["kind"], StatusTone> = {
   unreachable: "danger",
 };
 
-/*
- * Product level strings stay here for now. They move into localization
- * resources during the internationalization checkpoint, which is why no design
- * system component below receives a hardcoded string of its own.
- */
-const text = {
-  panelTitle: "API status",
-  checking: "Checking",
-  online: "Online",
-  unreachable: "Unreachable",
-  checkingMessage: "Contacting the project API...",
-  reachableMessage: "The project API answered the health check.",
-  endpointLabel: "Endpoint",
-  serviceLabel: "Service",
-  retry: "Check again",
-  retryLoading: "Checking the API",
-};
-
 export function ApiHealthStatus() {
+  const t = useTranslations("apiStatus");
   const [state, setState] = useState<HealthState>({ kind: "checking" });
 
   const loadHealth = useCallback((signal?: AbortSignal) => {
@@ -78,39 +62,39 @@ export function ApiHealthStatus() {
 
   const statusLabel =
     state.kind === "checking"
-      ? text.checking
+      ? t("checking")
       : state.kind === "reachable"
-        ? text.online
-        : text.unreachable;
+        ? t("online")
+        : t("unreachable");
 
   return (
     <Panel
       withScrews
-      title={text.panelTitle}
+      title={t("panelTitle")}
       headerAction={
         <StatusIndicator tone={statusTone[state.kind]}>{statusLabel}</StatusIndicator>
       }
     >
       <DisplaySurface tone={state.kind === "unreachable" ? "danger" : "display"}>
-        {state.kind === "checking" ? text.checkingMessage : null}
-        {state.kind === "reachable" ? text.reachableMessage : null}
+        {state.kind === "checking" ? t("checkingMessage") : null}
+        {state.kind === "reachable" ? t("reachableMessage") : null}
         {state.kind === "unreachable" ? state.reason : null}
       </DisplaySurface>
 
       <dl>
-        <PropertyRow label={text.endpointLabel}>{`${getApiBaseUrl()}/health`}</PropertyRow>
+        <PropertyRow label={t("endpointLabel")}>{`${getApiBaseUrl()}/health`}</PropertyRow>
         {state.kind === "reachable" ? (
-          <PropertyRow label={text.serviceLabel}>{state.health.service}</PropertyRow>
+          <PropertyRow label={t("serviceLabel")}>{state.health.service}</PropertyRow>
         ) : null}
       </dl>
 
       <Button
         variant="secondary"
         isLoading={state.kind === "checking"}
-        loadingLabel={text.retryLoading}
+        loadingLabel={t("retryLoading")}
         onClick={handleRetry}
       >
-        {text.retry}
+        {t("retry")}
       </Button>
     </Panel>
   );

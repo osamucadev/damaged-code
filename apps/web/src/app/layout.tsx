@@ -1,17 +1,28 @@
 import type { Metadata } from "next";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 
 import "./globals.css";
 
-export const metadata: Metadata = {
-  title: "Damaged Code",
-  description: "A Rick and Morty coding challenge",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("home");
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+  return {
+    title: t("title"),
+    description: t("subtitle"),
+  };
+}
+
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang={locale}>
+      <body>
+        <NextIntlClientProvider messages={messages}>{children}</NextIntlClientProvider>
+      </body>
     </html>
   );
 }

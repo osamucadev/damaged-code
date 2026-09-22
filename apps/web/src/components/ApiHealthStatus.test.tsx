@@ -1,6 +1,8 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
+import { renderWithIntl } from "@/test/intl";
 
 import { ApiHealthStatus } from "./ApiHealthStatus";
 
@@ -19,7 +21,7 @@ describe("ApiHealthStatus", () => {
   it("reports that the API is reachable when the health call succeeds", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(Response.json(healthPayload)));
 
-    render(<ApiHealthStatus />);
+    renderWithIntl(<ApiHealthStatus />);
 
     expect(await screen.findByText("Online")).toBeInTheDocument();
     expect(
@@ -31,7 +33,7 @@ describe("ApiHealthStatus", () => {
   it("reports that the API is unreachable when the health call fails", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("connection refused")));
 
-    render(<ApiHealthStatus />);
+    renderWithIntl(<ApiHealthStatus />);
 
     expect(await screen.findByText("Unreachable")).toBeInTheDocument();
     expect(screen.getByText("connection refused")).toBeInTheDocument();
@@ -41,7 +43,7 @@ describe("ApiHealthStatus", () => {
     const fetchMock = vi.fn().mockResolvedValue(Response.json(healthPayload));
     vi.stubGlobal("fetch", fetchMock);
 
-    render(<ApiHealthStatus />);
+    renderWithIntl(<ApiHealthStatus />);
 
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledWith(
@@ -59,7 +61,7 @@ describe("ApiHealthStatus", () => {
       .mockResolvedValue(Response.json(healthPayload));
     vi.stubGlobal("fetch", fetchMock);
 
-    render(<ApiHealthStatus />);
+    renderWithIntl(<ApiHealthStatus />);
 
     expect(await screen.findByText("Unreachable")).toBeInTheDocument();
 
@@ -69,10 +71,22 @@ describe("ApiHealthStatus", () => {
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
+  it("renders its strings in Portuguese when that locale is active", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(Response.json(healthPayload)));
+
+    renderWithIntl(<ApiHealthStatus />, { locale: "pt-BR" });
+
+    expect(await screen.findByText("Online")).toBeInTheDocument();
+    expect(
+      screen.getByText("A API do projeto respondeu à verificação de saúde."),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /verificar novamente/i })).toBeInTheDocument();
+  });
+
   it("always shows which endpoint it is reporting on", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(Response.json(healthPayload)));
 
-    render(<ApiHealthStatus />);
+    renderWithIntl(<ApiHealthStatus />);
 
     expect(
       await screen.findByText("http://localhost:4000/health"),

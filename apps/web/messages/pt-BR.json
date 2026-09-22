@@ -1,0 +1,30 @@
+{
+  "home": {
+    "title": "Damaged Code",
+    "subtitle": "Um desafio de código de Rick and Morty."
+  },
+  "apiStatus": {
+    "panelTitle": "Status da API",
+    "checking": "Verificando",
+    "online": "Online",
+    "unreachable": "Indisponível",
+    "checkingMessage": "Entrando em contato com a API do projeto...",
+    "reachableMessage": "A API do projeto respondeu à verificação de saúde.",
+    "endpointLabel": "Endereço",
+    "serviceLabel": "Serviço",
+    "retry": "Verificar novamente",
+    "retryLoading": "Verificando a API"
+  },
+  "episodes": {
+    "panelTitle": "Episódios",
+    "count": "{total, plural, =0 {Nenhum episódio} one {# episódio} other {# episódios}}",
+    "loading": "Carregando episódios...",
+    "loadingLabel": "Carregando episódios",
+    "empty": "A API do projeto não retornou nenhum episódio.",
+    "error": "Não foi possível carregar a lista de episódios.",
+    "retry": "Tentar novamente",
+    "retryLoading": "Carregando episódios",
+    "characterCount": "{count, plural, one {# personagem} other {# personagens}}",
+    "airDate": "Exibido em {date}"
+  }
+}

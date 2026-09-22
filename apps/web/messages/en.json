@@ -1,0 +1,30 @@
+{
+  "home": {
+    "title": "Damaged Code",
+    "subtitle": "A Rick and Morty coding challenge."
+  },
+  "apiStatus": {
+    "panelTitle": "API status",
+    "checking": "Checking",
+    "online": "Online",
+    "unreachable": "Unreachable",
+    "checkingMessage": "Contacting the project API...",
+    "reachableMessage": "The project API answered the health check.",
+    "endpointLabel": "Endpoint",
+    "serviceLabel": "Service",
+    "retry": "Check again",
+    "retryLoading": "Checking the API"
+  },
+  "episodes": {
+    "panelTitle": "Episodes",
+    "count": "{total, plural, =0 {No episodes} one {# episode} other {# episodes}}",
+    "loading": "Loading episodes...",
+    "loadingLabel": "Loading episodes",
+    "empty": "No episodes were returned by the project API.",
+    "error": "The episode list could not be loaded.",
+    "retry": "Try again",
+    "retryLoading": "Loading episodes",
+    "characterCount": "{count, plural, one {# character} other {# characters}}",
+    "airDate": "Aired {date}"
+  }
+}
