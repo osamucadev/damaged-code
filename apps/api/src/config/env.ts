@@ -15,12 +15,19 @@ export interface FirebaseConfig {
   emulatorHost: string | null;
 }
 
+export interface UpstreamConfig {
+  /** Base URL of the public Rick and Morty REST API. */
+  rickAndMortyBaseUrl: string;
+  requestTimeoutMs: number;
+}
+
 export interface AppConfig {
   environment: AppEnvironment;
   host: string;
   port: number;
   logLevel: string;
   corsOrigins: string[];
+  upstream: UpstreamConfig;
   firebase: FirebaseConfig;
 }
 
@@ -55,6 +62,27 @@ function readCorsOrigins(value: string | undefined): string[] {
     .split(",")
     .map((origin) => origin.trim())
     .filter((origin) => origin !== "");
+}
+
+const DEFAULT_RICK_AND_MORTY_URL = "https://rickandmortyapi.com/api";
+const DEFAULT_UPSTREAM_TIMEOUT_MS = 8000;
+
+function readUpstream(source: NodeJS.ProcessEnv): UpstreamConfig {
+  const baseUrl = source.RICK_AND_MORTY_API_URL?.trim();
+  const timeout = source.UPSTREAM_TIMEOUT_MS?.trim();
+  const parsedTimeout = timeout === undefined || timeout === "" ? NaN : Number.parseInt(timeout, 10);
+
+  if (timeout !== undefined && timeout !== "" && (Number.isNaN(parsedTimeout) || parsedTimeout <= 0)) {
+    throw new Error(`Invalid UPSTREAM_TIMEOUT_MS value: ${timeout}`);
+  }
+
+  return {
+    rickAndMortyBaseUrl: (baseUrl === undefined || baseUrl === ""
+      ? DEFAULT_RICK_AND_MORTY_URL
+      : baseUrl
+    ).replace(/\/+$/, ""),
+    requestTimeoutMs: Number.isNaN(parsedTimeout) ? DEFAULT_UPSTREAM_TIMEOUT_MS : parsedTimeout,
+  };
 }
 
 function readFirebase(
@@ -104,6 +132,7 @@ export function loadConfig(source: NodeJS.ProcessEnv = process.env): AppConfig {
     port: readPort(source.PORT),
     logLevel: source.LOG_LEVEL ?? (environment === "test" ? "silent" : "info"),
     corsOrigins: readCorsOrigins(source.CORS_ORIGINS),
+    upstream: readUpstream(source),
     firebase: readFirebase(source, environment),
   };
 }

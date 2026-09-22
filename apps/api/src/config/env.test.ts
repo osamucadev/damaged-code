@@ -12,6 +12,10 @@ describe("loadConfig", () => {
       port: 4000,
       logLevel: "info",
       corsOrigins: ["http://localhost:3000"],
+      upstream: {
+        rickAndMortyBaseUrl: "https://rickandmortyapi.com/api",
+        requestTimeoutMs: 8000,
+      },
       firebase: { enabled: false, projectId: null, emulatorHost: null },
     });
   });
@@ -35,6 +39,10 @@ describe("loadConfig", () => {
       port: 8080,
       logLevel: "warn",
       corsOrigins: ["https://web.example.com", "https://admin.example.com"],
+      upstream: {
+        rickAndMortyBaseUrl: "https://rickandmortyapi.com/api",
+        requestTimeoutMs: 8000,
+      },
       firebase: { enabled: false, projectId: null, emulatorHost: null },
     });
   });
@@ -46,6 +54,20 @@ describe("loadConfig", () => {
 
   it("treats an unknown environment name as development", () => {
     expect(loadConfig({ NODE_ENV: "staging" }).environment).toBe("development");
+  });
+});
+
+describe("loadConfig upstream", () => {
+  it("removes a trailing slash from the configured upstream url", () => {
+    const config = loadConfig({ RICK_AND_MORTY_API_URL: "http://upstream.test/api/" });
+
+    expect(config.upstream.rickAndMortyBaseUrl).toBe("http://upstream.test/api");
+  });
+
+  it("rejects a timeout that cannot be used", () => {
+    expect(() => loadConfig({ UPSTREAM_TIMEOUT_MS: "soon" })).toThrow(
+      "Invalid UPSTREAM_TIMEOUT_MS",
+    );
   });
 });
 
