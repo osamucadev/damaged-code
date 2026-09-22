@@ -1,0 +1,182 @@
+/*
+ * Damaged Code design tokens.
+ *
+ * Two levels live here. The primitive level holds raw palette and scale values
+ * and is private to this file. The semantic level names meanings and is the
+ * only level components are allowed to use.
+ *
+ * See docs/DESIGN_SYSTEM.md for the rules behind this layer.
+ */
+
+:root {
+  /* ---------------------------------------------------------------- */
+  /* Primitive palette. Do not use these directly inside components.   */
+  /* ---------------------------------------------------------------- */
+
+  --dc-raw-ink-900: #0f0e0c;
+  --dc-raw-ink-800: #1b1a17;
+
+  --dc-raw-metal-700: #2f2d28;
+  --dc-raw-metal-600: #3d3a33;
+  --dc-raw-metal-500: #4d493f;
+
+  --dc-raw-brown-950: #211a13;
+  --dc-raw-brown-700: #5a4529;
+  --dc-raw-brown-500: #8a6b43;
+
+  --dc-raw-beige-300: #c8b184;
+  --dc-raw-beige-200: #e2d2ae;
+  --dc-raw-beige-100: #efe3c8;
+
+  --dc-raw-bone-100: #f2ece0;
+  --dc-raw-bone-300: #b9ae9a;
+  --dc-raw-bone-500: #8a8577;
+
+  --dc-raw-screen-900: #06232b;
+  --dc-raw-screen-800: #0b3540;
+  --dc-raw-cyan-400: #4fd4ee;
+  --dc-raw-cyan-200: #a8ecfa;
+
+  --dc-raw-acid-600: #6f9e2f;
+  --dc-raw-acid-500: #97ce4c;
+  --dc-raw-acid-400: #b6e84f;
+
+  --dc-raw-amber-500: #e8912a;
+  --dc-raw-red-500: #d0442f;
+  --dc-raw-red-600: #a8331f;
+
+  /* ---------------------------------------------------------------- */
+  /* Semantic color                                                    */
+  /* ---------------------------------------------------------------- */
+
+  --dc-color-surface-machine: var(--dc-raw-brown-950);
+  --dc-color-surface-panel: var(--dc-raw-metal-700);
+  --dc-color-surface-panel-raised: var(--dc-raw-metal-600);
+  --dc-color-surface-recess: var(--dc-raw-ink-800);
+  --dc-color-surface-screen: var(--dc-raw-screen-900);
+  --dc-color-surface-paper: var(--dc-raw-beige-100);
+
+  --dc-color-text-primary: var(--dc-raw-bone-100);
+  --dc-color-text-secondary: var(--dc-raw-bone-300);
+  --dc-color-text-on-paper: var(--dc-raw-brown-950);
+  --dc-color-text-on-screen: var(--dc-raw-cyan-200);
+  --dc-color-text-on-accent: var(--dc-raw-ink-900);
+
+  --dc-color-border-heavy: var(--dc-raw-ink-900);
+  --dc-color-border-hairline: var(--dc-raw-metal-500);
+  --dc-color-border-screen: var(--dc-raw-screen-800);
+  --dc-color-border-paper: var(--dc-raw-beige-300);
+
+  --dc-color-accent-primary: var(--dc-raw-acid-500);
+  --dc-color-accent-primary-strong: var(--dc-raw-acid-400);
+  --dc-color-accent-primary-shade: var(--dc-raw-acid-600);
+  --dc-color-accent-display: var(--dc-raw-cyan-400);
+  --dc-color-accent-warning: var(--dc-raw-amber-500);
+  --dc-color-accent-danger: var(--dc-raw-red-500);
+  --dc-color-accent-danger-shade: var(--dc-raw-red-600);
+
+  --dc-color-state-focus: var(--dc-raw-cyan-200);
+  --dc-color-state-disabled-surface: var(--dc-raw-metal-600);
+  --dc-color-state-disabled-text: var(--dc-raw-bone-500);
+
+  --dc-color-hardware-screw: var(--dc-raw-metal-500);
+  --dc-color-overlay-backdrop: rgb(9 7 5 / 72%);
+
+  /* ---------------------------------------------------------------- */
+  /* Typography                                                        */
+  /* ---------------------------------------------------------------- */
+
+  /*
+   * System stacks only. A licensed display face can replace the display stack
+   * later without touching components, because components reference the token.
+   */
+  --dc-font-family-display: "Bahnschrift", "Oswald", "Arial Narrow", system-ui, sans-serif;
+  --dc-font-family-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --dc-font-family-mono: ui-monospace, "Cascadia Mono", "Consolas", monospace;
+
+  --dc-font-size-2xs: 0.6875rem;
+  --dc-font-size-xs: 0.75rem;
+  --dc-font-size-sm: 0.875rem;
+  --dc-font-size-md: 1rem;
+  --dc-font-size-lg: 1.125rem;
+  --dc-font-size-xl: 1.375rem;
+  --dc-font-size-2xl: 1.75rem;
+  --dc-font-size-3xl: 2.25rem;
+
+  --dc-font-weight-regular: 400;
+  --dc-font-weight-medium: 500;
+  --dc-font-weight-bold: 700;
+
+  --dc-line-height-tight: 1.15;
+  --dc-line-height-normal: 1.5;
+
+  --dc-letter-spacing-wide: 0.06em;
+  --dc-letter-spacing-wider: 0.12em;
+
+  /* ---------------------------------------------------------------- */
+  /* Spacing, radius, border                                           */
+  /* ---------------------------------------------------------------- */
+
+  --dc-space-1: 0.25rem;
+  --dc-space-2: 0.5rem;
+  --dc-space-3: 0.75rem;
+  --dc-space-4: 1rem;
+  --dc-space-5: 1.5rem;
+  --dc-space-6: 2rem;
+  --dc-space-7: 3rem;
+  --dc-space-8: 4rem;
+
+  --dc-radius-sm: 2px;
+  --dc-radius-md: 6px;
+  --dc-radius-lg: 12px;
+  --dc-radius-pill: 999px;
+
+  --dc-border-width-hairline: 1px;
+  --dc-border-width-heavy: 2px;
+  --dc-border-width-thick: 3px;
+
+  /* ---------------------------------------------------------------- */
+  /* Shadow                                                            */
+  /* ---------------------------------------------------------------- */
+
+  --dc-shadow-panel: 0 2px 0 var(--dc-color-border-heavy), 0 6px 14px rgb(0 0 0 / 45%);
+  --dc-shadow-raised: 0 4px 0 var(--dc-color-border-heavy), 0 10px 20px rgb(0 0 0 / 50%);
+  --dc-shadow-pressed: 0 1px 0 var(--dc-color-border-heavy);
+  --dc-shadow-screen-inset: inset 0 0 26px rgb(0 0 0 / 65%);
+  --dc-shadow-glow-accent: 0 0 12px rgb(151 206 76 / 55%);
+  --dc-shadow-glow-display: 0 0 14px rgb(79 212 238 / 45%);
+
+  /* ---------------------------------------------------------------- */
+  /* Motion                                                            */
+  /* ---------------------------------------------------------------- */
+
+  --dc-motion-fast: 120ms;
+  --dc-motion-normal: 220ms;
+  --dc-motion-card: 520ms;
+
+  --dc-ease-mechanical: cubic-bezier(0.2, 0, 0, 1);
+  --dc-ease-pop: cubic-bezier(0.34, 1.4, 0.64, 1);
+
+  /* ---------------------------------------------------------------- */
+  /* Layering                                                          */
+  /* ---------------------------------------------------------------- */
+
+  --dc-layer-base: 0;
+  --dc-layer-raised: 10;
+  --dc-layer-sticky: 100;
+  --dc-layer-overlay: 1000;
+  --dc-layer-dossier: 1100;
+  --dc-layer-tooltip: 1200;
+}
+
+/*
+ * Reduced motion is handled once, here. Components inherit the behavior through
+ * the motion tokens instead of each one reimplementing the media query.
+ */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dc-motion-fast: 1ms;
+    --dc-motion-normal: 1ms;
+    --dc-motion-card: 1ms;
+  }
+}

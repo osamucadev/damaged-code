@@ -1,25 +1,45 @@
-:root {
-  color-scheme: light dark;
-  --surface: #0f1115;
-  --text: #e7e9ee;
-  --muted: #9aa3b2;
-  --border: #262b35;
+@import "../design-system/tokens/tokens.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-* {
-  box-sizing: border-box;
+html {
+  color-scheme: dark;
 }
 
 body {
   margin: 0;
-  padding: 2rem 1.5rem;
-  background: var(--surface);
-  color: var(--text);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  line-height: 1.5;
+  padding: var(--dc-space-6) var(--dc-space-4);
+  background-color: var(--dc-color-surface-machine);
+  /* Worn industrial surface, built from tokens rather than an image asset. */
+  background-image:
+    radial-gradient(circle at 20% 15%, rgb(255 255 255 / 4%), transparent 45%),
+    repeating-linear-gradient(
+      135deg,
+      rgb(0 0 0 / 12%) 0 2px,
+      transparent 2px 6px
+    );
+  color: var(--dc-color-text-primary);
+  font-family: var(--dc-font-family-body);
+  font-size: var(--dc-font-size-md);
+  line-height: var(--dc-line-height-normal);
+  min-height: 100vh;
 }
 
-main {
-  margin: 0 auto;
-  max-width: 48rem;
+h1,
+h2,
+h3 {
+  font-family: var(--dc-font-family-display);
+  letter-spacing: var(--dc-letter-spacing-wide);
+  line-height: var(--dc-line-height-tight);
+  margin: 0;
+  text-transform: uppercase;
+}
+
+:focus-visible {
+  outline: var(--dc-border-width-thick) solid var(--dc-color-state-focus);
+  outline-offset: 2px;
 }
