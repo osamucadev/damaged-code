@@ -40,7 +40,15 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
     if (error instanceof UpstreamError) {
       request.log.error({ err: error, code: error.code }, "upstream request failed");
 
-      return reply.status(502).send({ error: { code: error.code, message: error.message } });
+      return reply
+        .status(error.status)
+        .send({ error: { code: error.code, message: error.message } });
+    }
+
+    if (error.validation !== undefined) {
+      return reply.status(400).send({
+        error: { code: "INVALID_REQUEST", message: error.message },
+      });
     }
 
     if (error.statusCode !== undefined && error.statusCode < 500) {

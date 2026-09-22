@@ -13,7 +13,7 @@ afterEach(async () => {
 async function buildDocumentedApp(): Promise<FastifyInstance> {
   app = await buildApp({
     config: loadConfig({ NODE_ENV: "test" }),
-    episodeService: { listEpisodes: async () => [] },
+    episodeService: { listEpisodes: async () => [], listEpisodeCharacters: async () => [] },
   });
 
   await app.ready();
@@ -81,5 +81,44 @@ describe("OpenAPI document", () => {
     const response = await server.inject({ method: "GET", url: "/docs" });
 
     expect([200, 302]).toContain(response.statusCode);
+  });
+})
+
+describe("OpenAPI character documentation", () => {
+  it("documents the episode characters endpoint with its path parameter", async () => {
+    const server = await buildDocumentedApp();
+
+    const document = (await server.inject({ method: "GET", url: "/docs/json" })).json();
+    const operation = document.paths["/v1/episodes/{episodeId}/characters"]?.get;
+
+    expect(operation.operationId).toBe("listEpisodeCharacters");
+    expect(operation.parameters[0].name).toBe("episodeId");
+    expect(operation.parameters[0].in).toBe("path");
+    expect(operation.parameters[0].required).toBe(true);
+  });
+
+  it("documents the character contract and its failure responses", async () => {
+    const server = await buildDocumentedApp();
+
+    const document = (await server.inject({ method: "GET", url: "/docs/json" })).json();
+    const operation = document.paths["/v1/episodes/{episodeId}/characters"].get;
+    const properties =
+      operation.responses["200"].content["application/json"].schema.properties.data.items
+        .properties;
+
+    expect(Object.keys(properties)).toEqual([
+      "id",
+      "name",
+      "image",
+      "status",
+      "species",
+      "type",
+      "gender",
+      "origin",
+      "location",
+    ]);
+    expect(Object.keys(operation.responses)).toEqual(
+      expect.arrayContaining(["200", "400", "404", "500", "502"]),
+    );
   });
 });

@@ -143,3 +143,142 @@ describe("createRickAndMortyClient", () => {
     ).rejects.toMatchObject({ code: "UPSTREAM_INVALID_RESPONSE" });
   });
 });
+
+function upstreamCharacter(id: number, name: string) {
+  return {
+    id,
+    name,
+    status: "Alive",
+    species: "Human",
+    type: "",
+    gender: "Male",
+    origin: { name: "Earth (C-137)", url: `${baseUrl}/location/1` },
+    location: { name: "Citadel of Ricks", url: `${baseUrl}/location/3` },
+    image: `${baseUrl}/character/avatar/${id}.jpeg`,
+  };
+}
+
+function upstreamEpisodeWithCharacters(ids: number[]) {
+  return {
+    id: 1,
+    name: "Pilot",
+    air_date: "December 2, 2013",
+    episode: "S01E01",
+    characters: ids.map((id) => `${baseUrl}/character/${id}`),
+  };
+}
+
+describe("fetchEpisodeCharacters", () => {
+  it("resolves every character of the episode in one batched request", async () => {
+    const fetchImpl = vi
+      .fn()
+      .mockReturnValueOnce(jsonResponse(upstreamEpisodeWithCharacters([2, 1])))
+      .mockReturnValueOnce(
+        jsonResponse([upstreamCharacter(2, "Morty Smith"), upstreamCharacter(1, "Rick Sanchez")]),
+      );
+
+    const characters = await createRickAndMortyClient({ baseUrl, fetchImpl }).fetchEpisodeCharacters(1);
+
+    expect(characters).toHaveLength(2);
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+    expect(fetchImpl.mock.calls[0]?.[0]).toBe(`${baseUrl}/episode/1`);
+    expect(fetchImpl.mock.calls[1]?.[0]).toBe(`${baseUrl}/character/2,1`);
+  });
+
+  it("normalizes nested upstream fields into the project character model", async () => {
+    const fetchImpl = vi
+      .fn()
+      .mockReturnValueOnce(jsonResponse(upstreamEpisodeWithCharacters([1])))
+      .mockReturnValueOnce(jsonResponse(upstreamCharacter(1, "Rick Sanchez")));
+
+    const [first] = await createRickAndMortyClient({ baseUrl, fetchImpl }).fetchEpisodeCharacters(1);
+
+    expect(first).toEqual({
+      id: 1,
+      name: "Rick Sanchez",
+      image: `${baseUrl}/character/avatar/1.jpeg`,
+      status: "Alive",
+      species: "Human",
+      type: "",
+      gender: "Male",
+      origin: "Earth (C-137)",
+      location: "Citadel of Ricks",
+    });
+    expect(JSON.stringify(first)).not.toContain("/location/");
+  });
+
+  it("handles the single character object upstream returns for one id", async () => {
+    const fetchImpl = vi
+      .fn()
+      .mockReturnValueOnce(jsonResponse(upstreamEpisodeWithCharacters([5])))
+      .mockReturnValueOnce(jsonResponse(upstreamCharacter(5, "Summer Smith")));
+
+    const characters = await createRickAndMortyClient({ baseUrl, fetchImpl }).fetchEpisodeCharacters(1);
+
+    expect(characters.map((item) => item.name)).toEqual(["Summer Smith"]);
+  });
+
+  it("splits very large casts into bounded batches", async () => {
+    const ids = Array.from({ length: 5 }, (_, index) => index + 1);
+    const fetchImpl = vi
+      .fn()
+      .mockReturnValueOnce(jsonResponse(upstreamEpisodeWithCharacters(ids)))
+      .mockReturnValueOnce(jsonResponse([upstreamCharacter(1, "A"), upstreamCharacter(2, "B")]))
+      .mockReturnValueOnce(jsonResponse([upstreamCharacter(3, "C"), upstreamCharacter(4, "D")]))
+      .mockReturnValueOnce(jsonResponse(upstreamCharacter(5, "E")));
+
+    const characters = await createRickAndMortyClient({
+      baseUrl,
+      fetchImpl,
+      characterBatchSize: 2,
+    }).fetchEpisodeCharacters(1);
+
+    expect(characters).toHaveLength(5);
+    expect(fetchImpl.mock.calls[1]?.[0]).toBe(`${baseUrl}/character/1,2`);
+    expect(fetchImpl.mock.calls[3]?.[0]).toBe(`${baseUrl}/character/5`);
+  });
+
+  it("does not call the character endpoint when the episode has no characters", async () => {
+    const fetchImpl = vi.fn().mockReturnValueOnce(jsonResponse(upstreamEpisodeWithCharacters([])));
+
+    const characters = await createRickAndMortyClient({ baseUrl, fetchImpl }).fetchEpisodeCharacters(1);
+
+    expect(characters).toEqual([]);
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+  });
+
+  it("reports a missing episode as its own error code", async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(new Response("Episode not found", { status: 404 }));
+
+    await expect(
+      createRickAndMortyClient({ baseUrl, fetchImpl }).fetchEpisodeCharacters(9999),
+    ).rejects.toMatchObject({ code: "EPISODE_NOT_FOUND", status: 404 });
+  });
+
+  it("reports an invalid response when a character reference is not usable", async () => {
+    const fetchImpl = vi.fn().mockReturnValueOnce(
+      jsonResponse({
+        id: 1,
+        name: "Pilot",
+        air_date: "December 2, 2013",
+        episode: "S01E01",
+        characters: ["not-a-character-url"],
+      }),
+    );
+
+    await expect(
+      createRickAndMortyClient({ baseUrl, fetchImpl }).fetchEpisodeCharacters(1),
+    ).rejects.toMatchObject({ code: "UPSTREAM_INVALID_RESPONSE" });
+  });
+
+  it("reports an unavailable upstream when the character request fails", async () => {
+    const fetchImpl = vi
+      .fn()
+      .mockReturnValueOnce(jsonResponse(upstreamEpisodeWithCharacters([1])))
+      .mockResolvedValueOnce(new Response("nope", { status: 500 }));
+
+    await expect(
+      createRickAndMortyClient({ baseUrl, fetchImpl }).fetchEpisodeCharacters(1),
+    ).rejects.toMatchObject({ code: "UPSTREAM_UNAVAILABLE" });
+  });
+});

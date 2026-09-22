@@ -23,3 +23,20 @@ export interface UpstreamEpisodePage {
   info: UpstreamPageInfo;
   results: UpstreamEpisode[];
 }
+
+export interface UpstreamNamedResource {
+  name: string;
+  url: string;
+}
+
+export interface UpstreamCharacter {
+  id: number;
+  name: string;
+  status: string;
+  species: string;
+  type: string;
+  gender: string;
+  origin: UpstreamNamedResource;
+  location: UpstreamNamedResource;
+  image: string;
+}

@@ -1,7 +1,8 @@
+import type { Character } from "../../domain/character.js";
 import type { Episode } from "../../domain/episode.js";
 
-import { UpstreamError } from "./errors.js";
-import { toEpisode, toEpisodePage } from "./mapper.js";
+import { UpstreamError, type UpstreamErrorCode } from "./errors.js";
+import { toCharacter, toEpisode, toEpisodeCharacterIds, toEpisodePage } from "./mapper.js";
 
 export interface RickAndMortyClientOptions {
   baseUrl: string;
@@ -10,14 +11,23 @@ export interface RickAndMortyClientOptions {
   requestTimeoutMs?: number;
   /** Safety limit, so a malformed pagination chain cannot loop forever. */
   maxPages?: number;
+  /** How many character ids are requested in one upstream call. */
+  characterBatchSize?: number;
 }
 
 export interface RickAndMortyClient {
   fetchAllEpisodes(): Promise<Episode[]>;
+  fetchEpisodeCharacters(episodeId: number): Promise<Character[]>;
 }
 
 const DEFAULT_TIMEOUT_MS = 8000;
 const DEFAULT_MAX_PAGES = 50;
+/*
+ * Upstream accepts a comma separated id list. Episodes hold at most a few dozen
+ * characters, so one request is normally enough. The batch size only keeps the
+ * URL bounded if an episode ever carries an unusual number of characters.
+ */
+const DEFAULT_CHARACTER_BATCH_SIZE = 100;
 
 export function createRickAndMortyClient(
   options: RickAndMortyClientOptions,
@@ -27,9 +37,13 @@ export function createRickAndMortyClient(
     fetchImpl = fetch,
     requestTimeoutMs = DEFAULT_TIMEOUT_MS,
     maxPages = DEFAULT_MAX_PAGES,
+    characterBatchSize = DEFAULT_CHARACTER_BATCH_SIZE,
   } = options;
 
-  async function requestJson(url: string): Promise<unknown> {
+  async function requestJson(
+    url: string,
+    notFound?: { code: UpstreamErrorCode; message: string },
+  ): Promise<unknown> {
     let response: Response;
 
     try {
@@ -43,6 +57,11 @@ export function createRickAndMortyClient(
         `Request to the Rick and Morty API failed: ${url}`,
         { cause },
       );
+    }
+
+    // The message stays free of provider URLs, because clients can read it.
+    if (response.status === 404 && notFound !== undefined) {
+      throw new UpstreamError(notFound.code, notFound.message);
     }
 
     if (!response.ok) {
@@ -94,6 +113,41 @@ export function createRickAndMortyClient(
       }
 
       return episodes;
+    },
+
+    /**
+     * Resolves every character of one episode.
+     *
+     * The episode carries character URLs. Their ids are extracted here and
+     * resolved through the upstream multiple id endpoint, so the number of
+     * requests stays proportional to the episode rather than to its cast.
+     */
+    async fetchEpisodeCharacters(episodeId: number): Promise<Character[]> {
+      const episode = await requestJson(`${baseUrl}/episode/${episodeId}`, {
+        code: "EPISODE_NOT_FOUND",
+        message: `Episode ${episodeId} does not exist.`,
+      });
+      const characterIds = toEpisodeCharacterIds(episode);
+
+      if (characterIds.length === 0) {
+        return [];
+      }
+
+      const characters: Character[] = [];
+
+      for (let start = 0; start < characterIds.length; start += characterBatchSize) {
+        const batch = characterIds.slice(start, start + characterBatchSize);
+        const payload = await requestJson(`${baseUrl}/character/${batch.join(",")}`);
+
+        // Upstream answers with an object for a single id and an array for many.
+        const entries = Array.isArray(payload) ? payload : [payload];
+
+        for (const entry of entries) {
+          characters.push(toCharacter(entry));
+        }
+      }
+
+      return characters;
     },
   };
 }

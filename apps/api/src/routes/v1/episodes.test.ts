@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { buildApp } from "../../app.js";
 import { loadConfig } from "../../config/env.js";
+import type { Character } from "../../domain/character.js";
 import type { Episode } from "../../domain/episode.js";
 import { UpstreamError } from "../../upstream/rick-and-morty/errors.js";
 
@@ -18,10 +19,13 @@ function episode(id: number): Episode {
 
 let app: FastifyInstance;
 
-async function buildWith(listEpisodes: () => Promise<Episode[]>): Promise<FastifyInstance> {
+async function buildWith(
+  listEpisodes: () => Promise<Episode[]>,
+  listEpisodeCharacters: (episodeId: number) => Promise<Character[]> = async () => [],
+): Promise<FastifyInstance> {
   app = await buildApp({
     config: loadConfig({ NODE_ENV: "test" }),
-    episodeService: { listEpisodes },
+    episodeService: { listEpisodes, listEpisodeCharacters },
   });
 
   await app.ready();
@@ -171,5 +175,142 @@ describe("upstream wiring", () => {
     );
 
     fetchSpy.mockRestore();
+  });
+});
+
+function character(id: number, name: string): Character {
+  return {
+    id,
+    name,
+    image: `https://upstream.test/avatar/${id}.jpeg`,
+    status: "Alive",
+    species: "Human",
+    type: "",
+    gender: "Male",
+    origin: "Earth (C-137)",
+    location: "Citadel of Ricks",
+  };
+}
+
+describe("GET /v1/episodes/:episodeId/characters", () => {
+  it("answers with the character contract for the episode", async () => {
+    const server = await buildWith(
+      async () => [],
+      async () => [character(1, "Abradolf Lincler"), character(2, "Rick Sanchez")],
+    );
+
+    const response = await server.inject({ method: "GET", url: "/v1/episodes/28/characters" });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({
+      data: [
+        {
+          id: 1,
+          name: "Abradolf Lincler",
+          image: "https://upstream.test/avatar/1.jpeg",
+          status: "Alive",
+          species: "Human",
+          type: "",
+          gender: "Male",
+          origin: "Earth (C-137)",
+          location: "Citadel of Ricks",
+        },
+        {
+          id: 2,
+          name: "Rick Sanchez",
+          image: "https://upstream.test/avatar/2.jpeg",
+          status: "Alive",
+          species: "Human",
+          type: "",
+          gender: "Male",
+          origin: "Earth (C-137)",
+          location: "Citadel of Ricks",
+        },
+      ],
+      meta: { total: 2, episodeId: 28 },
+    });
+  });
+
+  it("passes the requested episode to the service", async () => {
+    const listEpisodeCharacters = vi.fn().mockResolvedValue([]);
+    const server = await buildWith(async () => [], listEpisodeCharacters);
+
+    await server.inject({ method: "GET", url: "/v1/episodes/42/characters" });
+
+    expect(listEpisodeCharacters).toHaveBeenCalledWith(42);
+  });
+
+  it("answers with an empty contract when the episode has no characters", async () => {
+    const server = await buildWith(
+      async () => [],
+      async () => [],
+    );
+
+    const response = await server.inject({ method: "GET", url: "/v1/episodes/7/characters" });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({ data: [], meta: { total: 0, episodeId: 7 } });
+  });
+
+  it("answers with 404 when the episode does not exist", async () => {
+    const server = await buildWith(
+      async () => [],
+      async () => {
+        throw new UpstreamError("EPISODE_NOT_FOUND", "no episode 9999");
+      },
+    );
+
+    const response = await server.inject({ method: "GET", url: "/v1/episodes/9999/characters" });
+
+    expect(response.statusCode).toBe(404);
+    expect(response.json().error.code).toBe("EPISODE_NOT_FOUND");
+  });
+
+  it("maps an upstream failure to the existing error envelope", async () => {
+    const server = await buildWith(
+      async () => [],
+      async () => {
+        throw new UpstreamError("UPSTREAM_UNAVAILABLE", "the upstream service is down");
+      },
+    );
+
+    const response = await server.inject({ method: "GET", url: "/v1/episodes/1/characters" });
+
+    expect(response.statusCode).toBe(502);
+    expect(response.json().error.code).toBe("UPSTREAM_UNAVAILABLE");
+  });
+
+  it("rejects an episode id that is not a valid identifier", async () => {
+    const server = await buildWith(async () => []);
+
+    const invalid = await server.inject({ method: "GET", url: "/v1/episodes/abc/characters" });
+    const negative = await server.inject({ method: "GET", url: "/v1/episodes/0/characters" });
+
+    expect(invalid.statusCode).toBe(400);
+    expect(invalid.json().error.code).toBe("INVALID_REQUEST");
+    expect(negative.statusCode).toBe(400);
+  });
+
+  it("does not leak upstream urls through the character contract", async () => {
+    const server = await buildWith(
+      async () => [],
+      async () => [character(1, "Rick Sanchez")],
+    );
+
+    const response = await server.inject({ method: "GET", url: "/v1/episodes/1/characters" });
+    const [first] = response.json().data;
+
+    expect(Object.keys(first)).toEqual([
+      "id",
+      "name",
+      "image",
+      "status",
+      "species",
+      "type",
+      "gender",
+      "origin",
+      "location",
+    ]);
+    expect(response.body).not.toContain("rickandmortyapi.com/api/character/1");
   });
 });
