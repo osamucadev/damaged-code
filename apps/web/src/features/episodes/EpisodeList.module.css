@@ -1,0 +1,19 @@
+.list {
+  display: grid;
+  gap: var(--dc-space-3);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.state {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--dc-space-4);
+  justify-content: space-between;
+}
+
+.retry {
+  margin-top: var(--dc-space-4);
+}
