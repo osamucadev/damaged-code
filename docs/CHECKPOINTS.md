@@ -84,9 +84,45 @@ Delivered state:
 
 The `packages/` directory was not created because no shared code was needed yet.
 
-## Checkpoint 02: Episode listing vertical slice
+## Checkpoint 02: Design system foundation
 
 Status: ACTIVE
+
+Goal: establish the frontend design system that the product interface will be built from.
+
+This is a frontend design system concern. It is distinct from the system design and backend architecture already documented in `docs/ARCHITECTURE.md`.
+
+Target outcomes:
+
+1. `docs/DESIGN_SYSTEM.md` documents the direction.
+2. visual inspiration is attributed.
+3. semantic design tokens exist for color, typography, spacing, radius, border, shadow, motion, and layering.
+4. Atomic Design conventions are established in the web application.
+5. Storybook runs from the monorepo.
+6. a minimal real component set demonstrates the system.
+7. component tests cover real behavior.
+8. lint, type checking, and existing tests still pass.
+9. the web application still works.
+
+Deliberate limits:
+
+1. Do not build a large generic component library.
+2. Create only the primitives that the upcoming episode interface needs.
+3. Do not start the Rick and Morty integration in this checkpoint.
+
+Possible small commits:
+
+```text
+docs: add design system direction
+chore(web): add storybook
+feat(web): establish design tokens
+feat(web): add design system primitives
+test(web): cover design system primitives
+```
+
+## Checkpoint 03: Episode listing vertical slice
+
+Status: PENDING
 
 Goal: show all episodes in the web application through the project BFF.
 
@@ -103,7 +139,7 @@ Target outcomes:
 
 The feature should be visible before moving to the next slice.
 
-## Checkpoint 03: Episode characters vertical slice
+## Checkpoint 04: Episode characters vertical slice
 
 Status: PENDING
 
@@ -122,7 +158,7 @@ Target outcomes:
 
 At the end of this checkpoint, the core challenge behavior should work.
 
-## Checkpoint 04: Reliability, cache, and contract hardening
+## Checkpoint 05: Reliability, cache, and contract hardening
 
 Status: PENDING
 
@@ -140,7 +176,7 @@ Target outcomes:
 
 Avoid infrastructure that is disproportionate to the challenge.
 
-## Checkpoint 05: Internationalization and web completion
+## Checkpoint 06: Internationalization and web completion
 
 Status: PENDING
 
@@ -155,7 +191,7 @@ Target outcomes:
 5. relevant localization behavior is tested;
 6. README setup instructions reflect the working project.
 
-## Checkpoint 06: Firebase production deployment
+## Checkpoint 07: Firebase production deployment
 
 Status: PENDING
 
@@ -171,7 +207,7 @@ Target outcomes:
 6. OpenAPI documentation is reachable or clearly documented;
 7. deployment decisions are recorded in architecture docs.
 
-## Checkpoint 07: Flutter client
+## Checkpoint 08: Flutter client
 
 Status: PENDING
 
@@ -192,11 +228,13 @@ Target outcomes:
 
 Desktop targets may be validated where the development host supports them.
 
-## Checkpoint 08: Visual polish
+## Checkpoint 09: Visual polish
 
 Status: PENDING
 
 Goal: improve presentation after product behavior is stable.
+
+Refinement here extends the design system created in checkpoint 02. It does not introduce a second, parallel visual language.
 
 This checkpoint is an appropriate point for Codex-assisted visual refinement.
 
@@ -209,7 +247,7 @@ Target outcomes:
 5. Rick and Morty references do not interfere with usability;
 6. visual changes do not break tested behavior.
 
-## Checkpoint 09: Guided onboarding
+## Checkpoint 10: Guided onboarding
 
 Status: PENDING
 
@@ -225,7 +263,7 @@ Target outcomes:
 6. tour text is localized;
 7. tour does not block normal evaluation.
 
-## Checkpoint 10: Release review
+## Checkpoint 11: Release review
 
 Status: PENDING
 

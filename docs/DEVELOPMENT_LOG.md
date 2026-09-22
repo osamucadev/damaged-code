@@ -130,7 +130,7 @@ Validation:
 
 Known issues:
 
-1. The API has no OpenAPI document yet. It arrives with the first product route in checkpoint 02.
+1. The API has no OpenAPI document yet. It arrives with the first product route, which became checkpoint 03 after the design system checkpoint was inserted.
 2. There is no continuous integration workflow yet.
 3. TanStack Query is not installed yet. The health state uses a plain fetch because no server state caching is needed at this point.
 4. Firebase and Flutter remain untouched, as planned for this checkpoint.
