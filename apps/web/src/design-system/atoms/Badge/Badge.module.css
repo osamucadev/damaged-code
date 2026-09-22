@@ -1,0 +1,29 @@
+.badge {
+  align-items: center;
+  border: var(--dc-border-width-heavy) solid var(--dc-color-border-heavy);
+  border-radius: var(--dc-radius-sm);
+  display: inline-flex;
+  flex: none;
+  font-family: var(--dc-font-family-mono);
+  font-size: var(--dc-font-size-2xs);
+  font-weight: var(--dc-font-weight-bold);
+  justify-content: center;
+  letter-spacing: var(--dc-letter-spacing-wider);
+  padding: var(--dc-space-1) var(--dc-space-2);
+  text-transform: uppercase;
+}
+
+.display {
+  background-color: var(--dc-color-surface-screen);
+  color: var(--dc-color-text-on-screen);
+}
+
+.accent {
+  background-color: var(--dc-color-accent-primary);
+  color: var(--dc-color-text-on-accent);
+}
+
+.neutral {
+  background-color: var(--dc-color-surface-recess);
+  color: var(--dc-color-text-secondary);
+}

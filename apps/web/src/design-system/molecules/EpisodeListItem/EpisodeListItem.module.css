@@ -1,0 +1,39 @@
+.item {
+  align-items: center;
+  background-color: var(--dc-color-surface-panel-raised);
+  border: var(--dc-border-width-heavy) solid var(--dc-color-border-heavy);
+  border-radius: var(--dc-radius-md);
+  box-shadow: var(--dc-shadow-panel);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--dc-space-2) var(--dc-space-4);
+  justify-content: space-between;
+  padding: var(--dc-space-3) var(--dc-space-4);
+}
+
+.identity {
+  align-items: center;
+  display: flex;
+  flex: 1 1 18rem;
+  gap: var(--dc-space-3);
+  min-width: 0;
+}
+
+.name {
+  color: var(--dc-color-text-primary);
+  font-family: var(--dc-font-family-display);
+  font-size: var(--dc-font-size-md);
+  letter-spacing: var(--dc-letter-spacing-wide);
+  margin: 0;
+  /* Long titles wrap instead of pushing the row wider than its container. */
+  overflow-wrap: anywhere;
+}
+
+.meta {
+  color: var(--dc-color-text-secondary);
+  display: flex;
+  flex-wrap: wrap;
+  font-family: var(--dc-font-family-mono);
+  font-size: var(--dc-font-size-xs);
+  gap: var(--dc-space-2) var(--dc-space-4);
+}
