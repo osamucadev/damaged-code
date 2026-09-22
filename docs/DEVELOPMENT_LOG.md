@@ -312,3 +312,54 @@ Relevant commits:
 7. `feat(web): add tanstack query foundation`
 8. `feat(web): add episode list components to the design system`
 9. `feat(web): display the episode list`
+
+## 2026-09-22: Episode characters vertical slice
+
+Checkpoint: 04, Episode characters vertical slice
+
+Goal:
+
+Complete the required challenge behavior: select an episode and see its characters, alphabetically.
+
+What changed:
+
+1. `GET /v1/episodes/:episodeId/characters` was added, with a project owned character model.
+2. The upstream adapter resolves an episode, extracts character ids from the upstream character URLs, and fetches them through the upstream multiple id endpoint.
+3. Alphabetical ordering was implemented in the episode service.
+4. OpenAPI documents the new route, its path parameter, and its failure responses.
+5. `EpisodeListItem` became selectable, rendering a real button with an announced and visible selected state.
+6. A `CharacterCard` molecule was added to the design system.
+7. The web client gained an episode explorer that owns the selection and a character panel driven by a dependent TanStack Query.
+
+Decisions:
+
+1. `GET /v1/episodes/:id` was not added. The characters route resolves the episode itself, and nothing in the product needs a single episode resource yet.
+2. Alphabetical ordering uses an English collator with a base sensitivity, so case and accents do not disturb the order, and the character id breaks ties between identical names. Episode 1 contains two characters named Davin, so ties are real data rather than a hypothetical.
+3. A missing episode became its own upstream error code, `EPISODE_NOT_FOUND`, and `UpstreamError` now carries the status it maps to. The existing error envelope did not change.
+4. The 404 message deliberately avoids naming the upstream URL, because clients can read it. The pre existing 502 messages still contain the upstream URL, which belongs to the contract hardening checkpoint.
+5. Character ids are requested in bounded batches. The batch size only keeps the URL sane for an unusually large cast, and no concurrency machinery was introduced: an episode costs two upstream requests.
+6. Selection is client state. No routing was introduced, because nothing in this checkpoint needs a shareable URL.
+7. The status tone mapping lives in the feature layer, not in the design system, because it interprets product data. Unrecognized status values render neutrally instead of being guessed.
+8. Portraits use a plain image element. The portrait URL is part of the contract, and the Next image pipeline would add a server side media proxy that this checkpoint does not need. API traffic from the browser still reaches only the BFF.
+
+Validation:
+
+1. `pnpm check` passes with 122 tests, 58 on the API and 64 on the web client.
+2. `pnpm build` succeeds for both applications.
+3. The endpoint was checked against the live upstream service. Episode 1 returns 19 characters, alphabetically ordered, in two upstream requests, with no upstream URL in any field other than the portrait.
+4. A missing episode answers 404 with `EPISODE_NOT_FOUND`, and a non numeric id answers 400 with `INVALID_REQUEST`.
+5. The feature was verified in the browser through the standard Docker environment. Selecting an episode loads its characters, the portraits render, the selected row reports `aria-pressed`, and the browser network log shows API calls only to the project API on port 17321.
+6. Swagger UI lists the new route under the episodes tag.
+7. Empty, error, retry, and missing episode behavior are covered by web tests, including a test proving the client renders the contract order rather than sorting characters itself.
+
+Known issues:
+
+1. There is still no cache. Selecting an episode costs two upstream requests every time the query is refetched.
+2. Portrait images are fetched by the browser from the upstream media host, because the contract publishes absolute image URLs. No API call bypasses the BFF.
+3. The 502 error messages still include the upstream URL.
+4. The selected episode is not reflected in the URL, so a selection cannot be shared or restored on reload.
+
+Relevant commits:
+
+1. `feat(api): expose episode characters endpoint`
+2. `feat(web): display episode characters`

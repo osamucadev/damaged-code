@@ -169,7 +169,7 @@ Caching was deliberately not implemented. Every request to `GET /v1/episodes` cu
 
 ## Checkpoint 04: Episode characters vertical slice
 
-Status: ACTIVE
+Status: DONE
 
 Goal: complete the required challenge behavior.
 
@@ -186,9 +186,20 @@ Target outcomes:
 
 At the end of this checkpoint, the core challenge behavior should work.
 
+Delivered state:
+
+1. `GET /v1/episodes/:episodeId/characters` returns every character of the episode.
+2. The adapter resolves the episode, extracts character ids from the upstream URLs, and fetches them through the upstream multiple id endpoint, so one episode costs two upstream requests.
+3. Alphabetical ordering is applied in the service, because it is a contract rule rather than a client concern.
+4. OpenAPI documents the route, its path parameter, and its 400, 404, and 502 responses.
+5. Episode rows are real buttons with a visible and announced selected state.
+6. The web client renders the character grid with portraits, status, and details, with idle, loading, empty, error, and retry states.
+
+The required challenge behavior is complete.
+
 ## Checkpoint 05: Reliability, cache, and contract hardening
 
-Status: PENDING
+Status: ACTIVE
 
 Goal: make the core implementation robust without changing its product scope.
 

@@ -30,6 +30,8 @@ Checkpoints are delivery workflow markers and do not map directly to minor or pa
 - OpenAPI documentation with Swagger UI at `/docs`.
 - Episode list in the web client, with loading, empty, error, and retry states.
 - English and Portuguese, pt-BR, message catalogs for the web interface.
+- Episode characters endpoint `GET /v1/episodes/{episodeId}/characters`, returning characters alphabetically.
+- Episode selection in the web client, showing the characters of the chosen episode with portraits and details.
 
 ### Changed
 

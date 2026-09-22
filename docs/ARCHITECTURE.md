@@ -97,9 +97,10 @@ Optional endpoints must not be added before their features leave backlog.
 ### Implemented contract
 
 ```text
-GET /health         operational, outside the versioned product contract
-GET /v1/episodes    every episode, in the project model
-GET /docs           OpenAPI documentation, with the raw document at /docs/json
+GET /health                                operational, outside the product contract
+GET /v1/episodes                           every episode, in the project model
+GET /v1/episodes/{episodeId}/characters    every character of one episode, alphabetically
+GET /docs                                  OpenAPI documentation, raw document at /docs/json
 ```
 
 The episode list answers with an envelope rather than a bare array:
@@ -139,6 +140,12 @@ src/domain/                    the project model
 ```
 
 Nothing outside the adapter directory knows the upstream payload shape. The adapter follows the upstream next link until it ends, with a page limit so a malformed chain cannot loop forever.
+
+Characters are resolved in two upstream requests per episode. The adapter reads the episode, extracts the character ids from the upstream character URLs, and asks the upstream multiple id endpoint for all of them at once. The ids and URLs never leave the adapter. Only `characterCount` and the character model do.
+
+Alphabetical character ordering is a product contract rule, so the service applies it once and every client receives the same order. No client sorts characters.
+
+The character model publishes `origin` and `location` as names, and `image` as the absolute portrait URL upstream publishes. That URL is media, not an API call: clients still read all data through this API.
 
 ## OpenAPI
 
