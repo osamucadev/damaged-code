@@ -11,6 +11,9 @@ packages:
 # Dependencies explicitly allowed to run install scripts.
 allowBuilds:
   esbuild: true
+  # Firebase CLI dependencies, used by the emulator image.
+  protobufjs: true
+  re2: true
   unrs-resolver: true
 
 minimumReleaseAgeExclude:

@@ -20,5 +20,8 @@
     "typecheck": "pnpm --recursive typecheck",
     "test": "pnpm --recursive test",
     "check": "pnpm lint && pnpm typecheck && pnpm test"
+  },
+  "devDependencies": {
+    "firebase-tools": "15.30.2"
   }
 }

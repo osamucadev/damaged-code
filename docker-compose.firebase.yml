@@ -1,0 +1,62 @@
+# Optional Firebase local mode.
+#
+# Start it with:
+#
+#   docker compose -f docker-compose.yml -f docker-compose.firebase.yml up --build
+#
+# This overlay adds the Firestore emulator and the Emulator Suite UI, and points
+# the API at the emulator through Compose service DNS. It needs no Firebase CLI
+# on the host, no Java on the host, no Firebase login, and no real project.
+
+services:
+  firebase-emulators:
+    container_name: damaged-code-firebase-emulators
+    build:
+      context: .
+      dockerfile: docker/firebase-emulators/Dockerfile
+    environment:
+      # Deliberately fake local project, never a production project id. The
+      # "demo-" prefix is a Firebase convention that keeps the emulator fully
+      # offline: no credential lookup, no login, no real project contacted.
+      FIREBASE_PROJECT_ID: ${FIREBASE_LOCAL_PROJECT_ID:-demo-damaged-code-local}
+      EMULATOR_DATA_DIR: /emulator-data
+    ports:
+      - "${FIREBASE_UI_HOST_PORT:-17323}:4000"
+      - "${FIRESTORE_HOST_PORT:-17324}:8080"
+    volumes:
+      # Exported local state, so a normal restart can restore it. This is a
+      # named volume on purpose, so no mutable emulator files are written into
+      # the Git working tree.
+      - firebase-emulator-data:/emulator-data
+      # Downloaded emulator binaries, seeded from the image layer.
+      - firebase-emulator-cache:/root/.cache/firebase
+    # The emulator exports its data when it receives SIGTERM, so it needs time
+    # to finish writing before the container is killed.
+    stop_grace_period: 45s
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:8080/').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
+
+  api:
+    environment:
+      # Firebase mode is explicit. The API fails to start if it is asked for
+      # Firebase and the target is missing, rather than falling back silently.
+      FIREBASE_ENABLED: "true"
+      FIREBASE_PROJECT_ID: ${FIREBASE_LOCAL_PROJECT_ID:-demo-damaged-code-local}
+      FIRESTORE_EMULATOR_HOST: firebase-emulators:8080
+    depends_on:
+      firebase-emulators:
+        condition: service_healthy
+
+volumes:
+  firebase-emulator-data:
+  firebase-emulator-cache:

@@ -1,0 +1,12 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Clients never reach Firestore directly in this architecture. Only the BFF
+    // talks to Firestore, using server side credentials that bypass these
+    // rules, so the default answer for any direct client access is no.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
