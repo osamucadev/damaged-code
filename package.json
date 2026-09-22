@@ -11,9 +11,12 @@
   },
   "scripts": {
     "dev": "pnpm --parallel --filter \"./apps/*\" dev",
+    "dev:docker": "docker compose up --build",
+    "dev:docker:down": "docker compose down",
     "build": "pnpm --recursive build",
     "lint": "pnpm --recursive lint",
     "typecheck": "pnpm --recursive typecheck",
-    "test": "pnpm --recursive test"
+    "test": "pnpm --recursive test",
+    "check": "pnpm lint && pnpm typecheck && pnpm test"
   }
 }
