@@ -12,6 +12,7 @@ describe("loadConfig", () => {
       port: 4000,
       logLevel: "info",
       corsOrigins: ["http://localhost:3000"],
+      firebase: { enabled: false, projectId: null, emulatorHost: null },
     });
   });
 
@@ -34,6 +35,7 @@ describe("loadConfig", () => {
       port: 8080,
       logLevel: "warn",
       corsOrigins: ["https://web.example.com", "https://admin.example.com"],
+      firebase: { enabled: false, projectId: null, emulatorHost: null },
     });
   });
 
@@ -44,5 +46,60 @@ describe("loadConfig", () => {
 
   it("treats an unknown environment name as development", () => {
     expect(loadConfig({ NODE_ENV: "staging" }).environment).toBe("development");
+  });
+});
+
+describe("loadConfig firebase mode", () => {
+  it("stays disabled unless it is explicitly requested", () => {
+    expect(loadConfig({}).firebase.enabled).toBe(false);
+    expect(
+      loadConfig({ FIRESTORE_EMULATOR_HOST: "firebase-emulators:8080" }).firebase.enabled,
+    ).toBe(false);
+  });
+
+  it("reads the local emulator target when Firebase mode is requested", () => {
+    const { firebase } = loadConfig({
+      FIREBASE_ENABLED: "true",
+      FIREBASE_PROJECT_ID: "demo-damaged-code-local",
+      FIRESTORE_EMULATOR_HOST: "firebase-emulators:8080",
+    });
+
+    expect(firebase).toEqual({
+      enabled: true,
+      projectId: "demo-damaged-code-local",
+      emulatorHost: "firebase-emulators:8080",
+    });
+  });
+
+  it("refuses to start when Firebase mode has no project id", () => {
+    expect(() =>
+      loadConfig({
+        FIREBASE_ENABLED: "true",
+        FIRESTORE_EMULATOR_HOST: "firebase-emulators:8080",
+      }),
+    ).toThrow("FIREBASE_PROJECT_ID is missing");
+  });
+
+  it("refuses to fall back silently when the emulator target is missing", () => {
+    expect(() =>
+      loadConfig({
+        FIREBASE_ENABLED: "true",
+        FIREBASE_PROJECT_ID: "demo-damaged-code-local",
+      }),
+    ).toThrow("FIRESTORE_EMULATOR_HOST is missing");
+  });
+
+  it("allows production to use real credentials instead of an emulator", () => {
+    const { firebase } = loadConfig({
+      NODE_ENV: "production",
+      FIREBASE_ENABLED: "true",
+      FIREBASE_PROJECT_ID: "samuelcaetitedev",
+    });
+
+    expect(firebase).toEqual({
+      enabled: true,
+      projectId: "samuelcaetitedev",
+      emulatorHost: null,
+    });
   });
 });

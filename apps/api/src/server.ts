@@ -14,6 +14,16 @@ async function start(): Promise<void> {
   process.on("SIGINT", closeGracefully);
   process.on("SIGTERM", closeGracefully);
 
+  if (config.firebase.enabled) {
+    app.log.info(
+      {
+        projectId: config.firebase.projectId,
+        emulatorHost: config.firebase.emulatorHost,
+      },
+      "firebase mode enabled, using the local emulator",
+    );
+  }
+
   try {
     await app.listen({ host: config.host, port: config.port });
   } catch (error) {
