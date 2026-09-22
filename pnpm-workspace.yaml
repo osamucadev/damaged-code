@@ -1,3 +1,9 @@
+# Development containers install a filtered subset of the workspace inside the
+# image, so pnpm's pre-run check would consider the modules directory out of
+# sync and try to purge it, which fails without a TTY. "warn" keeps the signal
+# for developers on the host while letting the containers start.
+verifyDepsBeforeRun: warn
+
 packages:
   - "apps/*"
   - "packages/*"
