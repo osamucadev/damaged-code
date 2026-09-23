@@ -38,11 +38,13 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
    */
   app.setErrorHandler((error: FastifyError, request, reply) => {
     if (error instanceof UpstreamError) {
+      // The thrown message keeps the diagnostic detail, including the upstream
+      // URL. Only the public message leaves the server.
       request.log.error({ err: error, code: error.code }, "upstream request failed");
 
       return reply
         .status(error.status)
-        .send({ error: { code: error.code, message: error.message } });
+        .send({ error: { code: error.code, message: error.publicMessage } });
     }
 
     if (error.validation !== undefined) {
@@ -64,9 +66,11 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
     });
   });
 
-  app.setNotFoundHandler((request, reply) =>
+  // The requested route is not echoed back, so nothing from the request line
+  // is reflected into the response body.
+  app.setNotFoundHandler((_request, reply) =>
     reply.status(404).send({
-      error: { code: "NOT_FOUND", message: `Route ${request.method} ${request.url} not found.` },
+      error: { code: "NOT_FOUND", message: "The requested route does not exist." },
     }),
   );
 

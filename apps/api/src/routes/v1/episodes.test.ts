@@ -357,3 +357,69 @@ describe("GET /v1/episodes/:episodeId/characters", () => {
     expect(response.body).not.toContain("rickandmortyapi.com/api/character/1");
   });
 });
+
+describe("public error sanitization", () => {
+  it("never leaks the upstream provider through an unavailable error", async () => {
+    const server = await buildWith(
+      async () => {
+        throw new UpstreamError(
+          "UPSTREAM_UNAVAILABLE",
+          "Request to the Rick and Morty API failed: https://rickandmortyapi.com/api/episode",
+        );
+      },
+    );
+
+    const response = await server.inject({ method: "GET", url: "/v1/episodes" });
+
+    expect(response.statusCode).toBe(502);
+    expect(response.json().error.code).toBe("UPSTREAM_UNAVAILABLE");
+    expect(response.body).not.toContain("rickandmortyapi.com");
+    expect(response.body).not.toContain("https://");
+  });
+
+  it("never leaks the upstream provider through an invalid response error", async () => {
+    const server = await buildWith(async () => {
+      throw new UpstreamError(
+        "UPSTREAM_INVALID_RESPONSE",
+        "The Rick and Morty API returned a body that is not JSON: https://rickandmortyapi.com/api/episode?page=2",
+      );
+    });
+
+    const response = await server.inject({ method: "GET", url: "/v1/episodes" });
+
+    expect(response.statusCode).toBe(502);
+    expect(response.body).not.toContain("rickandmortyapi.com");
+    expect(response.body).not.toContain("page=2");
+  });
+
+  it("keeps the not found message free of upstream detail", async () => {
+    const server = await buildWith(
+      async () => [],
+      async () => {
+        throw new UpstreamError(
+          "EPISODE_NOT_FOUND",
+          "Episode 9999 does not exist at https://rickandmortyapi.com/api/episode/9999",
+        );
+      },
+    );
+
+    const response = await server.inject({ method: "GET", url: "/v1/episodes/9999/characters" });
+
+    expect(response.statusCode).toBe(404);
+    expect(response.json().error.code).toBe("EPISODE_NOT_FOUND");
+    expect(response.body).not.toContain("rickandmortyapi.com");
+  });
+
+  it("does not reflect the requested route back to the client", async () => {
+    const server = await buildWith(async () => []);
+
+    const response = await server.inject({
+      method: "GET",
+      url: "/v1/does-not-exist-<script>",
+    });
+
+    expect(response.statusCode).toBe(404);
+    expect(response.json().error.code).toBe("NOT_FOUND");
+    expect(response.body).not.toContain("script");
+  });
+});
