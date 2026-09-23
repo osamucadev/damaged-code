@@ -12,10 +12,9 @@
 }
 
 .portrait {
+  aspect-ratio: 1 / 1;
   border: var(--dc-border-width-heavy) solid var(--dc-color-border-heavy);
   border-radius: var(--dc-radius-md);
-  display: block;
-  height: auto;
   width: 100%;
 }
 

@@ -13,7 +13,12 @@ function renderCard(props: Partial<React.ComponentProps<typeof CharacterCard>> =
         image="https://upstream.test/avatar/1.jpeg"
         imageAlt="Portrait of Rick Sanchez"
         loadingLabel="Scanning portrait"
-        errorLabel="Image signal lost"
+        lostLabel="Image signal lost"
+        recoveringLabel={(seconds) => `Recovering signal in ${seconds}...`}
+        attemptLabel={(attempt, maxAttempts) => `Attempt ${attempt} of ${maxAttempts}`}
+        unavailableLabel="Image signal unavailable"
+        manualRecoveryLabel="Manual recovery required"
+        retryLabel="Retry signal"
         {...props}
       />
     </ul>,

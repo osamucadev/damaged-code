@@ -1,0 +1,106 @@
+.portrait {
+  overflow: hidden;
+  position: relative;
+}
+
+.image {
+  display: block;
+  height: 100%;
+  inset: 0;
+  object-fit: cover;
+  opacity: 0;
+  position: absolute;
+  transition: opacity var(--dc-motion-normal) var(--dc-ease-mechanical);
+  width: 100%;
+}
+
+.imageLoaded { opacity: 1; }
+
+.skeleton,
+.recovering,
+.unavailable {
+  align-content: center;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 5px, rgb(79 212 238 / 7%) 5px 6px),
+    var(--dc-color-surface-screen);
+  color: var(--dc-color-accent-display);
+  display: grid;
+  font-family: var(--dc-font-family-mono);
+  font-size: var(--dc-font-size-xs);
+  gap: var(--dc-space-1);
+  inset: 0;
+  justify-items: center;
+  letter-spacing: var(--dc-letter-spacing-wider);
+  overflow: hidden;
+  padding: var(--dc-space-2);
+  position: absolute;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.skeleton::after {
+  animation: portraitScan 1.8s linear infinite;
+  background: linear-gradient(transparent, rgb(79 212 238 / 24%), transparent);
+  content: "";
+  height: 28%;
+  inset-inline: 0;
+  position: absolute;
+}
+
+.skeleton span {
+  animation: portraitPulse 1.8s var(--dc-ease-mechanical) infinite;
+}
+
+.recovering,
+.unavailable {
+  color: var(--dc-color-text-secondary);
+}
+
+.signalLost {
+  border: var(--dc-border-width-heavy) solid var(--dc-color-accent-danger-display);
+  border-radius: var(--dc-radius-pill);
+  color: var(--dc-color-accent-danger-display);
+  display: grid;
+  font-size: var(--dc-font-size-xl);
+  height: 2.5rem;
+  place-items: center;
+  width: 2.5rem;
+}
+
+.recoveringHeadline,
+.unavailableHeadline {
+  color: var(--dc-color-text-primary);
+}
+
+.recoveringCountdown {
+  color: var(--dc-color-accent-display);
+}
+
+.retryButton {
+  margin-top: var(--dc-space-1);
+}
+
+/* Visually hidden, but still reachable by assistive technology. */
+.srOnly {
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+@keyframes portraitScan {
+  from { transform: translateY(-110%); }
+  to { transform: translateY(370%); }
+}
+
+@keyframes portraitPulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after,
+  .skeleton span { animation: none; }
+}

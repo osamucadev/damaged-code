@@ -17,67 +17,6 @@
   position: relative;
 }
 
-.image {
-  display: block;
-  height: 100%;
-  inset: 0;
-  object-fit: cover;
-  opacity: 0;
-  position: absolute;
-  transition: opacity var(--dc-motion-normal) var(--dc-ease-mechanical);
-  width: 100%;
-}
-
-.imageLoaded { opacity: 1; }
-
-.skeleton,
-.imageError {
-  align-content: center;
-  background:
-    repeating-linear-gradient(0deg, transparent 0 5px, rgb(79 212 238 / 7%) 5px 6px),
-    var(--dc-color-surface-screen);
-  color: var(--dc-color-accent-display);
-  display: grid;
-  font-family: var(--dc-font-family-mono);
-  font-size: var(--dc-font-size-xs);
-  inset: 0;
-  justify-items: center;
-  letter-spacing: var(--dc-letter-spacing-wider);
-  overflow: hidden;
-  position: absolute;
-  text-transform: uppercase;
-}
-
-.skeleton::after {
-  animation: portraitScan 1.8s linear infinite;
-  background: linear-gradient(transparent, rgb(79 212 238 / 24%), transparent);
-  content: "";
-  height: 28%;
-  inset-inline: 0;
-  position: absolute;
-}
-
-.skeleton span {
-  animation: portraitPulse 1.8s var(--dc-ease-mechanical) infinite;
-}
-
-.imageError {
-  color: var(--dc-color-text-secondary);
-  gap: var(--dc-space-2);
-  text-align: center;
-}
-
-.signalLost {
-  border: var(--dc-border-width-heavy) solid var(--dc-color-accent-danger-display);
-  border-radius: var(--dc-radius-pill);
-  color: var(--dc-color-accent-danger-display);
-  display: grid;
-  font-size: var(--dc-font-size-xl);
-  height: 2.5rem;
-  place-items: center;
-  width: 2.5rem;
-}
-
 .body {
   display: grid;
   gap: var(--dc-space-2);
@@ -97,16 +36,6 @@
 .details {
   display: grid;
   margin: 0;
-}
-
-@keyframes portraitScan {
-  from { transform: translateY(-110%); }
-  to { transform: translateY(370%); }
-}
-
-@keyframes portraitPulse {
-  0%, 100% { opacity: 0.55; }
-  50% { opacity: 1; }
 }
 
 @media (max-width: 34rem) {
@@ -129,11 +58,6 @@
   }
 
   .name { font-size: var(--dc-font-size-lg); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .skeleton::after,
-  .skeleton span { animation: none; }
 }
 
 /*

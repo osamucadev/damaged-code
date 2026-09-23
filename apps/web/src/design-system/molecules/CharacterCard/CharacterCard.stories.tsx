@@ -17,7 +17,12 @@ const meta = {
     image: portrait,
     imageAlt: "Portrait of Rick Sanchez",
     loadingLabel: "Scanning portrait",
-    errorLabel: "Image signal lost",
+    lostLabel: "Image signal lost",
+    recoveringLabel: (seconds: number) => `Recovering signal in ${seconds}...`,
+    attemptLabel: (attempt: number, maxAttempts: number) => `Attempt ${attempt} of ${maxAttempts}`,
+    unavailableLabel: "Image signal unavailable",
+    manualRecoveryLabel: "Manual recovery required",
+    retryLabel: "Retry signal",
   },
   decorators: [
     (Story) => (
@@ -33,20 +38,28 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const LoadedPortrait: Story = {
-  args: { portraitState: "loaded" },
+  args: { previewState: "loaded" },
 };
 
 export const LoadingPortrait: Story = {
-  args: { portraitState: "loading" },
+  args: { previewState: "loading" },
 };
 
-export const FailedPortrait: Story = {
-  args: { portraitState: "error" },
+export const RecoveringAttempt1: Story = {
+  args: { previewState: "recovering-1" },
+};
+
+export const RecoveringAttempt2: Story = {
+  args: { previewState: "recovering-2" },
+};
+
+export const PortraitUnavailable: Story = {
+  args: { previewState: "unavailable" },
 };
 
 export const WithStatusAndDetails: Story = {
   args: {
-    portraitState: "loaded",
+    previewState: "loaded",
     status: <StatusIndicator tone="ok">Alive</StatusIndicator>,
     children: (
       <>
@@ -60,7 +73,7 @@ export const WithStatusAndDetails: Story = {
 
 export const LongContent: Story = {
   args: {
-    portraitState: "loaded",
+    previewState: "loaded",
     name: "Abradolf Lincler from a replacement dimension",
     status: <StatusIndicator tone="neutral">unknown</StatusIndicator>,
     children: (
@@ -75,7 +88,7 @@ export const LongContent: Story = {
 export const NarrowPresentation: Story = {
   args: {
     ...WithStatusAndDetails.args,
-    portraitState: "loaded",
+    previewState: "loaded",
   },
   decorators: [
     (Story) => (

@@ -5,6 +5,11 @@ export {
   type DisplaySurfaceProps,
 } from "./atoms/DisplaySurface/DisplaySurface";
 export { Loader, type LoaderProps } from "./atoms/Loader/Loader";
+export {
+  Portrait,
+  type PortraitPreviewState,
+  type PortraitProps,
+} from "./atoms/Portrait/Portrait";
 export { Panel, type PanelProps } from "./atoms/Panel/Panel";
 export {
   StatusIndicator,

@@ -8,6 +8,7 @@ import {
   Button,
   DisplaySurface,
   Dossier,
+  Portrait,
   PropertyRow,
   useDossierClose,
 } from "@/design-system";
@@ -142,17 +143,18 @@ export function CharacterDossier({
       {data === undefined ? null : (
         <div className={styles.content}>
           <div className={styles.identity}>
-            {/*
-              A plain image element, consistent with the grid: the portrait URL
-              is part of the contract and needs no media proxy.
-            */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Portrait
+              key={data.image}
               alt={t("portraitAlt", { name: data.name })}
+              attemptLabel={(attempt, maxAttempts) => t("portraitAttempt", { attempt, maxAttempts })}
               className={styles.portrait}
-              height={300}
+              loadingLabel={t("portraitLoading")}
+              lostLabel={t("portraitLost")}
+              manualRecoveryLabel={t("portraitManualRecovery")}
+              recoveringLabel={(seconds) => t("portraitRecovering", { seconds })}
+              retryLabel={t("portraitRetry")}
               src={data.image}
-              width={300}
+              unavailableLabel={t("portraitUnavailable")}
             />
             <dl className={styles.facts}>
               <PropertyRow label={t("statusLabel")}>{data.status}</PropertyRow>

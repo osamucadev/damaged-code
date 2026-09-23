@@ -112,7 +112,12 @@ export function EpisodeCharacters({ episode }: EpisodeCharactersProps) {
               image={character.image}
               imageAlt={t("portraitAlt", { name: character.name })}
               loadingLabel={t("portraitLoading")}
-              errorLabel={t("portraitError")}
+              lostLabel={t("portraitLost")}
+              recoveringLabel={(seconds) => t("portraitRecovering", { seconds })}
+              attemptLabel={(attempt, maxAttempts) => t("portraitAttempt", { attempt, maxAttempts })}
+              unavailableLabel={t("portraitUnavailable")}
+              manualRecoveryLabel={t("portraitManualRecovery")}
+              retryLabel={t("portraitRetry")}
               onOpen={(origin) => {
                 setSelected({ character, origin });
               }}
