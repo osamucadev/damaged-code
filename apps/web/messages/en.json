@@ -6,6 +6,8 @@
     "intro": "Browse every transmission by season, then open an episode to inspect its complete character manifest.",
     "github": "View on GitHub",
     "githubHint": "Open the source repository",
+    "android": "Download Android",
+    "androidHint": "Get the release APK",
     "browserTitle": "Episode archive",
     "browserIntro": "Select a season, then choose an episode.",
     "season": "Season {season}",

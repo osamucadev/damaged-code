@@ -28,18 +28,32 @@ export default async function HomePage() {
           <h1 className={styles.title}>{t("title")}</h1>
           <p className={styles.subtitle}>{t("subtitle")}</p>
           <p className={styles.intro}>{t("intro")}</p>
-          <a
-            className={styles.github}
-            href="https://github.com/osamucadev/damaged-code"
-            rel="noreferrer"
-            target="_blank"
-          >
-            <span aria-hidden="true" className={styles.githubMark}>↗</span>
-            <span>
-              <strong>{t("github")}</strong>
-              <small>{t("githubHint")}</small>
-            </span>
-          </a>
+          <div className={styles.ctaRow}>
+            <a
+              className={styles.github}
+              href="https://github.com/osamucadev/damaged-code"
+              rel="noreferrer"
+              target="_blank"
+            >
+              <span aria-hidden="true" className={styles.githubMark}>↗</span>
+              <span>
+                <strong>{t("github")}</strong>
+                <small>{t("githubHint")}</small>
+              </span>
+            </a>
+            <a
+              className={styles.android}
+              href="https://github.com/osamucadev/damaged-code/releases/download/v0.1.0/damaged-code-android-v0.1.0.apk"
+              rel="noreferrer"
+              target="_blank"
+            >
+              <span aria-hidden="true" className={styles.androidMark}>↓</span>
+              <span>
+                <strong>{t("android")}</strong>
+                <small>{t("androidHint")}</small>
+              </span>
+            </a>
+          </div>
         </div>
         <div aria-hidden="true" className={styles.monitor}>
           <span className={styles.scanline} />

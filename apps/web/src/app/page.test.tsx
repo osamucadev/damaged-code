@@ -62,4 +62,13 @@ describe("HomePage", () => {
       "https://github.com/osamucadev/damaged-code",
     );
   });
+
+  it("links to the Android release APK", async () => {
+    renderWithIntl(await HomePage());
+
+    expect(screen.getByRole("link", { name: /download android/i })).toHaveAttribute(
+      "href",
+      "https://github.com/osamucadev/damaged-code/releases/download/v0.1.0/damaged-code-android-v0.1.0.apk",
+    );
+  });
 });

@@ -6,6 +6,8 @@
     "intro": "Navegue por todas as transmissões por temporada e abra um episódio para inspecionar seu manifesto completo de personagens.",
     "github": "Ver no GitHub",
     "githubHint": "Abrir o repositório do código-fonte",
+    "android": "Baixar para Android",
+    "androidHint": "Obter o APK da versão",
     "browserTitle": "Arquivo de episódios",
     "browserIntro": "Escolha uma temporada e depois um episódio.",
     "season": "Temporada {season}",

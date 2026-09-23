@@ -111,27 +111,40 @@
   max-width: 42rem;
 }
 
-.github {
+.ctaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--dc-space-4);
+  justify-self: start;
+}
+
+.github,
+.android {
   align-items: center;
-  background: var(--dc-color-accent-primary);
   border: var(--dc-border-width-thick) solid var(--dc-color-border-heavy);
   border-radius: var(--dc-radius-md);
   box-shadow: 5px 5px 0 var(--dc-color-border-heavy);
-  color: var(--dc-color-text-on-accent);
   display: inline-flex;
   gap: var(--dc-space-3);
-  justify-self: start;
   padding: var(--dc-space-3) var(--dc-space-4);
   text-decoration: none;
   transition: transform var(--dc-motion-fast) var(--dc-ease-mechanical);
 }
 
-.github:hover { transform: translate(-2px, -2px); }
+.github { background: var(--dc-color-accent-primary); color: var(--dc-color-text-on-accent); }
+.android { background: var(--dc-color-accent-display); color: var(--dc-color-text-on-accent); }
 
-.github span:last-child { display: grid; }
-.github strong { font-family: var(--dc-font-family-display); letter-spacing: var(--dc-letter-spacing-wide); text-transform: uppercase; }
-.github small { font-family: var(--dc-font-family-mono); }
-.githubMark { font-size: var(--dc-font-size-2xl); }
+.github:hover, .android:hover { transform: translate(-2px, -2px); }
+
+.github span:last-child, .android span:last-child { display: grid; }
+.github strong, .android strong { font-family: var(--dc-font-family-display); letter-spacing: var(--dc-letter-spacing-wide); text-transform: uppercase; }
+.github small, .android small { font-family: var(--dc-font-family-mono); }
+.githubMark, .androidMark { font-size: var(--dc-font-size-2xl); }
+
+@media (max-width: 26rem) {
+  .ctaRow { flex-direction: column; }
+  .github, .android { justify-content: center; }
+}
 
 .monitor {
   align-self: center;
