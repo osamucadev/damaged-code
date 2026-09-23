@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Debug-only network security policy. It allows cleartext HTTP so a debug
+  build can reach a local BFF during development: the Android Emulator host
+  alias 10.0.2.2, or a development machine's LAN address for a physical
+  device. The base config applies to every destination because a developer
+  BFF address is not known in advance. This file is only packaged into debug
+  builds and never affects the release APK, which keeps the default Android
+  policy that blocks cleartext traffic.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>
