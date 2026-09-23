@@ -43,7 +43,7 @@ describe("HomePage", () => {
   it("shows the episode explorer", async () => {
     renderWithIntl(await HomePage());
 
-    expect(await screen.findByRole("heading", { name: "Episodes" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Episode archive" })).toBeInTheDocument();
   });
 
   it("shows the API status area", async () => {
@@ -52,5 +52,14 @@ describe("HomePage", () => {
     expect(
       await screen.findByRole("heading", { name: "API status" }),
     ).toBeInTheDocument();
+  });
+
+  it("links prominently to the source repository", async () => {
+    renderWithIntl(await HomePage());
+
+    expect(screen.getByRole("link", { name: /view on github/i })).toHaveAttribute(
+      "href",
+      "https://github.com/osamucadev/damaged-code",
+    );
   });
 });

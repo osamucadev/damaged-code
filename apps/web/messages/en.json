@@ -1,7 +1,17 @@
 {
   "home": {
     "title": "Damaged Code",
-    "subtitle": "A Rick and Morty coding challenge."
+    "subtitle": "A Rick and Morty coding challenge.",
+    "eyebrow": "Interdimensional archive",
+    "intro": "Browse every transmission by season, then open an episode to inspect its complete character manifest.",
+    "github": "View on GitHub",
+    "githubHint": "Open the source repository",
+    "browserTitle": "Episode archive",
+    "browserIntro": "Select a season, then choose an episode.",
+    "season": "Season {season}",
+    "seasonLabel": "Choose a season",
+    "openEpisode": "Open {code} {name}",
+    "footer": "With 💜 by Samuel Caetité"
   },
   "apiStatus": {
     "panelTitle": "API status",
@@ -25,7 +35,26 @@
     "retry": "Try again",
     "retryLoading": "Loading episodes",
     "characterCount": "{count, plural, one {# character} other {# characters}}",
-    "airDate": "Aired {date}"
+    "airDate": "Aired {date}",
+    "current": "Current",
+    "backToArchive": "Episode archive",
+    "navigatorTitle": "Episode navigator",
+    "navigatorSummary": "Browse episodes",
+    "episodeIdentity": "Episode file",
+    "seasonNumber": "Season {season}",
+    "episodeNumber": "Episode {episode}",
+    "airedLabel": "Aired",
+    "charactersLabel": "Characters",
+    "previous": "Previous",
+    "next": "Next",
+    "previousEpisode": "Previous: {code} {name}",
+    "nextEpisode": "Next: {code} {name}",
+    "charactersTitle": "Character manifest",
+    "detailLoading": "Loading episode file...",
+    "detailLoadingLabel": "Loading episode",
+    "detailError": "The episode file could not be loaded.",
+    "detailNotFound": "That episode does not exist in the archive.",
+    "allEpisodesError": "Episode navigation is temporarily unavailable."
   },
   "characters": {
     "panelTitle": "Characters",

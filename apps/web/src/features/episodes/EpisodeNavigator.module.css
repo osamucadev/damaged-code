@@ -1,0 +1,79 @@
+.navigator {
+  background: var(--dc-color-surface-panel);
+  border: var(--dc-border-width-thick) solid var(--dc-color-border-heavy);
+  border-radius: var(--dc-radius-lg);
+  box-shadow: var(--dc-shadow-panel);
+  max-height: calc(100vh - 2rem);
+  overflow: auto;
+  position: sticky;
+  top: var(--dc-space-4);
+}
+
+.navigator > summary {
+  align-items: center;
+  border-bottom: var(--dc-border-width-heavy) solid var(--dc-color-border-heavy);
+  cursor: pointer;
+  display: flex;
+  font-family: var(--dc-font-family-display);
+  font-size: var(--dc-font-size-lg);
+  font-weight: var(--dc-font-weight-bold);
+  justify-content: space-between;
+  letter-spacing: var(--dc-letter-spacing-wide);
+  list-style: none;
+  padding: var(--dc-space-4) var(--dc-space-5);
+  text-transform: uppercase;
+}
+
+.navigator > summary::-webkit-details-marker { display: none; }
+
+.summaryAction {
+  color: var(--dc-color-accent-display);
+  display: none;
+  font-family: var(--dc-font-family-mono);
+  font-size: var(--dc-font-size-2xs);
+}
+
+.body { padding: var(--dc-space-4); }
+
+.seasons {
+  display: flex;
+  gap: var(--dc-space-2);
+  margin-bottom: var(--dc-space-4);
+  overflow-x: auto;
+  padding-bottom: var(--dc-space-2);
+}
+
+.seasons button {
+  background: var(--dc-color-surface-recess);
+  border: var(--dc-border-width-heavy) solid var(--dc-color-border-heavy);
+  border-radius: var(--dc-radius-sm);
+  color: var(--dc-color-text-secondary);
+  cursor: pointer;
+  font-family: var(--dc-font-family-mono);
+  padding: var(--dc-space-2) var(--dc-space-3);
+}
+
+.seasons button[aria-selected="true"] {
+  background: var(--dc-color-accent-primary);
+  color: var(--dc-color-text-on-accent);
+}
+
+.episodes {
+  display: grid;
+  gap: var(--dc-space-3);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.episodes a { min-height: 7.25rem; padding: var(--dc-space-3); }
+
+@media (max-width: 68rem) {
+  .navigator {
+    max-height: none;
+    position: static;
+  }
+
+  .summaryAction { display: inline; }
+  .episodes { grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); }
+}

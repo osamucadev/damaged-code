@@ -3,15 +3,10 @@
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 
-import {
-  Button,
-  DisplaySurface,
-  Panel,
-  PropertyRow,
-  StatusIndicator,
-  type StatusTone,
-} from "@/design-system";
+import { Button, DisplaySurface, StatusIndicator, type StatusTone } from "@/design-system";
 import { fetchApiHealth, getApiBaseUrl, type ApiHealth } from "@/lib/api";
+
+import styles from "./ApiHealthStatus.module.css";
 
 type HealthState =
   | { kind: "checking" }
@@ -30,34 +25,21 @@ export function ApiHealthStatus() {
 
   const loadHealth = useCallback((signal?: AbortSignal) => {
     return fetchApiHealth(signal)
-      .then((health) => {
-        setState({ kind: "reachable", health });
-      })
+      .then((health) => setState({ kind: "reachable", health }))
       .catch((error: unknown) => {
-        if (signal?.aborted === true) {
-          return;
+        if (signal?.aborted !== true) {
+          setState({
+            kind: "unreachable",
+            reason: error instanceof Error ? error.message : "Unknown error",
+          });
         }
-
-        setState({
-          kind: "unreachable",
-          reason: error instanceof Error ? error.message : "Unknown error",
-        });
       });
   }, []);
 
   useEffect(() => {
     const controller = new AbortController();
-
     void loadHealth(controller.signal);
-
-    return () => {
-      controller.abort();
-    };
-  }, [loadHealth]);
-
-  const handleRetry = useCallback(() => {
-    setState({ kind: "checking" });
-    void loadHealth();
+    return () => controller.abort();
   }, [loadHealth]);
 
   const statusLabel =
@@ -68,34 +50,43 @@ export function ApiHealthStatus() {
         : t("unreachable");
 
   return (
-    <Panel
-      withScrews
-      title={t("panelTitle")}
-      headerAction={
+    <details className={styles.status}>
+      <summary>
+        <span className={styles.srOnly}>{t("panelTitle")}: </span>
         <StatusIndicator tone={statusTone[state.kind]}>{statusLabel}</StatusIndicator>
-      }
-    >
-      <DisplaySurface tone={state.kind === "unreachable" ? "danger" : "display"}>
-        {state.kind === "checking" ? t("checkingMessage") : null}
-        {state.kind === "reachable" ? t("reachableMessage") : null}
-        {state.kind === "unreachable" ? state.reason : null}
-      </DisplaySurface>
-
-      <dl>
-        <PropertyRow label={t("endpointLabel")}>{`${getApiBaseUrl()}/health`}</PropertyRow>
-        {state.kind === "reachable" ? (
-          <PropertyRow label={t("serviceLabel")}>{state.health.service}</PropertyRow>
-        ) : null}
-      </dl>
-
-      <Button
-        variant="secondary"
-        isLoading={state.kind === "checking"}
-        loadingLabel={t("retryLoading")}
-        onClick={handleRetry}
-      >
-        {t("retry")}
-      </Button>
-    </Panel>
+        <span aria-hidden="true" className={styles.disclosure}>+</span>
+      </summary>
+      <h2 className={styles.srOnly}>{t("panelTitle")}</h2>
+      <div className={styles.details}>
+        <DisplaySurface tone={state.kind === "unreachable" ? "danger" : "display"}>
+          {state.kind === "checking" ? t("checkingMessage") : null}
+          {state.kind === "reachable" ? t("reachableMessage") : null}
+          {state.kind === "unreachable" ? state.reason : null}
+        </DisplaySurface>
+        <dl className={styles.meta}>
+          <div>
+            <dt>{t("endpointLabel")}</dt>
+            <dd>{`${getApiBaseUrl()}/health`}</dd>
+          </div>
+          {state.kind === "reachable" ? (
+            <div>
+              <dt>{t("serviceLabel")}</dt>
+              <dd>{state.health.service}</dd>
+            </div>
+          ) : null}
+        </dl>
+        <Button
+          isLoading={state.kind === "checking"}
+          loadingLabel={t("retryLoading")}
+          onClick={() => {
+            setState({ kind: "checking" });
+            void loadHealth();
+          }}
+          variant="secondary"
+        >
+          {t("retry")}
+        </Button>
+      </div>
+    </details>
   );
 }

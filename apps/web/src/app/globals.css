@@ -12,7 +12,7 @@ html {
 
 body {
   margin: 0;
-  padding: var(--dc-space-6) var(--dc-space-4);
+  padding: 0;
   background-color: var(--dc-color-surface-machine);
   /* Worn industrial surface, built from tokens rather than an image asset. */
   background-image:
@@ -27,6 +27,21 @@ body {
   font-size: var(--dc-font-size-md);
   line-height: var(--dc-line-height-normal);
   min-height: 100vh;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+summary,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: var(--dc-color-accent-primary);
+  color: var(--dc-color-text-on-accent);
 }
 
 h1,

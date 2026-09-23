@@ -1,7 +1,17 @@
 {
   "home": {
     "title": "Damaged Code",
-    "subtitle": "Um desafio de código de Rick and Morty."
+    "subtitle": "Um desafio de código de Rick and Morty.",
+    "eyebrow": "Arquivo interdimensional",
+    "intro": "Navegue por todas as transmissões por temporada e abra um episódio para inspecionar seu manifesto completo de personagens.",
+    "github": "Ver no GitHub",
+    "githubHint": "Abrir o repositório do código-fonte",
+    "browserTitle": "Arquivo de episódios",
+    "browserIntro": "Escolha uma temporada e depois um episódio.",
+    "season": "Temporada {season}",
+    "seasonLabel": "Escolha uma temporada",
+    "openEpisode": "Abrir {code} {name}",
+    "footer": "With 💜 by Samuel Caetité"
   },
   "apiStatus": {
     "panelTitle": "Status da API",
@@ -25,7 +35,26 @@
     "retry": "Tentar novamente",
     "retryLoading": "Carregando episódios",
     "characterCount": "{count, plural, one {# personagem} other {# personagens}}",
-    "airDate": "Exibido em {date}"
+    "airDate": "Exibido em {date}",
+    "current": "Atual",
+    "backToArchive": "Arquivo de episódios",
+    "navigatorTitle": "Navegador de episódios",
+    "navigatorSummary": "Navegar pelos episódios",
+    "episodeIdentity": "Arquivo do episódio",
+    "seasonNumber": "Temporada {season}",
+    "episodeNumber": "Episódio {episode}",
+    "airedLabel": "Exibição",
+    "charactersLabel": "Personagens",
+    "previous": "Anterior",
+    "next": "Próximo",
+    "previousEpisode": "Anterior: {code} {name}",
+    "nextEpisode": "Próximo: {code} {name}",
+    "charactersTitle": "Manifesto de personagens",
+    "detailLoading": "Carregando arquivo do episódio...",
+    "detailLoadingLabel": "Carregando episódio",
+    "detailError": "Não foi possível carregar o arquivo do episódio.",
+    "detailNotFound": "Esse episódio não existe no arquivo.",
+    "allEpisodesError": "A navegação de episódios está temporariamente indisponível."
   },
   "characters": {
     "panelTitle": "Personagens",

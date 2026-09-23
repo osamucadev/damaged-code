@@ -23,3 +23,7 @@ export {
   CharacterCard,
   type CharacterCardProps,
 } from "./molecules/CharacterCard/CharacterCard";
+export {
+  EpisodeLinkCard,
+  type EpisodeLinkCardProps,
+} from "./molecules/EpisodeLinkCard/EpisodeLinkCard";

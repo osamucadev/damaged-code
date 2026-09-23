@@ -134,6 +134,8 @@
   --dc-space-7: 3rem;
   --dc-space-8: 4rem;
 
+  --dc-layout-max: 94rem;
+
   --dc-radius-sm: 2px;
   --dc-radius-md: 6px;
   --dc-radius-lg: 12px;
@@ -153,6 +155,7 @@
   --dc-shadow-screen-inset: inset 0 0 26px rgb(0 0 0 / 65%);
   --dc-shadow-glow-accent: 0 0 12px rgb(151 206 76 / 55%);
   --dc-shadow-glow-display: 0 0 14px rgb(79 212 238 / 45%);
+  --dc-shadow-hero: 0 8px 0 var(--dc-color-border-heavy), 0 24px 54px rgb(0 0 0 / 52%);
 
   /* ---------------------------------------------------------------- */
   /* Motion                                                            */

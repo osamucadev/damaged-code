@@ -23,6 +23,16 @@ export function getApiBaseUrl(): string {
   return configured.replace(/\/+$/, "");
 }
 
+export function getServerApiBaseUrl(): string {
+  const configured = process.env.API_INTERNAL_URL;
+
+  if (configured === undefined || configured.trim() === "") {
+    return getApiBaseUrl();
+  }
+
+  return configured.replace(/\/+$/, "");
+}
+
 export async function fetchApiHealth(signal?: AbortSignal): Promise<ApiHealth> {
   const response = await fetch(`${getApiBaseUrl()}/health`, {
     cache: "no-store",

@@ -1,0 +1,27 @@
+.footer {
+  align-items: center;
+  color: var(--dc-color-text-secondary);
+  display: grid;
+  font-family: var(--dc-font-family-mono);
+  font-size: var(--dc-font-size-xs);
+  gap: var(--dc-space-4);
+  grid-template-columns: minmax(1rem, 1fr) auto minmax(1rem, 1fr);
+  margin: var(--dc-space-8) auto 0;
+  max-width: var(--dc-layout-max);
+  padding: 0 var(--dc-space-4) var(--dc-space-6);
+  text-align: center;
+}
+
+.footer a {
+  color: inherit;
+  text-decoration-color: var(--dc-color-accent-primary-shade);
+  text-underline-offset: 0.25rem;
+}
+
+.footer a:hover {
+  color: var(--dc-color-text-primary);
+}
+
+.line {
+  border-top: var(--dc-border-width-heavy) solid var(--dc-color-border-hairline);
+}

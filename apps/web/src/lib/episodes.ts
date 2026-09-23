@@ -19,6 +19,10 @@ export interface EpisodeListResponse {
   meta: { total: number };
 }
 
+export interface EpisodeResponse {
+  data: Episode;
+}
+
 export class ApiError extends Error {
   public readonly code: string;
 
@@ -71,4 +75,64 @@ export async function fetchEpisodes(signal?: AbortSignal): Promise<Episode[]> {
   }
 
   return body.data;
+}
+
+export async function fetchEpisode(
+  episodeId: number,
+  signal?: AbortSignal,
+  apiBaseUrl = getApiBaseUrl(),
+): Promise<Episode> {
+  const response = await fetch(`${apiBaseUrl}/v1/episodes/${episodeId}`, {
+    headers: { accept: "application/json" },
+    signal,
+  });
+
+  if (!response.ok) {
+    let code = "REQUEST_FAILED";
+
+    try {
+      const body = (await response.json()) as { error?: { code?: string } };
+      code = body.error?.code ?? code;
+    } catch {
+      // The error body was not the project envelope, so the generic code stands.
+    }
+
+    throw new ApiError(code, `The episode request failed with status ${response.status}`);
+  }
+
+  const body = (await response.json()) as Partial<EpisodeResponse>;
+
+  if (!isEpisode(body.data)) {
+    throw new ApiError("INVALID_RESPONSE", "The episode response did not match the contract");
+  }
+
+  return body.data;
+}
+
+export interface EpisodePosition {
+  season: number;
+  episode: number;
+}
+
+export function parseEpisodeCode(code: string): EpisodePosition | null {
+  const match = /^S(\d+)E(\d+)$/.exec(code);
+
+  if (match === null) {
+    return null;
+  }
+
+  return { season: Number(match[1]), episode: Number(match[2]) };
+}
+
+export function groupEpisodesBySeason(episodes: Episode[]): Map<number, Episode[]> {
+  const seasons = new Map<number, Episode[]>();
+
+  for (const episode of episodes) {
+    const season = parseEpisodeCode(episode.code)?.season ?? 0;
+    const entries = seasons.get(season) ?? [];
+    entries.push(episode);
+    seasons.set(season, entries);
+  }
+
+  return seasons;
 }
