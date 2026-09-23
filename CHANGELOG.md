@@ -8,49 +8,38 @@ Checkpoints are delivery workflow markers and do not map directly to minor or pa
 
 ## Unreleased
 
+Nothing yet.
+
+## [0.1.0] - 2026-09-23
+
+The first versioned release. Damaged Code is a Rick and Morty coding challenge delivered as a Next.js web client, a Fastify REST BFF, and a Flutter Android client, all consuming one project-owned API contract.
+
 ### Added
 
-- Initial project governance and delivery documentation.
-- Architecture guardrails for the shared REST BFF.
-- PNPM-only package management policy.
-- Unit and integration testing requirements.
-- English and Portuguese localization requirement.
-- Docker-based local development requirement.
-- OpenAPI documentation requirement.
-- Planned Flutter client and guided web onboarding.
-- PNPM workspace with the Next.js web client and the Fastify REST API.
-- Docker Compose environment that starts the web and API applications locally.
-- API health endpoint at `GET /health`.
-- Web home page reporting whether the project API is reachable.
+- Episode archive, grouped by season, with a shareable page per episode.
+- Character manifest per episode, alphabetically ordered, with a character dossier and episode appearance navigation.
+- Project REST API with `GET /v1/episodes`, `GET /v1/episodes/{episodeId}`, `GET /v1/episodes/{episodeId}/characters`, `GET /v1/characters/{characterId}`, and `GET /health`, documented with OpenAPI and Swagger UI.
+- English and Portuguese, pt-BR, localization for the web interface.
 - Frontend design system with semantic tokens, Atomic Design structure, and Storybook documentation.
-- Machine inspired interface style for the web application, with a control to run the API check again.
-- Storybook as part of the Docker development environment.
-- Optional Firebase emulator mode for local development, with no Firebase tooling required on the host.
-- Episode listing endpoint `GET /v1/episodes` in the project REST contract.
-- OpenAPI documentation with Swagger UI at `/docs`.
-- Episode list in the web client, with loading, empty, error, and retry states.
-- English and Portuguese, pt-BR, message catalogs for the web interface.
-- Episode characters endpoint `GET /v1/episodes/{episodeId}/characters`, returning characters alphabetically.
-- Episode selection in the web client, showing the characters of the chosen episode with portraits and details.
-- Single episode endpoint at `GET /v1/episodes/{episodeId}` with OpenAPI documentation.
-- Dedicated episode routes with shareable URLs, previous and next navigation, and a responsive episode navigator.
-- Prominent GitHub repository link, author footer, intentional metadata, and an original DC favicon.
-- Season based episode browser and reusable episode link cards.
-- Character detail endpoint `GET /v1/characters/{characterId}` with normalized episode appearances.
-- Character dossier in the web client, opened from a character card, with episode appearance links.
-- Caching behind the BFF, in process by default and Firestore backed in the Firebase mode.
-- Production API deployment as the isolated `damagedCodeApi` Firebase Functions codebase.
-- Production web deployment through a dedicated Firebase Hosting site and Cloud Run service.
-- Flutter mobile client with episode browsing, character dossiers, appearance navigation, and Android release builds.
-- English and Brazilian Portuguese Flutter localization through generated ARB catalogs.
+- Response caching behind the BFF: in-process by default, and Firestore backed in the optional Firebase emulator mode.
+- Docker Compose local environment for the web client, API, and Storybook, with an optional Firebase emulator overlay.
+- Flutter Android client with the same episode, character, and appearance journey, English and Brazilian Portuguese localization, and a signed-for-evaluation release APK.
+- Android release download available directly from the web home page, next to the GitHub source link.
+- Production deployment: web served through a custom domain in front of Firebase Hosting and Cloud Run, and the API deployed as an isolated Cloud Functions codebase.
 
 ### Changed
 
 - Published local development ports moved to a project specific block starting at 17320, configurable through environment variables.
-- The web information architecture now separates the project landing page from dedicated episode pages.
-- API health now appears as a secondary operational disclosure instead of the primary content panel.
-- Production web builds now compile the public `damagedCodeApi` URL into the Next.js client.
+- The web information architecture separates the project landing page from dedicated episode pages.
+- API health appears as a secondary operational disclosure instead of the primary content panel.
+- Production web builds compile the public `damagedCodeApi` URL into the Next.js client.
 
 ### Fixed
 
 - Public API error responses no longer expose upstream URLs or the requested route.
+
+### Deferred
+
+- A visible in-page language switcher; locale currently follows a cookie. Tracked in `docs/BACKLOG.md`.
+- The guided onboarding tour originally planned for final web polish. Tracked in `docs/BACKLOG.md`.
+

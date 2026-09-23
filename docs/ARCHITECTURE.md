@@ -395,7 +395,17 @@ Cache              in process, one hour lifetime
 Firestore          not used by production Damaged Code
 ```
 
-App Hosting was evaluated first. Firebase documents PNPM support, but its monorepo guidance supports Nx and Turborepo rather than this repository's plain PNPM workspace with one root lockfile. The deployment therefore uses the existing production Dockerfile from the monorepo root, with no copied lockfile and no workspace restructuring.
+App Hosting was evaluated first. Firebase documents PNPM support, but its monorepo guidance supports Nx and Turborepo rather than this repository's plain PNPM workspace with one root lockfile. A bounded compatibility check found no supported path that preserved the root lockfile without an Nx or Turborepo migration or a duplicate lockfile added only for deployment convenience, so App Hosting was rejected and no App Hosting backend was created. The deployment therefore uses the existing production Dockerfile from the monorepo root, with no copied lockfile and no workspace restructuring, deployed through Cloud Run behind the dedicated Firebase Hosting site.
+
+### Why production uses the in-process cache, not Firestore
+
+The Firebase mode already implements a Firestore-backed cache, validated through the emulator, but production deliberately runs the in-process cache instead.
+
+The existing Firebase project's default Firestore database already holds unrelated production data belonging to other projects in the same account, and it had to remain untouched. Provisioning Damaged Code's own cache collections there, or a separate named database, would have added operational surface, migration, and cleanup concerns to a database this project does not own.
+
+That infrastructure would not have improved correctness. The cache is an optimization, not a source of truth: losing an in-process cache on an instance restart only causes a normal upstream refetch, which the product already handles on every cold cache entry. Cloud Functions instances are ephemeral and there can be several at once, so an in-process cache mostly misses in production, but a miss here costs one more Rick and Morty API call, not incorrect or unavailable data.
+
+Proportional infrastructure was preferred over infrastructure that looked more sophisticated without changing what the challenge required. The Firestore-backed implementation remains available if shared cache state becomes valuable later, for example if request volume grows enough that repeated upstream calls become a real cost.
 
 Cloud Build creates the production image with `NEXT_PUBLIC_API_URL` present at build time. Cloud Run executes that immutable image. The dedicated Firebase Hosting site is the stable public edge and rewrites every path to Cloud Run, so direct episode routes and hard refreshes reach Next.js correctly.
 

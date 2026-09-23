@@ -228,7 +228,7 @@ Delivered state:
 
 ## Checkpoint 06: Internationalization and web completion
 
-Status: ACTIVE
+Status: DONE
 
 Goal: complete the planned web experience in English and Portuguese.
 
@@ -240,6 +240,14 @@ Target outcomes:
 4. user-facing strings are localized;
 5. relevant localization behavior is tested;
 6. README setup instructions reflect the working project.
+
+Delivered state:
+
+1. English and Portuguese, pt-BR, message catalogs cover every user-facing string in the web client.
+2. Locale resolves from the `damaged-code-locale` cookie with an English fallback.
+3. Localization behavior is covered by web tests.
+
+Deferred: a visible in-page language switcher control was not implemented for v0.1.0. Locale currently follows the cookie rather than an on-screen control. This is tracked in `docs/BACKLOG.md` rather than left as a misleading active item.
 
 ## Checkpoint 07: Firebase production deployment
 
@@ -338,23 +346,15 @@ Delivered state:
 
 ## Checkpoint 10: Guided onboarding
 
-Status: PENDING
+Status: BACKLOG
 
 Goal: help a reviewer understand the product quickly.
 
-Target outcomes:
-
-1. short guided tour exists;
-2. tour is skippable;
-3. tour can be replayed;
-4. completion is stored locally;
-5. tour does not require backend persistence;
-6. tour text is localized;
-7. tour does not block normal evaluation.
+This checkpoint was not implemented for v0.1.0. It was not part of the required challenge behavior, and the release was not held for it. It moved to `docs/BACKLOG.md` with its original target outcomes intact so it can be picked up later without blocking this release.
 
 ## Checkpoint 11: Release review
 
-Status: PENDING
+Status: DONE
 
 Goal: produce the final reviewable delivery.
 
@@ -372,6 +372,8 @@ Exit criteria:
 10. no secrets are tracked;
 11. Git history remains incremental and understandable;
 12. optional backlog work has not destabilized the core.
+
+Delivered as the `v0.1.0` release: the Android download CTA shipped beside the existing GitHub CTA, the README and architecture docs were brought in line with the actual deployed and local-reproducible state, the changelog gained its first versioned entry, and this checkpoint was marked complete only after quality gates and production validation passed.
 
 ## Optional work
 

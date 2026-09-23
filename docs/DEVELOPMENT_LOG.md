@@ -551,3 +551,42 @@ Known limitations:
 1. Locale selection follows the device. There is no in-app language switch because the checkpoint asked for device locale behavior.
 2. The app has no offline database. A lost connection shows the retry state, which is intentional for this read-only client.
 3. Portrait fallback is intentionally simple and does not reproduce the web client's advanced recovery sequence.
+
+## 2026-09-23: v0.1.0 release
+
+Checkpoint: 11, Release review
+
+Goal:
+
+Ship the first versioned release: an Android download path beside the existing GitHub CTA, documentation that matches the deployed and locally reproducible state, and a tagged GitHub Release with the evaluator APK.
+
+What changed:
+
+1. The home hero gained a second CTA, `Download Android`, linking directly to the `v0.1.0` GitHub Release asset, styled with the existing design tokens and stacking under the GitHub CTA on narrow viewports.
+2. A debug-only Android network security configuration was added so local debug builds can reach a local BFF over cleartext HTTP; the release build keeps the platform default and only ever calls the production API over HTTPS.
+3. The README was reordered around a live demo and downloads section, and now states plainly that standard Docker mode needs internet access to the public Rick and Morty API even though it needs no Firebase project or Google credentials.
+4. Checkpoint 06 was closed as delivered, with the visible language switcher explicitly deferred to the backlog instead of left as a misleading active item. Checkpoint 10, guided onboarding, moved to the backlog because it was never implemented and did not block this release.
+5. `docs/BACKLOG.md` gained a concrete hybrid search pipeline description, plus the language switcher and guided onboarding items moved from checkpoints.
+6. `CHANGELOG.md` gained its first versioned entry, `[0.1.0] - 2026-09-23`.
+
+Decisions:
+
+1. The Android CTA reuses the existing button pattern and the cyan display accent already used elsewhere in the interface, rather than introducing a new icon package or a third visual style.
+2. The debug cleartext policy is scoped to the debug build variant only, through Android's manifest merger, so the release manifest and its transport policy are untouched.
+3. Internationalization and guided onboarding statuses were corrected to match the running application rather than the original plan, because a release candidate should not claim behavior that is not there.
+
+Validation:
+
+1. Web unit and integration tests pass, including new coverage asserting the Android CTA's href.
+2. `flutter analyze`, `flutter test`, and `flutter build apk --release` were run for the release candidate before tagging.
+3. The production web deployment was redeployed through the existing Cloud Run and Firebase Hosting path and smoke tested at `https://zrp.samuelcaetite.dev`.
+
+Known issues:
+
+1. The Swagger UI asset prefix issue at `/docs` on production remains a known limitation; `/docs/json` stays the reliable production OpenAPI reference.
+
+Relevant commits:
+
+1. `feat(web): expose Android release download`
+2. `fix(mobile): support local BFF in debug builds`
+3. `docs: prepare v0.1.0 release`

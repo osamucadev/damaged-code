@@ -28,24 +28,54 @@ The feature is useful, but it provides less value than finishing the core produc
 
 Possible capability:
 
-Allow a user to describe an episode without knowing its exact title.
+Let a reviewer describe an episode without knowing its exact title or code, for example "what is the episode where...".
 
-Potential future direction:
+The public Rick and Morty API returns titles, codes, and air dates, but no synopsis or narrative description. A strong semantic search cannot be built on that alone, so this direction depends on an enrichment step before any retrieval work starts.
+
+Potential future pipeline:
 
 ```text
-lexical retrieval
-semantic retrieval
+Rick and Morty episode metadata
++
+episode synopsis enrichment with documented provenance
+  |
+  v
+normalized episode corpus
+  |
+  v
+lexical index + embeddings
+  |
+  v
+hybrid retrieval
+  |
+  v
 combined ranking
-enriched episode metadata
+  |
+  v
+natural-language discovery, such as "what is the episode where..."
 ```
 
-Important constraint:
+Why hybrid, not lexical or semantic alone:
 
-The public Rick and Morty API does not provide enough narrative context by itself for strong semantic episode discovery. Any enrichment source and its provenance must be documented.
+1. lexical search stays useful for exact titles, codes, character names, and other explicit terms a reviewer already knows;
+2. semantic search becomes useful once a reviewer only remembers a concept or a plot fragment rather than a title;
+3. hybrid retrieval combines both signals instead of forcing a choice between them.
+
+Why provenance matters:
+
+Synopsis content does not come from the core Rick and Morty REST API today. Any enrichment source used to build the corpus must be documented, including where each synopsis came from and how it was normalized, so the product never presents enriched narrative text as if it were upstream API data.
+
+Where it lives:
+
+Enrichment, indexing, and search infrastructure belong behind the BFF, consistent with the existing rule that clients never talk to a data source directly. Clients would keep asking the project contract a question; the BFF would own retrieval.
+
+Scope boundary:
+
+This is a retrieval feature, semantic and hybrid search over existing episodes, not a generation feature. Retrieval-augmented generation, answering in prose from retrieved evidence rather than returning matching episodes, would only become relevant later if the product started generating answers instead of simply finding them.
 
 Reason for backlog:
 
-This feature introduces data enrichment, indexing, search design, and possibly model infrastructure. It is only justified after the required delivery is complete.
+This feature introduces data enrichment, indexing, search design, and possibly embedding infrastructure. It is only justified after the required delivery is complete.
 
 ## Authenticated experimental area
 
@@ -71,6 +101,30 @@ Reason for backlog:
 The initial quality target is strong unit and integration coverage.
 
 End-to-end infrastructure can be added if time remains after release stability.
+
+## Visible language switcher
+
+Possible capability:
+
+An on-screen control that lets a reviewer change the interface language without editing the `damaged-code-locale` cookie directly.
+
+Current state:
+
+English and Portuguese, pt-BR, message catalogs are complete and localization behavior is tested. Locale resolution currently follows the cookie, with an English fallback, and has no visible control.
+
+Reason for backlog:
+
+The required challenge behavior and its localized text are already delivered. A visible switcher is a usability refinement on top of working localization, not a blocker for it.
+
+## Guided onboarding
+
+Possible capability:
+
+A short, skippable, replayable guided tour that explains the episode and character flow to a first-time reviewer, with completion stored locally and no backend persistence required.
+
+Reason for backlog:
+
+This was originally planned as the final web polish checkpoint, but it was not implemented for v0.1.0. The core episode and character experience is discoverable without a tour, so the release was not held for it.
 
 ## Additional client targets
 
