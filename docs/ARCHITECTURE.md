@@ -385,9 +385,9 @@ Next.js runtime    Cloud Run service: damaged-code-web
                    maximum instances: 5
 
 Storybook          Firebase Hosting site: damaged-code-storybook
-                   https://damaged-code-storybook.web.app
+                   custom domain: https://sb.zrp.samuelcaetite.dev
+                   fallback: https://damaged-code-storybook.web.app
                    static build from apps/web/storybook-static
-                   custom domain: sb.zrp.samuelcaetite.dev, DNS configured, certificate provisioning
 
 BFF                Cloud Functions
                    function name: damagedCodeApi

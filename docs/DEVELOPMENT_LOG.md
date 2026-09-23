@@ -622,10 +622,33 @@ Validation:
 
 Known issues:
 
-1. `sb.zrp.samuelcaetite.dev` remains pending certificate provisioning by Firebase. The `.web.app` address stays canonical until that completes.
+1. `sb.zrp.samuelcaetite.dev` was pending certificate provisioning by Firebase at the time of this entry. It went live shortly after and became the canonical Storybook URL; see the follow-up entry below.
 
 Relevant commits:
 
 1. `chore(storybook): publish component library`
 2. `feat(web): expose technical review resources`
 3. `docs: document public review resources`
+
+## 2026-09-23: Storybook custom domain went live
+
+Checkpoint: 11, Release review, post-release follow-up
+
+Goal:
+
+Switch the canonical Storybook URL from the Firebase fallback to the custom domain now that its certificate finished provisioning.
+
+What changed:
+
+1. The hero's Storybook link now points to `https://sb.zrp.samuelcaetite.dev` instead of `https://damaged-code-storybook.web.app`.
+2. README.md and `docs/ARCHITECTURE.md` document the custom domain as canonical, keeping the `.web.app` address as a Firebase fallback.
+
+Validation:
+
+1. The custom domain was verified live, resolving with a certificate issued for `sb.zrp.samuelcaetite.dev` rather than Firebase's default wildcard certificate.
+2. Focused hero tests and `pnpm check` pass.
+3. Production web was redeployed through the existing Cloud Run and Firebase Hosting pipeline, and the live hero was confirmed to link Storybook at the custom domain.
+
+Relevant commits:
+
+1. `feat(web): use Storybook custom domain`

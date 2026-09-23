@@ -58,7 +58,7 @@ export default async function HomePage() {
             <span className={styles.technicalLabel}>{t("technicalResources")}</span>
             <a
               className={styles.technicalLink}
-              href="https://damaged-code-storybook.web.app"
+              href="https://sb.zrp.samuelcaetite.dev"
               rel="noreferrer"
               target="_blank"
             >

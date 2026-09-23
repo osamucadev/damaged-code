@@ -77,7 +77,7 @@ describe("HomePage", () => {
 
     expect(screen.getByRole("link", { name: "Storybook" })).toHaveAttribute(
       "href",
-      "https://damaged-code-storybook.web.app",
+      "https://sb.zrp.samuelcaetite.dev",
     );
   });
 

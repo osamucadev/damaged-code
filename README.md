@@ -21,14 +21,14 @@ If any reference or bit of canon is slightly off, please treat it as an accident
 | Live web | [https://zrp.samuelcaetite.dev](https://zrp.samuelcaetite.dev) |
 | GitHub repository | [https://github.com/osamucadev/damaged-code](https://github.com/osamucadev/damaged-code) |
 | Android APK | [v0.1.0 release](https://github.com/osamucadev/damaged-code/releases/tag/v0.1.0) |
-| Storybook | [https://damaged-code-storybook.web.app](https://damaged-code-storybook.web.app) |
+| Storybook | [https://sb.zrp.samuelcaetite.dev](https://sb.zrp.samuelcaetite.dev) |
 | Swagger UI | [/docs/#/](https://us-central1-samuelcaetitedev.cloudfunctions.net/damagedCodeApi/docs/#/) |
 | Raw OpenAPI | [/docs/json](https://us-central1-samuelcaetitedev.cloudfunctions.net/damagedCodeApi/docs/json) |
 | Production API | [https://us-central1-samuelcaetitedev.cloudfunctions.net/damagedCodeApi](https://us-central1-samuelcaetitedev.cloudfunctions.net/damagedCodeApi) |
 
 `zrp.samuelcaetite.dev` is the canonical public demo. [https://damaged-code-web.web.app](https://damaged-code-web.web.app) is the underlying Firebase Hosting URL and stays documented as an infrastructure fallback.
 
-`https://damaged-code-storybook.web.app` is the canonical Storybook URL. A custom domain, `sb.zrp.samuelcaetite.dev`, is configured in DNS and pointed at the same Firebase Hosting site, but its certificate is still provisioning, so it is not yet used as a public link.
+`https://sb.zrp.samuelcaetite.dev` is the canonical Storybook URL. [https://damaged-code-storybook.web.app](https://damaged-code-storybook.web.app) is the underlying Firebase Hosting URL and stays documented as an infrastructure fallback.
 
 The Android release APK is an evaluator distribution build. It is ready to install, already configured to call the production API above, and does not require the reviewer to run Docker. See [Flutter evaluation](#flutter-evaluation) for details and for the optional local development path.
 
@@ -194,10 +194,10 @@ The reusable interface components are documented in Storybook.
 
 ```text
 Local Storybook:  http://localhost:17322, as a Compose service, or through pnpm storybook on the host
-Public Storybook: https://damaged-code-storybook.web.app
+Public Storybook: https://sb.zrp.samuelcaetite.dev
 ```
 
-Storybook needs no API, no database, and no network access. It is published as its own Firebase Hosting site, `damaged-code-storybook`, deployed from the static build at `apps/web/storybook-static` and kept separate from the `damaged-code-web` site that serves the Next.js application. See [docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md) for the component rules and token philosophy.
+Storybook needs no API, no database, and no network access. It is published as its own Firebase Hosting site, `damaged-code-storybook`, deployed from the static build at `apps/web/storybook-static` and kept separate from the `damaged-code-web` site that serves the Next.js application. [https://damaged-code-storybook.web.app](https://damaged-code-storybook.web.app) remains available as a Firebase Hosting fallback. See [docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md) for the component rules and token philosophy.
 
 ### Quality checks
 
@@ -299,7 +299,8 @@ Web (fallback): https://damaged-code-web.web.app
 API:        https://us-central1-samuelcaetitedev.cloudfunctions.net/damagedCodeApi
 Swagger UI: https://us-central1-samuelcaetitedev.cloudfunctions.net/damagedCodeApi/docs/#/
 OpenAPI:    https://us-central1-samuelcaetitedev.cloudfunctions.net/damagedCodeApi/docs/json
-Storybook:  https://damaged-code-storybook.web.app
+Storybook:  https://sb.zrp.samuelcaetite.dev
+Storybook (fallback): https://damaged-code-storybook.web.app
 APK:        GitHub Release v0.1.0, damaged-code-android-v0.1.0.apk
 ```
 
