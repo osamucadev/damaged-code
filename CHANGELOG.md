@@ -32,7 +32,13 @@ Checkpoints are delivery workflow markers and do not map directly to minor or pa
 - English and Portuguese, pt-BR, message catalogs for the web interface.
 - Episode characters endpoint `GET /v1/episodes/{episodeId}/characters`, returning characters alphabetically.
 - Episode selection in the web client, showing the characters of the chosen episode with portraits and details.
+- Single episode endpoint at `GET /v1/episodes/{episodeId}` with OpenAPI documentation.
+- Dedicated episode routes with shareable URLs, previous and next navigation, and a responsive episode navigator.
+- Prominent GitHub repository link, author footer, intentional metadata, and an original DC favicon.
+- Season based episode browser and reusable episode link cards.
 
 ### Changed
 
 - Published local development ports moved to a project specific block starting at 17320, configurable through environment variables.
+- The web information architecture now separates the project landing page from dedicated episode pages.
+- API health now appears as a secondary operational disclosure instead of the primary content panel.

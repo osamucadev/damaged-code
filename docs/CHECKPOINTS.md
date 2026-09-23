@@ -280,7 +280,7 @@ Desktop targets may be validated where the development host supports them.
 
 ## Checkpoint 09: Visual polish
 
-Status: PENDING
+Status: DONE
 
 Goal: improve presentation after product behavior is stable.
 
@@ -296,6 +296,18 @@ Target outcomes:
 4. accessibility basics are reviewed;
 5. Rick and Morty references do not interfere with usability;
 6. visual changes do not break tested behavior.
+
+Delivered state:
+
+1. The home page is an intentional project entry point with a first fold GitHub repository CTA.
+2. The 51 episodes are grouped into compact season views instead of one long list.
+3. Episode selection lives at `/episodes/:episodeId`, so direct links, refresh, back, and forward work.
+4. The dedicated episode workspace combines identity, metadata, previous and next navigation, characters, and a sticky desktop navigator.
+5. Narrow screens receive a disclosure based episode navigator instead of a compressed sidebar.
+6. API health is a secondary operational indicator with details behind disclosure.
+7. Canonical decorative faces are consumed through a small decorative component and never replace API portraits.
+8. The site includes intentional metadata, an original DC favicon, a visible source link, and the author footer.
+9. Reusable episode link states are documented in Storybook and covered by component tests.
 
 ## Checkpoint 10: Guided onboarding
 

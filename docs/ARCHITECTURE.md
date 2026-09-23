@@ -99,6 +99,7 @@ Optional endpoints must not be added before their features leave backlog.
 ```text
 GET /health                                operational, outside the product contract
 GET /v1/episodes                           every episode, in the project model
+GET /v1/episodes/{episodeId}               one episode, in the project model
 GET /v1/episodes/{episodeId}/characters    every character of one episode, alphabetically
 GET /docs                                  OpenAPI documentation, raw document at /docs/json
 ```
@@ -123,6 +124,22 @@ The episode list answers with an envelope rather than a bare array:
 The envelope exists so response metadata can grow without a breaking change. A bare top level array cannot gain metadata later.
 
 Upstream character URLs are reduced to `characterCount`. Provider specific URLs and upstream pagination never reach a client.
+
+The single episode endpoint uses the same model and envelope as the list:
+
+```json
+{
+  "data": {
+    "id": 28,
+    "code": "S03E07",
+    "name": "The Ricklantis Mixup",
+    "airDate": "September 10, 2017",
+    "characterCount": 65
+  }
+}
+```
+
+The web route `/episodes/{episodeId}` reads that resource directly. Episode identity therefore lives in the URL and supports direct links, refresh, and browser history.
 
 Errors use one envelope with a stable code, because clients translate codes rather than server prose:
 

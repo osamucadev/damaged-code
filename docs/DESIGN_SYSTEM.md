@@ -121,9 +121,16 @@ atoms/StatusIndicator       lamp plus required status text
 atoms/Loader                busy indicator with an announced label
 molecules/PropertyRow       one labelled property of an object
 molecules/EpisodeListItem   one episode in a list
+molecules/EpisodeLinkCard   navigable episode card with a current page state
 ```
 
 `EpisodeListItem` shows how the localization rule works in practice. It receives the production code and the title as domain data, and receives the air date and the character count as text the caller has already translated.
+
+`EpisodeLinkCard` is the navigation counterpart. It renders a semantic link, supports `aria-current="page"`, and accepts all interface wording from the caller. The home archive and episode navigator use the same component at different densities.
+
+The redesigned web experience uses wide mechanical panels rather than an artificially narrow dashboard column. The home archive groups episodes by season, while the episode route keeps the character manifest and episode navigator in the same desktop workspace. On narrow screens, the navigator becomes a disclosure placed before the episode content.
+
+Decorative faces remain canonical files in `assets/decorative/faces`. `DecorativeFace` imports a deliberately small allowlist from that root location, which keeps the web application from becoming the conceptual owner and avoids duplicating the source files. The component always hides these images from assistive technology and never associates them with API entities.
 
 `src/design-system/index.ts` is the public entry point. Application code imports from there rather than from individual component files.
 

@@ -363,3 +363,46 @@ Relevant commits:
 
 1. `feat(api): expose episode characters endpoint`
 2. `feat(web): display episode characters`
+
+## 2026-09-22: Web information architecture and experience redesign
+
+Checkpoint: 09, Visual polish
+
+Goal:
+
+Replace the long single page flow with shareable episode routes and a responsive interface that treats the product journey as primary.
+
+What changed:
+
+1. `GET /v1/episodes/:episodeId` was added with the existing project episode model, error envelope, OpenAPI conventions, and upstream adapter.
+2. The home page became a project landing surface and season based episode archive.
+3. Every episode links to `/episodes/:episodeId` instead of changing local selection state.
+4. The episode page combines identity, metadata, previous and next links, character cards, and season navigation.
+5. The desktop navigator is sticky, while narrow layouts use a disclosure before the episode content.
+6. API health became a small secondary status control.
+7. The GitHub repository is visible in the first fold, and the author signature links to the portfolio in the footer.
+8. Four canonical decorative faces are available through one allowlisted presentation component. They remain unrelated to API character data.
+9. The application gained an original DC favicon and intentional route metadata.
+
+Decisions:
+
+1. The API still returns all 51 episodes. Season grouping is presentation logic, so backend pagination was not introduced.
+2. Episode names, air dates, character names, and character details remain upstream domain data and are not translated.
+3. The single episode endpoint reuses the list model and adds no fictional synopsis, runtime, rating, or plot information.
+4. The web client continues to call only the BFF for application data. Portrait URLs remain media published by the BFF contract.
+5. Decorative face files stay at the repository root and are imported from there. No copies were added under the web application.
+6. The compact mobile navigator uses native disclosure semantics and preserves keyboard access.
+
+Validation:
+
+1. Focused API and web tests cover the new contract and navigation behavior.
+2. Direct navigation to `/episodes/28` renders the episode and its characters.
+3. Browser back and forward restore the home and episode routes.
+4. The interface was inspected at 1920 by 1080, the normal desktop viewport, and 390 by 844.
+5. English and Portuguese interface strings remain in their message catalogs, with localization behavior covered by the existing tests.
+
+Known limits:
+
+1. The visible language selector still belongs to checkpoint 06.
+2. Cache work remains in checkpoint 05.
+3. The full character dossier interaction remains a later refinement.

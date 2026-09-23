@@ -2,7 +2,7 @@
 
 Damaged Code is a time-boxed technical challenge built around the public Rick and Morty API.
 
-The core experience is intentionally simple: list every episode, let the user select one, and display the characters from that episode in alphabetical order.
+The core experience is intentionally simple: browse episodes by season, open a shareable episode page, and display the characters from that episode in alphabetical order.
 
 The implementation is designed to show how a small requirement can be delivered with clear boundaries, reproducible development, test coverage, documented contracts, and room for multiple clients.
 
@@ -200,8 +200,10 @@ http://localhost:17321/docs/json   raw OpenAPI document
 Implemented endpoints:
 
 ```text
-GET /v1/episodes   every episode, in the project contract
-GET /health        operational, outside the versioned product contract
+GET /v1/episodes                          every episode, in the project contract
+GET /v1/episodes/{episodeId}              one episode, in the project contract
+GET /v1/episodes/{episodeId}/characters   episode characters, alphabetically
+GET /health                               operational, outside the versioned product contract
 ```
 
 Clients consume only this API. The Rick and Morty API is reached by the BFF alone, and upstream pagination and character URLs never reach a client.

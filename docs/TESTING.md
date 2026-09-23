@@ -124,11 +124,13 @@ The Flutter `integration_test` package is not part of the initial scope because 
 ## Implemented coverage
 
 ```text
-API    38 tests   upstream adapter, normalization, pagination, service rules,
+API    67 tests   upstream adapter, normalization, pagination, service rules,
                   configuration, route integration through inject, OpenAPI document
-Web    43 tests   design system behavior, BFF client contract handling,
-                  episode list states, localization behavior
+Web    76 tests   design system behavior, BFF client contract handling,
+                  episode list and detail states, localization behavior, navigation
 ```
+
+The web navigation redesign extends this coverage with the season browser, semantic episode links, direct episode rendering, metadata, previous and next links, current episode state, external evaluation links, and the BFF only request boundary.
 
 No test reaches the live Rick and Morty API. The upstream boundary is replaced with an injected fetch in the adapter tests, and the episode service is injected into the application factory for route tests. The web tests replace `fetch` at the browser boundary.
 
