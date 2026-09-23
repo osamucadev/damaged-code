@@ -78,6 +78,14 @@
 
 .retryButton {
   margin-top: var(--dc-space-1);
+  /*
+   * A caller such as CharacterCard can lay an invisible full card control over
+   * this whole area to make the card itself open something. That control sits
+   * above the portrait by default, so this button needs its own stacking
+   * position to stay reachable instead of silently forwarding clicks to it.
+   */
+  position: relative;
+  z-index: 2;
 }
 
 /* Visually hidden, but still reachable by assistive technology. */
