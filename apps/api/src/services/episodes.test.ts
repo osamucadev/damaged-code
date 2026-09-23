@@ -1,5 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 
+import { createCacheReader } from "../cache/cache.js";
+import { createMemoryCache } from "../cache/memory-cache.js";
+
 import { createEpisodeService } from "./episodes.js";
 
 function episode(id: number) {
@@ -125,5 +128,46 @@ describe("getEpisode", () => {
 
     await expect(createEpisodeService(client).getEpisode(28)).resolves.toEqual(episode(28));
     expect(fetchEpisode).toHaveBeenCalledWith(28);
+  });
+});
+
+describe("createEpisodeService with a cache", () => {
+  it("resolves the episode catalog upstream only once", async () => {
+    const fetchAllEpisodes = vi.fn().mockResolvedValue([episode(2), episode(1)]);
+    const client = {
+      fetchAllEpisodes,
+      fetchEpisode: vi.fn(),
+      fetchEpisodeCharacters: vi.fn(),
+      fetchCharacter: vi.fn(),
+      fetchEpisodesByIds: vi.fn(),
+    };
+    const cached = createCacheReader(createMemoryCache({ ttlMs: 1000 }), { warn: vi.fn() });
+    const service = createEpisodeService(client, cached);
+
+    const first = await service.listEpisodes();
+    const second = await service.listEpisodes();
+
+    expect(first.map((item) => item.id)).toEqual([1, 2]);
+    expect(second).toEqual(first);
+    expect(fetchAllEpisodes).toHaveBeenCalledTimes(1);
+  });
+
+  it("caches each episode cast separately", async () => {
+    const fetchEpisodeCharacters = vi.fn().mockResolvedValue([]);
+    const client = {
+      fetchAllEpisodes: vi.fn(),
+      fetchEpisode: vi.fn(),
+      fetchEpisodeCharacters,
+      fetchCharacter: vi.fn(),
+      fetchEpisodesByIds: vi.fn(),
+    };
+    const cached = createCacheReader(createMemoryCache({ ttlMs: 1000 }), { warn: vi.fn() });
+    const service = createEpisodeService(client, cached);
+
+    await service.listEpisodeCharacters(1);
+    await service.listEpisodeCharacters(1);
+    await service.listEpisodeCharacters(2);
+
+    expect(fetchEpisodeCharacters).toHaveBeenCalledTimes(2);
   });
 });

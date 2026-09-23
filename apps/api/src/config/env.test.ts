@@ -16,6 +16,7 @@ describe("loadConfig", () => {
         rickAndMortyBaseUrl: "https://rickandmortyapi.com/api",
         requestTimeoutMs: 8000,
       },
+      cache: { ttlMs: 3_600_000 },
       firebase: { enabled: false, projectId: null, emulatorHost: null },
     });
   });
@@ -43,6 +44,7 @@ describe("loadConfig", () => {
         rickAndMortyBaseUrl: "https://rickandmortyapi.com/api",
         requestTimeoutMs: 8000,
       },
+      cache: { ttlMs: 3_600_000 },
       firebase: { enabled: false, projectId: null, emulatorHost: null },
     });
   });
@@ -123,5 +125,24 @@ describe("loadConfig firebase mode", () => {
       projectId: "samuelcaetitedev",
       emulatorHost: null,
     });
+  });
+});
+
+describe("loadConfig cache", () => {
+  it("uses one hour as the default entry lifetime", () => {
+    expect(loadConfig({}).cache.ttlMs).toBe(3_600_000);
+  });
+
+  it("accepts an explicit lifetime", () => {
+    expect(loadConfig({ CACHE_TTL_MS: "60000" }).cache.ttlMs).toBe(60_000);
+  });
+
+  it("allows disabling reuse with a zero lifetime", () => {
+    expect(loadConfig({ CACHE_TTL_MS: "0" }).cache.ttlMs).toBe(0);
+  });
+
+  it("rejects a lifetime that cannot be used", () => {
+    expect(() => loadConfig({ CACHE_TTL_MS: "soon" })).toThrow("Invalid CACHE_TTL_MS");
+    expect(() => loadConfig({ CACHE_TTL_MS: "-1" })).toThrow("Invalid CACHE_TTL_MS");
   });
 });

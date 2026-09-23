@@ -1,5 +1,10 @@
 import type { Character } from "../domain/character.js";
 import type { Episode } from "../domain/episode.js";
+import {
+  cacheKeys,
+  passThroughCacheReader,
+  type CacheReader,
+} from "../cache/cache.js";
 import type { RickAndMortyClient } from "../upstream/rick-and-morty/client.js";
 
 export interface EpisodeService {
@@ -21,24 +26,33 @@ const byName = new Intl.Collator("en", { sensitivity: "base", numeric: true });
  * The service owns the contract order so every client, web and Flutter, sees
  * the same sequence without sorting it themselves.
  */
-export function createEpisodeService(client: RickAndMortyClient): EpisodeService {
+export function createEpisodeService(
+  client: RickAndMortyClient,
+  cached: CacheReader = passThroughCacheReader,
+): EpisodeService {
   return {
-    async listEpisodes(): Promise<Episode[]> {
-      const episodes = await client.fetchAllEpisodes();
+    listEpisodes(): Promise<Episode[]> {
+      // The catalog costs three upstream pages, so it is the entry that
+      // benefits most from being cached.
+      return cached(cacheKeys.episodeCatalog(), async () => {
+        const episodes = await client.fetchAllEpisodes();
 
-      return [...episodes].sort((first, second) => first.id - second.id);
+        return [...episodes].sort((first, second) => first.id - second.id);
+      });
     },
 
     getEpisode(episodeId: number): Promise<Episode> {
-      return client.fetchEpisode(episodeId);
+      return cached(cacheKeys.episode(episodeId), () => client.fetchEpisode(episodeId));
     },
 
-    async listEpisodeCharacters(episodeId: number): Promise<Character[]> {
-      const characters = await client.fetchEpisodeCharacters(episodeId);
+    listEpisodeCharacters(episodeId: number): Promise<Character[]> {
+      return cached(cacheKeys.episodeCharacters(episodeId), async () => {
+        const characters = await client.fetchEpisodeCharacters(episodeId);
 
-      return [...characters].sort(
-        (first, second) => byName.compare(first.name, second.name) || first.id - second.id,
-      );
+        return [...characters].sort(
+          (first, second) => byName.compare(first.name, second.name) || first.id - second.id,
+        );
+      });
     },
   };
 }

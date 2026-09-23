@@ -21,6 +21,17 @@ export interface UpstreamConfig {
   requestTimeoutMs: number;
 }
 
+export interface CacheConfig {
+  /**
+   * One lifetime for every cached entry.
+   *
+   * The upstream dataset is a finished television archive, so entries do not
+   * need different freshness policies. One hour keeps the data fresh enough
+   * while removing almost all repeated upstream work.
+   */
+  ttlMs: number;
+}
+
 export interface AppConfig {
   environment: AppEnvironment;
   host: string;
@@ -28,6 +39,7 @@ export interface AppConfig {
   logLevel: string;
   corsOrigins: string[];
   upstream: UpstreamConfig;
+  cache: CacheConfig;
   firebase: FirebaseConfig;
 }
 
@@ -85,6 +97,24 @@ function readUpstream(source: NodeJS.ProcessEnv): UpstreamConfig {
   };
 }
 
+const DEFAULT_CACHE_TTL_MS = 3_600_000;
+
+function readCache(source: NodeJS.ProcessEnv): CacheConfig {
+  const raw = source.CACHE_TTL_MS?.trim();
+
+  if (raw === undefined || raw === "") {
+    return { ttlMs: DEFAULT_CACHE_TTL_MS };
+  }
+
+  const parsed = Number.parseInt(raw, 10);
+
+  if (Number.isNaN(parsed) || parsed < 0) {
+    throw new Error(`Invalid CACHE_TTL_MS value: ${raw}`);
+  }
+
+  return { ttlMs: parsed };
+}
+
 function readFirebase(
   source: NodeJS.ProcessEnv,
   environment: AppEnvironment,
@@ -133,6 +163,7 @@ export function loadConfig(source: NodeJS.ProcessEnv = process.env): AppConfig {
     logLevel: source.LOG_LEVEL ?? (environment === "test" ? "silent" : "info"),
     corsOrigins: readCorsOrigins(source.CORS_ORIGINS),
     upstream: readUpstream(source),
+    cache: readCache(source),
     firebase: readFirebase(source, environment),
   };
 }

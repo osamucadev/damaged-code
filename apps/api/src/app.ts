@@ -1,6 +1,18 @@
 import cors from "@fastify/cors";
-import Fastify, { type FastifyError, type FastifyInstance } from "fastify";
+import Fastify, {
+  type FastifyBaseLogger,
+  type FastifyError,
+  type FastifyInstance,
+} from "fastify";
 
+import {
+  createCacheReader,
+  passThroughCacheReader,
+  type Cache,
+  type CacheReader,
+} from "./cache/cache.js";
+import { createFirestoreCache } from "./cache/firestore-cache.js";
+import { createMemoryCache } from "./cache/memory-cache.js";
 import { loadConfig, type AppConfig } from "./config/env.js";
 import { registerOpenApi } from "./docs/openapi.js";
 import { healthRoutes } from "./routes/health.js";
@@ -16,6 +28,8 @@ export interface BuildAppOptions {
   /** Injected by tests so the suite never reaches the live upstream service. */
   episodeService?: EpisodeService;
   characterService?: CharacterService;
+  /** Injected by tests that exercise cache behavior without a real backend. */
+  cache?: Cache;
 }
 
 export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyInstance> {
@@ -82,8 +96,19 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
     requestTimeoutMs: config.upstream.requestTimeoutMs,
   });
 
-  const episodeService = options.episodeService ?? createEpisodeService(upstreamClient);
-  const characterService = options.characterService ?? createCharacterService(upstreamClient);
+  /*
+   * Which cache backs the BFF follows the runtime mode that already exists in
+   * this repository. The standard mode keeps everything in process. The
+   * explicit Firebase mode shares one cache through Firestore, which is what a
+   * multi instance deployment needs later.
+   */
+  const cache = options.cache ?? (await createCacheForConfig(config, app.log));
+  const cached: CacheReader =
+    cache === undefined ? passThroughCacheReader : createCacheReader(cache, app.log);
+
+  const episodeService = options.episodeService ?? createEpisodeService(upstreamClient, cached);
+  const characterService =
+    options.characterService ?? createCharacterService(upstreamClient, cached);
 
   // Operational routes stay outside the versioned product contract.
   await app.register(healthRoutes);
@@ -91,6 +116,36 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
   await app.register(characterRoutes, { prefix: "/v1", characterService });
 
   return app;
+}
+
+/**
+ * Builds the cache for the active runtime mode.
+ *
+ * A Firestore cache that cannot be created is a startup failure and is not
+ * silently downgraded to an in-process cache, because the repository treats
+ * Firebase mode as explicit: asking for it and getting something else would
+ * hide the problem.
+ */
+async function createCacheForConfig(
+  config: AppConfig,
+  logger: FastifyBaseLogger,
+): Promise<Cache> {
+  if (config.firebase.enabled && config.firebase.projectId !== null) {
+    logger.info(
+      { projectId: config.firebase.projectId, ttlMs: config.cache.ttlMs },
+      "using the Firestore backed cache",
+    );
+
+    return createFirestoreCache({
+      projectId: config.firebase.projectId,
+      emulatorHost: config.firebase.emulatorHost,
+      ttlMs: config.cache.ttlMs,
+    });
+  }
+
+  logger.info({ ttlMs: config.cache.ttlMs }, "using the in-process cache");
+
+  return createMemoryCache({ ttlMs: config.cache.ttlMs });
 }
 
 declare module "fastify" {

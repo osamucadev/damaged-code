@@ -1,5 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 
+import { createCacheReader } from "../cache/cache.js";
+import { createMemoryCache } from "../cache/memory-cache.js";
+
 import { createCharacterService } from "./characters.js";
 
 function character(id: number, name: string) {
@@ -118,5 +121,47 @@ describe("createCharacterService", () => {
     await expect(createCharacterService(client).getCharacter(2)).rejects.toThrow(
       "episodes are gone",
     );
+  });
+});
+
+describe("createCharacterService with a cache", () => {
+  function cachedService(client: ReturnType<typeof clientWith>, ttlMs = 1000, now = () => 0) {
+    const cache = createMemoryCache({ ttlMs, now });
+
+    return createCharacterService(client, createCacheReader(cache, { warn: vi.fn() }));
+  }
+
+  it("asks upstream once and serves the repeat view from the cache", async () => {
+    const client = clientWith([1, 2]);
+    const service = cachedService(client);
+
+    const first = await service.getCharacter(2);
+    const second = await service.getCharacter(2);
+
+    expect(second).toEqual(first);
+    expect(client.fetchCharacter).toHaveBeenCalledTimes(1);
+    expect(client.fetchEpisodesByIds).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps different characters in separate entries", async () => {
+    const client = clientWith([1]);
+    const service = cachedService(client);
+
+    await service.getCharacter(2);
+    await service.getCharacter(3);
+
+    expect(client.fetchCharacter).toHaveBeenCalledTimes(2);
+  });
+
+  it("asks upstream again once the entry expires", async () => {
+    let clock = 0;
+    const client = clientWith([1]);
+    const service = cachedService(client, 1000, () => clock);
+
+    await service.getCharacter(2);
+    clock = 1000;
+    await service.getCharacter(2);
+
+    expect(client.fetchCharacter).toHaveBeenCalledTimes(2);
   });
 });
