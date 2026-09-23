@@ -1,0 +1,133 @@
+.backdrop {
+  align-items: center;
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: var(--dc-space-5);
+  position: fixed;
+  z-index: var(--dc-layer-dossier);
+}
+
+.backdropSurface {
+  animation: dossierBackdrop var(--dc-motion-normal) var(--dc-ease-mechanical);
+  background: var(--dc-color-overlay-backdrop);
+  inset: 0;
+  position: absolute;
+}
+
+.panel {
+  animation: dossierEnter var(--dc-motion-card) var(--dc-ease-pop);
+  background: linear-gradient(
+    135deg,
+    var(--dc-color-surface-panel-raised),
+    var(--dc-color-surface-panel)
+  );
+  border: var(--dc-border-width-thick) solid var(--dc-color-border-heavy);
+  border-radius: var(--dc-radius-lg);
+  box-shadow: var(--dc-shadow-raised);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  max-height: min(44rem, 100%);
+  max-width: 44rem;
+  position: relative;
+  width: 100%;
+}
+
+.header {
+  align-items: start;
+  border-bottom: var(--dc-border-width-heavy) solid var(--dc-color-border-heavy);
+  display: flex;
+  gap: var(--dc-space-4);
+  justify-content: space-between;
+  padding: var(--dc-space-4) var(--dc-space-5);
+}
+
+.heading {
+  display: grid;
+  gap: var(--dc-space-1);
+  min-width: 0;
+}
+
+.eyebrow {
+  color: var(--dc-color-accent-display);
+  font-family: var(--dc-font-family-mono);
+  font-size: var(--dc-font-size-xs);
+  letter-spacing: var(--dc-letter-spacing-wider);
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.title {
+  color: var(--dc-color-text-primary);
+  font-family: var(--dc-font-family-display);
+  font-size: var(--dc-font-size-2xl);
+  letter-spacing: var(--dc-letter-spacing-wide);
+  margin: 0;
+  /* Long names wrap instead of pushing the dialog wider than the viewport. */
+  overflow-wrap: anywhere;
+  text-transform: uppercase;
+}
+
+.close {
+  background: var(--dc-color-surface-recess);
+  border: var(--dc-border-width-heavy) solid var(--dc-color-border-heavy);
+  border-radius: var(--dc-radius-sm);
+  color: var(--dc-color-text-primary);
+  cursor: pointer;
+  flex: none;
+  font-size: var(--dc-font-size-xl);
+  line-height: 1;
+  padding: var(--dc-space-2) var(--dc-space-3);
+}
+
+.close:hover {
+  background: var(--dc-color-accent-danger);
+}
+
+.body {
+  overflow-y: auto;
+  padding: var(--dc-space-5);
+}
+
+@keyframes dossierBackdrop {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/*
+ * The card lifts toward the reader rather than simply appearing, which is the
+ * physical dossier feel the design system describes. It is one transform, not
+ * an animation system.
+ */
+@keyframes dossierEnter {
+  from {
+    opacity: 0;
+    transform: perspective(60rem) translateY(1.5rem) rotateX(7deg) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: perspective(60rem) translateY(0) rotateX(0) scale(1);
+  }
+}
+
+@media (max-width: 42rem) {
+  .backdrop { padding: 0; }
+
+  .panel {
+    border-radius: 0;
+    max-height: 100%;
+    max-width: 100%;
+    height: 100%;
+  }
+
+  .body { padding: var(--dc-space-4); }
+  .header { padding: var(--dc-space-4); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  .backdropSurface {
+    animation: none;
+  }
+}

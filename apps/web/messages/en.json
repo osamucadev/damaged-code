@@ -83,6 +83,16 @@
     "typeLabel": "Type",
     "genderLabel": "Gender",
     "originLabel": "Origin",
-    "locationLabel": "Last known location"
+    "locationLabel": "Last known location",
+    "openDossier": "Open the dossier of {name}",
+    "dossierEyebrow": "Character file",
+    "dossierClose": "Close the dossier",
+    "dossierLoading": "Reading character file...",
+    "dossierLoadingLabel": "Loading character",
+    "dossierError": "The character file could not be loaded.",
+    "dossierNotFound": "That character does not exist.",
+    "appearancesTitle": "Episode appearances",
+    "appearancesCount": "{total, plural, =0 {No episodes} one {# episode} other {# episodes}}",
+    "appearancesEmpty": "No episode appearances were returned for this character."
   }
 }

@@ -15,6 +15,10 @@ export interface CharacterCardProps extends HTMLAttributes<HTMLLIElement> {
   errorLabel: string;
   /** Controlled portrait state for documentation and deterministic previews. */
   portraitState?: "loading" | "loaded" | "error";
+  /** Makes the whole card open something. Without it the card is static. */
+  onSelect?: () => void;
+  /** Localized accessible name of the card control. Required with onSelect. */
+  selectLabel?: string;
   /** Optional status presentation, such as a StatusIndicator. */
   status?: ReactNode;
   /** Property rows describing the character. Rendered inside a description list. */
@@ -99,15 +103,27 @@ export function CharacterCard({
   loadingLabel,
   errorLabel,
   portraitState,
+  onSelect,
+  selectLabel,
   status,
   className,
   children,
   ...rest
 }: CharacterCardProps) {
-  const classes = [styles.card, className].filter(Boolean).join(" ");
+  const classes = [styles.card, onSelect === undefined ? undefined : styles.selectable, className]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <li {...rest} className={classes}>
+      {/*
+        The control covers the card instead of wrapping it, so the whole card
+        stays one large target while the description list below stays outside
+        the button, where a description list is allowed to live.
+      */}
+      {onSelect === undefined ? null : (
+        <button aria-label={selectLabel} className={styles.trigger} onClick={onSelect} type="button" />
+      )}
       <CharacterPortrait
         key={image}
         errorLabel={errorLabel}

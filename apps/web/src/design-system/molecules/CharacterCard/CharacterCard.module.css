@@ -1,4 +1,5 @@
 .card {
+  position: relative;
   background-color: var(--dc-color-surface-panel-raised);
   border: var(--dc-border-width-heavy) solid var(--dc-color-border-heavy);
   border-radius: var(--dc-radius-md);
@@ -133,4 +134,31 @@
 @media (prefers-reduced-motion: reduce) {
   .skeleton::after,
   .skeleton span { animation: none; }
+}
+
+/*
+ * The invisible control sits above the card surface but below the text, so the
+ * card reads as one target while the content stays selectable markup.
+ */
+.trigger {
+  background: none;
+  border: 0;
+  cursor: pointer;
+  inset: 0;
+  padding: 0;
+  position: absolute;
+  z-index: 1;
+}
+
+.selectable:hover {
+  border-color: var(--dc-color-accent-primary);
+}
+
+.selectable:has(.trigger:focus-visible) {
+  outline: var(--dc-border-width-thick) solid var(--dc-color-state-focus);
+  outline-offset: 2px;
+}
+
+.trigger:focus-visible {
+  outline: none;
 }

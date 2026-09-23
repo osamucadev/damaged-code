@@ -1,0 +1,87 @@
+.content {
+  display: grid;
+  gap: var(--dc-space-5);
+}
+
+.state {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--dc-space-4);
+  justify-content: space-between;
+}
+
+.retry { margin-top: var(--dc-space-4); }
+
+.identity {
+  display: grid;
+  gap: var(--dc-space-4);
+  grid-template-columns: minmax(0, 14rem) minmax(0, 1fr);
+}
+
+.portrait {
+  border: var(--dc-border-width-heavy) solid var(--dc-color-border-heavy);
+  border-radius: var(--dc-radius-md);
+  display: block;
+  height: auto;
+  width: 100%;
+}
+
+.facts { display: grid; margin: 0; align-content: start; }
+
+.appearances { display: grid; gap: var(--dc-space-3); }
+
+.appearancesHeader {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--dc-space-3);
+  justify-content: space-between;
+}
+
+.appearancesTitle {
+  color: var(--dc-color-text-primary);
+  font-family: var(--dc-font-family-display);
+  font-size: var(--dc-font-size-lg);
+  letter-spacing: var(--dc-letter-spacing-wide);
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.appearanceList {
+  display: grid;
+  gap: var(--dc-space-2);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.appearance {
+  align-items: center;
+  background: var(--dc-color-surface-recess);
+  border: var(--dc-border-width-heavy) solid var(--dc-color-border-heavy);
+  border-radius: var(--dc-radius-sm);
+  color: var(--dc-color-text-primary);
+  display: flex;
+  gap: var(--dc-space-2);
+  padding: var(--dc-space-2) var(--dc-space-3);
+  text-decoration: none;
+}
+
+.appearance:hover { border-color: var(--dc-color-accent-display); }
+
+.appearance[aria-current="page"] {
+  border-color: var(--dc-color-accent-primary);
+}
+
+.appearanceName {
+  font-size: var(--dc-font-size-sm);
+  /* Long episode titles wrap instead of overflowing the tile. */
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 42rem) {
+  .identity { grid-template-columns: minmax(0, 1fr); }
+  .portrait { max-width: 12rem; }
+}

@@ -83,6 +83,16 @@
     "typeLabel": "Tipo",
     "genderLabel": "Gênero",
     "originLabel": "Origem",
-    "locationLabel": "Última localização conhecida"
+    "locationLabel": "Última localização conhecida",
+    "openDossier": "Abrir o dossiê de {name}",
+    "dossierEyebrow": "Arquivo do personagem",
+    "dossierClose": "Fechar o dossiê",
+    "dossierLoading": "Lendo o arquivo do personagem...",
+    "dossierLoadingLabel": "Carregando personagem",
+    "dossierError": "Não foi possível carregar o arquivo do personagem.",
+    "dossierNotFound": "Esse personagem não existe.",
+    "appearancesTitle": "Aparições em episódios",
+    "appearancesCount": "{total, plural, =0 {Nenhum episódio} one {# episódio} other {# episódios}}",
+    "appearancesEmpty": "Nenhuma aparição em episódio foi retornada para este personagem."
   }
 }

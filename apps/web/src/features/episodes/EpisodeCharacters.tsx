@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 
 import {
   Badge,
@@ -13,8 +14,10 @@ import {
   StatusIndicator,
   type StatusTone,
 } from "@/design-system";
+import type { Character } from "@/lib/characters";
 import type { Episode } from "@/lib/episodes";
 
+import { CharacterDossier } from "./CharacterDossier";
 import styles from "./EpisodeCharacters.module.css";
 import { useEpisodeCharacters } from "./useEpisodeCharacters";
 
@@ -43,6 +46,7 @@ function statusTone(status: string): StatusTone {
 
 export function EpisodeCharacters({ episode }: EpisodeCharactersProps) {
   const t = useTranslations("characters");
+  const [selected, setSelected] = useState<Character | null>(null);
   const episodeId = episode?.id ?? null;
   const { data, isPending, isError, error, refetch, isFetching } = useEpisodeCharacters(episodeId);
 
@@ -103,6 +107,10 @@ export function EpisodeCharacters({ episode }: EpisodeCharactersProps) {
               imageAlt={t("portraitAlt", { name: character.name })}
               loadingLabel={t("portraitLoading")}
               errorLabel={t("portraitError")}
+              onSelect={() => {
+                setSelected(character);
+              }}
+              selectLabel={t("openDossier", { name: character.name })}
               status={
                 <StatusIndicator tone={statusTone(character.status)}>
                   {character.status}
@@ -120,6 +128,17 @@ export function EpisodeCharacters({ episode }: EpisodeCharactersProps) {
           ))}
         </ul>
       ) : null}
+
+      {selected === null ? null : (
+        <CharacterDossier
+          characterId={selected.id}
+          currentEpisodeId={episode?.id}
+          fallbackName={selected.name}
+          onClose={() => {
+            setSelected(null);
+          }}
+        />
+      )}
     </Panel>
   );
 }
