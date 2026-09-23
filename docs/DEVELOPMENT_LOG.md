@@ -652,3 +652,34 @@ Validation:
 Relevant commits:
 
 1. `feat(web): use Storybook custom domain`
+
+## 2026-09-23: Visible language selector
+
+Checkpoint: 06, Internationalization and web completion, post-release follow-up
+
+Goal:
+
+Expose the already implemented English and Portuguese localization through a visible control, instead of requiring a reviewer to edit the `damaged-code-locale` cookie by hand.
+
+What changed:
+
+1. A `LanguageSwitcher` client component was added, rendering a compact EN and PT pill using the existing cookie mechanism, no new localization system or dependency.
+2. It is placed in the header on the home page, the episode detail page, and the custom 404 page, so it works on `/`, every episode route, the character dossier flow that lives inside the episode page, and the not found page.
+3. Switching writes the `damaged-code-locale` cookie and reloads the current URL in place, so the route is always preserved and the interface updates immediately.
+4. The active locale is marked with `aria-current`, and each control carries a localized accessible label.
+
+Decisions:
+
+1. A full reload of the current URL was chosen over `router.refresh()` so the fix stays a small, dependency-free change consistent with the existing cookie-based, non prefix-routed locale resolution, and so route preservation is trivially correct rather than something to get right by hand.
+2. The switcher is duplicated into each page's own header, matching the existing pattern where every page already owns its own topbar markup and styles rather than sharing one header component.
+
+Validation:
+
+1. Focused `LanguageSwitcher` tests cover the active locale for both languages, the cookie write, localized accessible labels, and that switching reloads in place rather than navigating elsewhere.
+2. `pnpm check` and `pnpm build` pass.
+3. Verified in the browser on `/`, an episode route, and the 404 page: switching language updates the interface immediately, the active locale is visually marked, and the route is preserved. Checked at desktop and 375 pixel wide viewports.
+4. Production web was redeployed through the existing Cloud Run and Firebase Hosting pipeline, and the selector was confirmed working on `https://zrp.samuelcaetite.dev`.
+
+Relevant commits:
+
+1. `feat(web): add language selector`

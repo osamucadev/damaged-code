@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { DisplaySurface } from "@/design-system";
 
 import styles from "./not-found.module.css";
@@ -26,6 +27,7 @@ export default async function NotFound() {
           <span className={styles.wordmarkIcon}>DC</span>
           <span>{home("title")}</span>
         </Link>
+        <LanguageSwitcher />
       </header>
 
       <div className={styles.statePage}>

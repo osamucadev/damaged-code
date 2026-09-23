@@ -285,7 +285,7 @@ Responses are cached behind the BFF for one hour. The standard mode keeps entrie
 
 ## Interface languages
 
-The web client ships English and Portuguese, pt-BR, message catalogs, and localization behavior is tested. The locale currently comes from the `damaged-code-locale` cookie and falls back to English. A visible on-screen language selector is not implemented yet; it is tracked in [docs/BACKLOG.md](./docs/BACKLOG.md).
+The web client ships English and Portuguese, pt-BR, message catalogs, and localization behavior is tested. A compact language selector in the header lets a reviewer switch between them; the choice is stored in the `damaged-code-locale` cookie, which falls back to English, and switching reloads the current route in place.
 
 Episode names and air dates are domain data and stay exactly as the upstream API publishes them.
 
@@ -323,7 +323,7 @@ See [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) for the full reasoning behind
 
 ## Future evolution
 
-Optional work that intentionally did not block this release lives in [docs/BACKLOG.md](./docs/BACKLOG.md), including a visible language switcher, the guided onboarding tour, and a concrete hybrid lexical and semantic episode search pipeline built on a documented synopsis enrichment step.
+Optional work that intentionally did not block this release lives in [docs/BACKLOG.md](./docs/BACKLOG.md), including the guided onboarding tour and a concrete hybrid lexical and semantic episode search pipeline built on a documented synopsis enrichment step.
 
 ## Quality
 

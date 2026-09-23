@@ -12,6 +12,12 @@
   min-height: 3.5rem;
 }
 
+.topbarActions {
+  align-items: center;
+  display: inline-flex;
+  gap: var(--dc-space-3);
+}
+
 .wordmark {
   align-items: center;
   display: inline-flex;

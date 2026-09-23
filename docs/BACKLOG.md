@@ -102,20 +102,6 @@ The initial quality target is strong unit and integration coverage.
 
 End-to-end infrastructure can be added if time remains after release stability.
 
-## Visible language switcher
-
-Possible capability:
-
-An on-screen control that lets a reviewer change the interface language without editing the `damaged-code-locale` cookie directly.
-
-Current state:
-
-English and Portuguese, pt-BR, message catalogs are complete and localization behavior is tested. Locale resolution currently follows the cookie, with an English fallback, and has no visible control.
-
-Reason for backlog:
-
-The required challenge behavior and its localized text are already delivered. A visible switcher is a usability refinement on top of working localization, not a blocker for it.
-
 ## Guided onboarding
 
 Possible capability:

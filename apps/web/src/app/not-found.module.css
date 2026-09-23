@@ -9,6 +9,7 @@
 .topbar {
   align-items: center;
   display: flex;
+  justify-content: space-between;
   min-height: 3.5rem;
 }
 

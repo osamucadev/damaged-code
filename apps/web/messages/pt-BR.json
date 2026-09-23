@@ -18,6 +18,12 @@
     "openEpisode": "Abrir {code} {name}",
     "footer": "With 💜 by Samuel Caetité"
   },
+  "language": {
+    "label": "Idioma",
+    "english": "Inglês",
+    "portuguese": "Português do Brasil",
+    "switchTo": "Mudar para {language}"
+  },
   "notFound": {
     "title": "404 // Sinal perdido",
     "description": "A transmissão solicitada não foi encontrada nesta dimensão.",

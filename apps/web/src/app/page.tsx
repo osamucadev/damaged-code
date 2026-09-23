@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { ApiHealthStatus } from "@/components/ApiHealthStatus";
 import { DecorativeFace } from "@/components/DecorativeFace";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { EpisodeBrowser } from "@/features/episodes/EpisodeBrowser";
 
 import styles from "./page.module.css";
@@ -17,7 +18,10 @@ export default async function HomePage() {
           <span className={styles.wordmarkIcon}>DC</span>
           <span>{t("title")}</span>
         </Link>
-        <ApiHealthStatus />
+        <div className={styles.topbarActions}>
+          <LanguageSwitcher />
+          <ApiHealthStatus />
+        </div>
       </header>
 
       <section className={styles.hero}>

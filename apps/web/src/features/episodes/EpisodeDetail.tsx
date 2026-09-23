@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 
 import { ApiHealthStatus } from "@/components/ApiHealthStatus";
 import { DecorativeFace, selectDecorativeFace } from "@/components/DecorativeFace";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Badge, Button, DisplaySurface, EpisodeBoundaryCard, Loader } from "@/design-system";
 import { ApiError, parseEpisodeCode } from "@/lib/episodes";
 
@@ -70,7 +71,10 @@ export function EpisodeDetail({ episodeId }: EpisodeDetailProps) {
           <span className={styles.wordmarkIcon}>DC</span>
           <span>{home("title")}</span>
         </Link>
-        <ApiHealthStatus />
+        <div className={styles.topbarActions}>
+          <LanguageSwitcher />
+          <ApiHealthStatus />
+        </div>
       </header>
 
       <div className={styles.shell}>

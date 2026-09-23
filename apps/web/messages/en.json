@@ -18,6 +18,12 @@
     "openEpisode": "Open {code} {name}",
     "footer": "With 💜 by Samuel Caetité"
   },
+  "language": {
+    "label": "Language",
+    "english": "English",
+    "portuguese": "Portuguese, Brazil",
+    "switchTo": "Switch to {language}"
+  },
   "notFound": {
     "title": "404 // Signal lost",
     "description": "The requested transmission could not be located in this dimension.",
