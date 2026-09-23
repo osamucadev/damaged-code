@@ -49,6 +49,33 @@ function missingEpisodeFetch(url: string) {
   return routeFetch(url);
 }
 
+const firstEpisodes = [
+  { id: 1, code: "S01E01", name: "Pilot", airDate: "December 2, 2013", characterCount: 0 },
+  { id: 2, code: "S01E02", name: "Lawnmower Dog", airDate: "December 9, 2013", characterCount: 0 },
+];
+
+const lastEpisodes = [
+  { id: 50, code: "S05E09", name: "Forgetting Sarick Mortshall", airDate: "September 5, 2021", characterCount: 0 },
+  { id: 51, code: "S05E10", name: "Rickmurai Jack", airDate: "September 5, 2021", characterCount: 0 },
+];
+
+function boundaryFetch(currentId: 1 | 51) {
+  const collection = currentId === 1 ? firstEpisodes : lastEpisodes;
+
+  return (url: string) => {
+    if (url.endsWith("/health")) {
+      return Promise.resolve(Response.json({ status: "ok", service: "damaged-code-api", uptime: 1, timestamp: "now" }));
+    }
+    if (url.endsWith(`/v1/episodes/${currentId}/characters`)) {
+      return Promise.resolve(Response.json({ data: [], meta: { total: 0, episodeId: currentId } }));
+    }
+    if (url.endsWith(`/v1/episodes/${currentId}`)) {
+      return Promise.resolve(Response.json({ data: collection.find((episode) => episode.id === currentId) }));
+    }
+    return Promise.resolve(Response.json({ data: collection, meta: { total: collection.length } }));
+  };
+}
+
 afterEach(() => vi.unstubAllGlobals());
 
 describe("EpisodeDetail", () => {
@@ -86,5 +113,25 @@ describe("EpisodeDetail", () => {
     expect(await screen.findByText("That episode does not exist in the archive.")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Episode archive" })).toHaveAttribute("href", "/");
     expect(screen.queryByRole("button", { name: "Try again" })).not.toBeInTheDocument();
+  });
+
+  it("uses a non-interactive boundary panel before the first episode", async () => {
+    vi.stubGlobal("fetch", vi.fn(boundaryFetch(1)));
+    renderWithIntl(<EpisodeDetail episodeId={1} />);
+
+    expect(await screen.findByText("Beginning of transmission")).toBeInTheDocument();
+    expect(screen.getByText("First episode file")).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /previous:/i })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /next: S01E02 Lawnmower Dog/i })).toBeInTheDocument();
+  });
+
+  it("uses a non-interactive boundary panel after the last episode", async () => {
+    vi.stubGlobal("fetch", vi.fn(boundaryFetch(51)));
+    renderWithIntl(<EpisodeDetail episodeId={51} />);
+
+    expect(await screen.findByText("End of transmission")).toBeInTheDocument();
+    expect(screen.getByText("No further episode files")).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /next:/i })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /previous: S05E09 Forgetting Sarick Mortshall/i })).toBeInTheDocument();
   });
 });

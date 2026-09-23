@@ -3,37 +3,37 @@
   border: var(--dc-border-width-thick) solid var(--dc-color-border-heavy);
   border-radius: var(--dc-radius-lg);
   box-shadow: var(--dc-shadow-panel);
-  max-height: calc(100vh - 2rem);
-  overflow: auto;
-  position: sticky;
-  top: var(--dc-space-4);
+  min-width: 0;
 }
 
-.navigator > summary {
+.header {
   align-items: center;
   border-bottom: var(--dc-border-width-heavy) solid var(--dc-color-border-heavy);
-  cursor: pointer;
   display: flex;
-  font-family: var(--dc-font-family-display);
-  font-size: var(--dc-font-size-lg);
-  font-weight: var(--dc-font-weight-bold);
+  gap: var(--dc-space-3);
   justify-content: space-between;
-  letter-spacing: var(--dc-letter-spacing-wide);
-  list-style: none;
   padding: var(--dc-space-4) var(--dc-space-5);
+}
+
+.header h2 {
+  font-size: var(--dc-font-size-lg);
+}
+
+.toggle {
+  background: transparent;
+  border: 0;
+  color: var(--dc-color-accent-display);
+  cursor: pointer;
+  font-family: var(--dc-font-family-mono);
+  font-size: var(--dc-font-size-2xs);
+  font-weight: var(--dc-font-weight-bold);
+  min-height: 2.75rem;
+  padding: var(--dc-space-2);
   text-transform: uppercase;
 }
 
-.navigator > summary::-webkit-details-marker { display: none; }
-
-.summaryAction {
-  color: var(--dc-color-accent-display);
-  display: none;
-  font-family: var(--dc-font-family-mono);
-  font-size: var(--dc-font-size-2xs);
-}
-
 .body { padding: var(--dc-space-4); }
+.bodyClosed { display: none; }
 
 .seasons {
   display: flex;
@@ -53,7 +53,7 @@
   padding: var(--dc-space-2) var(--dc-space-3);
 }
 
-.seasons button[aria-selected="true"] {
+.seasons button[aria-pressed="true"] {
   background: var(--dc-color-accent-primary);
   color: var(--dc-color-text-on-accent);
 }
@@ -66,14 +66,20 @@
   padding: 0;
 }
 
-.episodes a { min-height: 7.25rem; padding: var(--dc-space-3); }
+.episodes a { min-height: 7rem; padding: var(--dc-space-3); }
 
-@media (max-width: 68rem) {
+@media (min-width: 80rem) {
   .navigator {
-    max-height: none;
-    position: static;
+    max-height: calc(100vh - 2rem);
+    overflow: auto;
+    position: sticky;
+    top: var(--dc-space-4);
   }
 
-  .summaryAction { display: inline; }
-  .episodes { grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); }
+  .toggle { display: none; }
+  .bodyClosed { display: block; }
+}
+
+@media (min-width: 42rem) and (max-width: 79.999rem) {
+  .episodes { grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); }
 }

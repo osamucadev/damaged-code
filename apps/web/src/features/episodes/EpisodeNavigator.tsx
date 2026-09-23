@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useId, useMemo, useState } from "react";
 
 import { EpisodeLinkCard } from "@/design-system";
 import { groupEpisodesBySeason, parseEpisodeCode, type Episode } from "@/lib/episodes";
@@ -20,35 +20,37 @@ export function EpisodeNavigator({ currentEpisode, episodes }: EpisodeNavigatorP
   const grouped = useMemo(() => groupEpisodesBySeason(episodes), [episodes]);
   const seasons = [...grouped.keys()].sort((first, second) => first - second);
   const [selectedSeason, setSelectedSeason] = useState(currentSeason);
-  const navigatorRef = useRef<HTMLDetailsElement>(null);
-
-  useEffect(() => {
-    if (typeof window.matchMedia === "function" && window.matchMedia("(max-width: 68rem)").matches) {
-      navigatorRef.current?.removeAttribute("open");
-    }
-  }, []);
+  const [expanded, setExpanded] = useState(false);
+  const bodyId = useId();
 
   return (
-    <details className={styles.navigator} open ref={navigatorRef}>
-      <summary>
-        <span>{t("navigatorTitle")}</span>
-        <span className={styles.summaryAction}>{t("navigatorSummary")}</span>
-      </summary>
-      <div className={styles.body}>
-        <div aria-label={home("seasonLabel")} className={styles.seasons} role="tablist">
+    <section aria-labelledby={`${bodyId}-title`} className={styles.navigator}>
+      <div className={styles.header}>
+        <h2 id={`${bodyId}-title`}>{t("navigatorTitle")}</h2>
+        <button
+          aria-controls={bodyId}
+          aria-expanded={expanded}
+          className={styles.toggle}
+          onClick={() => setExpanded((current) => !current)}
+          type="button"
+        >
+          {expanded ? t("navigatorClose") : t("navigatorSummary")}
+        </button>
+      </div>
+      <div className={`${styles.body} ${expanded ? "" : styles.bodyClosed}`} id={bodyId}>
+        <div aria-label={home("seasonLabel")} className={styles.seasons} role="group">
           {seasons.map((season) => (
             <button
-              aria-selected={selectedSeason === season}
+              aria-pressed={selectedSeason === season}
               key={season}
               onClick={() => setSelectedSeason(season)}
-              role="tab"
               type="button"
             >
               {String(season).padStart(2, "0")}
             </button>
           ))}
         </div>
-        <ul className={styles.episodes} role="tabpanel">
+        <ul className={styles.episodes}>
           {(grouped.get(selectedSeason) ?? []).map((episode) => (
             <EpisodeLinkCard
               code={episode.code}
@@ -63,6 +65,6 @@ export function EpisodeNavigator({ currentEpisode, episodes }: EpisodeNavigatorP
           ))}
         </ul>
       </div>
-    </details>
+    </section>
   );
 }

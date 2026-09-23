@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 import { ApiHealthStatus } from "@/components/ApiHealthStatus";
-import { DecorativeFace } from "@/components/DecorativeFace";
-import { Badge, Button, DisplaySurface, Loader } from "@/design-system";
+import { DecorativeFace, selectDecorativeFace } from "@/components/DecorativeFace";
+import { Badge, Button, DisplaySurface, EpisodeBoundaryCard, Loader } from "@/design-system";
 import { ApiError, parseEpisodeCode } from "@/lib/episodes";
 
 import { EpisodeCharacters } from "./EpisodeCharacters";
@@ -61,6 +61,7 @@ export function EpisodeDetail({ episodeId }: EpisodeDetailProps) {
   const index = episodes.findIndex((item) => item.id === episode.id);
   const previous = index > 0 ? episodes[index - 1] : undefined;
   const next = index >= 0 ? episodes[index + 1] : undefined;
+  const heroFace = selectDecorativeFace(episode.id, "episode-hero");
 
   return (
     <main className={styles.page}>
@@ -73,50 +74,68 @@ export function EpisodeDetail({ episodeId }: EpisodeDetailProps) {
       </header>
 
       <div className={styles.shell}>
-        <div className={styles.content}>
-          <section className={styles.identity}>
-            <DecorativeFace className={styles.face} face={42} size="medium" />
-            <p className={styles.eyebrow}>{t("episodeIdentity")}</p>
-            <Badge tone="accent">{episode.code}</Badge>
-            <h1>{episode.name}</h1>
-            <dl className={styles.metadata}>
-              <div><dt>{t("seasonNumber", { season: position?.season ?? 0 })}</dt><dd>{String(position?.season ?? 0).padStart(2, "0")}</dd></div>
-              <div><dt>{t("episodeNumber", { episode: position?.episode ?? 0 })}</dt><dd>{String(position?.episode ?? 0).padStart(2, "0")}</dd></div>
-              <div><dt>{t("airedLabel")}</dt><dd>{episode.airDate}</dd></div>
-              <div><dt>{t("charactersLabel")}</dt><dd>{episode.characterCount}</dd></div>
-            </dl>
-          </section>
+        <section className={styles.identity}>
+          <DecorativeFace className={styles.face} face={heroFace} size="medium" />
+          <p className={styles.eyebrow}>{t("episodeIdentity")}</p>
+          <Badge tone="accent">{episode.code}</Badge>
+          <h1>{episode.name}</h1>
+          <dl className={styles.metadata}>
+            <div><dt>{t("seasonNumber", { season: position?.season ?? 0 })}</dt><dd>{String(position?.season ?? 0).padStart(2, "0")}</dd></div>
+            <div><dt>{t("episodeNumber", { episode: position?.episode ?? 0 })}</dt><dd>{String(position?.episode ?? 0).padStart(2, "0")}</dd></div>
+            <div><dt>{t("airedLabel")}</dt><dd>{episode.airDate}</dd></div>
+            <div><dt>{t("charactersLabel")}</dt><dd>{episode.characterCount}</dd></div>
+          </dl>
+        </section>
 
-          <nav aria-label={t("navigatorTitle")} className={styles.sequence}>
-            {previous ? (
-              <Link
-                aria-label={t("previousEpisode", { code: previous.code, name: previous.name })}
-                href={`/episodes/${previous.id}`}
-              >
-                <span>{t("previous")}</span><strong>{previous.code}</strong><small>{previous.name}</small>
-              </Link>
-            ) : <span />}
-            {next ? (
-              <Link
-                aria-label={t("nextEpisode", { code: next.code, name: next.name })}
-                href={`/episodes/${next.id}`}
-              >
-                <span>{t("next")}</span><strong>{next.code}</strong><small>{next.name}</small>
-              </Link>
-            ) : <span />}
-          </nav>
-
-          <EpisodeCharacters episode={episode} />
-        </div>
-
-        <aside className={styles.sidebar}>
+        <div className={styles.navigatorSlot}>
           {episodesQuery.isError ? (
             <DisplaySurface tone="danger">{t("allEpisodesError")}</DisplaySurface>
           ) : episodes.length > 0 ? (
             <EpisodeNavigator currentEpisode={episode} episodes={episodes} key={episode.id} />
           ) : null}
-        </aside>
+        </div>
+
+        <nav aria-label={t("sequenceTitle")} className={styles.sequence}>
+          {previous ? (
+            <Link
+              aria-label={t("previousEpisode", { code: previous.code, name: previous.name })}
+              href={`/episodes/${previous.id}`}
+            >
+              <span>{t("previous")}</span><strong>{previous.code}</strong><small>{previous.name}</small>
+            </Link>
+          ) : (
+            <EpisodeBoundaryCard
+              decoration={
+                <DecorativeFace face={selectDecorativeFace(episode.id, "sequence-start")} size="small" />
+              }
+              label={t("startBoundaryLabel")}
+              side="previous"
+              title={t("startBoundaryTitle")}
+            />
+          )}
+          {next ? (
+            <Link
+              aria-label={t("nextEpisode", { code: next.code, name: next.name })}
+              href={`/episodes/${next.id}`}
+            >
+              <span>{t("next")}</span><strong>{next.code}</strong><small>{next.name}</small>
+            </Link>
+          ) : (
+            <EpisodeBoundaryCard
+              decoration={
+                <DecorativeFace face={selectDecorativeFace(episode.id, "sequence-end")} size="small" />
+              }
+              label={t("endBoundaryLabel")}
+              side="next"
+              title={t("endBoundaryTitle")}
+            />
+          )}
+        </nav>
+
+        <div className={styles.characters}>
+          <EpisodeCharacters episode={episode} />
       </div>
+        </div>
     </main>
   );
 }
