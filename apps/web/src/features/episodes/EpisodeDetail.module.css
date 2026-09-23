@@ -104,7 +104,15 @@
 
 .metadata dt { color: var(--dc-color-text-secondary); font-family: var(--dc-font-family-mono); font-size: var(--dc-font-size-xs); }
 .metadata dd { font-family: var(--dc-font-family-display); font-size: var(--dc-font-size-xl); font-weight: var(--dc-font-weight-bold); margin: 0; }
-.face { bottom: -2rem; position: absolute; right: 3%; transform: rotate(8deg); z-index: 1; }
+/*
+ * Qualified with .identity instead of the bare class so the specificity
+ * always beats DecorativeFace's own base position rule. A bare single class
+ * selector here ties with DecorativeFace.module.css's .face selector, and
+ * Next.js does not guarantee the same stylesheet order between a hard load
+ * and a client-side navigation, so the tie broke unpredictably depending on
+ * how the page was reached.
+ */
+.identity .face { bottom: -2rem; position: absolute; right: 3%; transform: rotate(8deg); z-index: 1; }
 
 .sequence {
   display: grid;
@@ -158,7 +166,7 @@
   .identity h1 { font-size: clamp(2.1rem, 11vw, 3rem); margin-block: var(--dc-space-3) var(--dc-space-5); }
   .metadata { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .metadata dd { font-size: var(--dc-font-size-lg); }
-  .face { display: none; }
+  .identity .face { display: none; }
   .sequence { gap: var(--dc-space-2); }
   .sequence a { min-height: 6.5rem; padding: var(--dc-space-3); }
 }

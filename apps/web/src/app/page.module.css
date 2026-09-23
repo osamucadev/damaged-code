@@ -177,8 +177,16 @@
   position: absolute;
 }
 
-.faceLeft { bottom: -3.5rem; position: absolute; right: 25%; transform: rotate(-8deg); z-index: 3; }
-.faceRight { position: absolute; right: -1.5rem; top: -1.5rem; transform: rotate(15deg); z-index: 3; }
+/*
+ * Qualified with .hero instead of the bare class so the specificity always
+ * beats DecorativeFace's own base position rule. A bare single class selector
+ * here ties with DecorativeFace.module.css's .face selector, and Next.js does
+ * not guarantee the same stylesheet order between a hard load and a
+ * client-side navigation, so the tie broke unpredictably depending on how the
+ * page was reached.
+ */
+.hero .faceLeft { bottom: -3.5rem; position: absolute; right: 25%; transform: rotate(-8deg); z-index: 3; }
+.hero .faceRight { position: absolute; right: -1.5rem; top: -1.5rem; transform: rotate(15deg); z-index: 3; }
 
 @keyframes scan {
   from { transform: translateY(-5rem); }
@@ -188,7 +196,7 @@
 @media (max-width: 64rem) {
   .hero { grid-template-columns: 1fr; min-height: auto; }
   .monitor { display: none; }
-  .faceLeft { right: 4%; }
+  .hero .faceLeft { right: 4%; }
 }
 
 @media (max-width: 42rem) {
@@ -197,5 +205,5 @@
   .hero { padding: var(--dc-space-7) var(--dc-space-5); }
   .title { font-size: clamp(2.65rem, 15vw, 4.25rem); }
   .intro { font-size: var(--dc-font-size-md); }
-  .faceLeft, .faceRight { display: none; }
+  .hero .faceLeft, .hero .faceRight { display: none; }
 }
