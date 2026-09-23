@@ -41,6 +41,7 @@
 }
 
 .appearanceList {
+  align-items: stretch;
   display: grid;
   gap: var(--dc-space-2);
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
@@ -48,6 +49,9 @@
   margin: 0;
   padding: 0;
 }
+
+/* Each tile's li stretches to the row height (the grid default); the tile itself fills it. */
+.appearanceList > li { display: flex; }
 
 /*
  * Shared by the episode links and the current episode button, so both read as
@@ -61,6 +65,7 @@
   color: var(--dc-color-text-primary);
   cursor: pointer;
   display: flex;
+  flex: 1;
   font: inherit;
   gap: var(--dc-space-2);
   padding: var(--dc-space-2) var(--dc-space-3);
