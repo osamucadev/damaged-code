@@ -1,0 +1,18 @@
+steps:
+  - name: gcr.io/cloud-builders/docker
+    env:
+      - DOCKER_BUILDKIT=1
+    args:
+      - build
+      - --file
+      - apps/web/Dockerfile
+      - --target
+      - production
+      - --build-arg
+      - NEXT_PUBLIC_API_URL=https://us-central1-samuelcaetitedev.cloudfunctions.net/damagedCodeApi
+      - --tag
+      - us-central1-docker.pkg.dev/samuelcaetitedev/damaged-code-web/web:latest
+      - .
+
+images:
+  - us-central1-docker.pkg.dev/samuelcaetitedev/damaged-code-web/web:latest

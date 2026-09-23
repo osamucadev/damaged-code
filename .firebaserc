@@ -1,5 +1,12 @@
 {
   "projects": {
     "default": "samuelcaetitedev"
+  },
+  "targets": {
+    "samuelcaetitedev": {
+      "hosting": {
+        "damaged-code-web": ["damaged-code-web"]
+      }
+    }
   }
 }

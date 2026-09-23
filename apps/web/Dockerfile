@@ -40,7 +40,9 @@ CMD ["pnpm", "--filter", "@damaged-code/web", "storybook:docker"]
 
 # Build target: produces the standalone Next server bundle.
 FROM dependencies AS build
-ENV NODE_ENV=production
+ARG NEXT_PUBLIC_API_URL
+ENV NODE_ENV=production \
+    NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 COPY . .
 RUN pnpm --filter @damaged-code/web build
 

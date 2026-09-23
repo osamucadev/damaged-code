@@ -14,5 +14,21 @@
       ],
       "predeploy": ["pnpm --filter @damaged-code/api build"]
     }
+  ],
+  "hosting": [
+    {
+      "target": "damaged-code-web",
+      "public": "apps/web/public",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "rewrites": [
+        {
+          "source": "**",
+          "run": {
+            "serviceId": "damaged-code-web",
+            "region": "us-central1"
+          }
+        }
+      ]
+    }
   ]
 }
