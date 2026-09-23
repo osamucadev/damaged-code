@@ -1,0 +1,54 @@
+{
+  "@@locale": "pt",
+  "appTitle": "Damaged Code",
+  "archiveEyebrow": "ARQUIVO INTERDIMENSIONAL",
+  "episodesTitle": "Arquivo de episódios",
+  "episodesDescription": "Escolha uma transmissão para inspecionar o manifesto completo de personagens.",
+  "loadingEpisodes": "Carregando arquivo de episódios...",
+  "loadingEpisode": "Carregando ficha do episódio...",
+  "loadingCharacter": "Carregando dossiê do personagem...",
+  "errorTitle": "Transmissão interrompida",
+  "genericError": "Não foi possível acessar o arquivo. Verifique sua conexão e tente novamente.",
+  "serviceUnavailable": "A fonte do arquivo está temporariamente indisponível. Tente novamente em instantes.",
+  "retry": "Tentar novamente",
+  "noEpisodes": "Nenhuma ficha de episódio foi encontrada.",
+  "noCharacters": "Nenhum personagem foi registrado para este episódio.",
+  "noAppearances": "Nenhuma aparição em episódio foi registrada.",
+  "episodeFile": "FICHA DO EPISÓDIO",
+  "characterDossier": "DOSSIÊ DO PERSONAGEM",
+  "charactersTitle": "Personagens",
+  "appearancesTitle": "Aparições em episódios",
+  "season": "Temporada",
+  "episode": "Episódio",
+  "aired": "Exibido em",
+  "characters": "Personagens",
+  "status": "Status",
+  "species": "Espécie",
+  "type": "Tipo",
+  "gender": "Gênero",
+  "origin": "Origem",
+  "location": "Última localização conhecida",
+  "imageUnavailable": "Retrato indisponível",
+  "openEpisode": "Abrir {code} {name}",
+  "@openEpisode": {
+    "placeholders": {
+      "code": {"type": "String"},
+      "name": {"type": "String"}
+    }
+  },
+  "openCharacter": "Abrir o dossiê de {name}",
+  "@openCharacter": {
+    "placeholders": {"name": {"type": "String"}}
+  },
+  "seasonEpisode": "Temporada {seasonNumber} · Episódio {episodeNumber}",
+  "@seasonEpisode": {
+    "placeholders": {
+      "seasonNumber": {"type": "int"},
+      "episodeNumber": {"type": "int"}
+    }
+  },
+  "episodeCount": "{count, plural, =0{Nenhum episódio} =1{1 episódio} other{{count} episódios}}",
+  "@episodeCount": {"placeholders": {"count": {"type": "int"}}},
+  "characterCount": "{count, plural, =0{Nenhum personagem} =1{1 personagem} other{{count} personagens}}",
+  "@characterCount": {"placeholders": {"count": {"type": "int"}}}
+}

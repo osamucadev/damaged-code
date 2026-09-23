@@ -1,0 +1,54 @@
+{
+  "@@locale": "en",
+  "appTitle": "Damaged Code",
+  "archiveEyebrow": "INTERDIMENSIONAL ARCHIVE",
+  "episodesTitle": "Episode archive",
+  "episodesDescription": "Choose a transmission to inspect its complete character manifest.",
+  "loadingEpisodes": "Loading episode archive...",
+  "loadingEpisode": "Loading episode file...",
+  "loadingCharacter": "Loading character dossier...",
+  "errorTitle": "Transmission interrupted",
+  "genericError": "The archive could not be reached. Check your connection and try again.",
+  "serviceUnavailable": "The archive source is temporarily unavailable. Try again shortly.",
+  "retry": "Retry",
+  "noEpisodes": "No episode files were found.",
+  "noCharacters": "No characters were recorded for this episode.",
+  "noAppearances": "No episode appearances were recorded.",
+  "episodeFile": "EPISODE FILE",
+  "characterDossier": "CHARACTER DOSSIER",
+  "charactersTitle": "Characters",
+  "appearancesTitle": "Episode appearances",
+  "season": "Season",
+  "episode": "Episode",
+  "aired": "Aired",
+  "characters": "Characters",
+  "status": "Status",
+  "species": "Species",
+  "type": "Type",
+  "gender": "Gender",
+  "origin": "Origin",
+  "location": "Last known location",
+  "imageUnavailable": "Portrait unavailable",
+  "openEpisode": "Open {code} {name}",
+  "@openEpisode": {
+    "placeholders": {
+      "code": {"type": "String"},
+      "name": {"type": "String"}
+    }
+  },
+  "openCharacter": "Open the dossier of {name}",
+  "@openCharacter": {
+    "placeholders": {"name": {"type": "String"}}
+  },
+  "seasonEpisode": "Season {seasonNumber} · Episode {episodeNumber}",
+  "@seasonEpisode": {
+    "placeholders": {
+      "seasonNumber": {"type": "int"},
+      "episodeNumber": {"type": "int"}
+    }
+  },
+  "episodeCount": "{count, plural, =0{No episodes} =1{1 episode} other{{count} episodes}}",
+  "@episodeCount": {"placeholders": {"count": {"type": "int"}}},
+  "characterCount": "{count, plural, =0{No characters} =1{1 character} other{{count} characters}}",
+  "@characterCount": {"placeholders": {"count": {"type": "int"}}}
+}
