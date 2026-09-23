@@ -2,7 +2,13 @@ import type { Character } from "../../domain/character.js";
 import type { Episode } from "../../domain/episode.js";
 
 import { UpstreamError, type UpstreamErrorCode } from "./errors.js";
-import { toCharacter, toEpisode, toEpisodeCharacterIds, toEpisodePage } from "./mapper.js";
+import {
+  toCharacter,
+  toCharacterEpisodeIds,
+  toEpisode,
+  toEpisodeCharacterIds,
+  toEpisodePage,
+} from "./mapper.js";
 
 export interface RickAndMortyClientOptions {
   baseUrl: string;
@@ -11,24 +17,33 @@ export interface RickAndMortyClientOptions {
   requestTimeoutMs?: number;
   /** Safety limit, so a malformed pagination chain cannot loop forever. */
   maxPages?: number;
-  /** How many character ids are requested in one upstream call. */
-  characterBatchSize?: number;
+  /** How many ids are requested in one upstream call. */
+  batchSize?: number;
+}
+
+/** A character together with the episode ids read from its upstream URLs. */
+export interface CharacterWithEpisodeIds {
+  character: Character;
+  episodeIds: number[];
 }
 
 export interface RickAndMortyClient {
   fetchAllEpisodes(): Promise<Episode[]>;
   fetchEpisode(episodeId: number): Promise<Episode>;
   fetchEpisodeCharacters(episodeId: number): Promise<Character[]>;
+  fetchCharacter(characterId: number): Promise<CharacterWithEpisodeIds>;
+  fetchEpisodesByIds(episodeIds: number[]): Promise<Episode[]>;
 }
 
 const DEFAULT_TIMEOUT_MS = 8000;
 const DEFAULT_MAX_PAGES = 50;
 /*
- * Upstream accepts a comma separated id list. Episodes hold at most a few dozen
- * characters, so one request is normally enough. The batch size only keeps the
- * URL bounded if an episode ever carries an unusual number of characters.
+ * Upstream accepts a comma separated id list for both characters and episodes.
+ * A cast or an appearance list holds at most a few dozen entries, so one
+ * request is normally enough. The batch size only keeps the URL bounded if a
+ * record ever carries an unusual number of references.
  */
-const DEFAULT_CHARACTER_BATCH_SIZE = 100;
+const DEFAULT_BATCH_SIZE = 100;
 
 export function createRickAndMortyClient(
   options: RickAndMortyClientOptions,
@@ -38,7 +53,7 @@ export function createRickAndMortyClient(
     fetchImpl = fetch,
     requestTimeoutMs = DEFAULT_TIMEOUT_MS,
     maxPages = DEFAULT_MAX_PAGES,
-    characterBatchSize = DEFAULT_CHARACTER_BATCH_SIZE,
+    batchSize = DEFAULT_BATCH_SIZE,
   } = options;
 
   async function requestJson(
@@ -145,8 +160,8 @@ export function createRickAndMortyClient(
 
       const characters: Character[] = [];
 
-      for (let start = 0; start < characterIds.length; start += characterBatchSize) {
-        const batch = characterIds.slice(start, start + characterBatchSize);
+      for (let start = 0; start < characterIds.length; start += batchSize) {
+        const batch = characterIds.slice(start, start + batchSize);
         const payload = await requestJson(`${baseUrl}/character/${batch.join(",")}`);
 
         // Upstream answers with an object for a single id and an array for many.
@@ -158,6 +173,46 @@ export function createRickAndMortyClient(
       }
 
       return characters;
+    },
+
+    async fetchCharacter(characterId: number): Promise<CharacterWithEpisodeIds> {
+      const payload = await requestJson(`${baseUrl}/character/${characterId}`, {
+        code: "CHARACTER_NOT_FOUND",
+        message: `Character ${characterId} does not exist.`,
+      });
+
+      return {
+        character: toCharacter(payload),
+        episodeIds: toCharacterEpisodeIds(payload),
+      };
+    },
+
+    /**
+     * Resolves many episodes in as few requests as possible.
+     *
+     * Upstream accepts a comma separated id list, so an appearance list costs
+     * one request instead of one request per episode.
+     */
+    async fetchEpisodesByIds(episodeIds: number[]): Promise<Episode[]> {
+      if (episodeIds.length === 0) {
+        return [];
+      }
+
+      const episodes: Episode[] = [];
+
+      for (let start = 0; start < episodeIds.length; start += batchSize) {
+        const batch = episodeIds.slice(start, start + batchSize);
+        const payload = await requestJson(`${baseUrl}/episode/${batch.join(",")}`);
+
+        // Upstream answers with an object for a single id and an array for many.
+        const entries = Array.isArray(payload) ? payload : [payload];
+
+        for (const entry of entries) {
+          episodes.push(toEpisode(entry));
+        }
+      }
+
+      return episodes;
     },
   };
 }

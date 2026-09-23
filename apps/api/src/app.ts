@@ -4,7 +4,9 @@ import Fastify, { type FastifyError, type FastifyInstance } from "fastify";
 import { loadConfig, type AppConfig } from "./config/env.js";
 import { registerOpenApi } from "./docs/openapi.js";
 import { healthRoutes } from "./routes/health.js";
+import { characterRoutes } from "./routes/v1/characters.js";
 import { episodeRoutes } from "./routes/v1/episodes.js";
+import { createCharacterService, type CharacterService } from "./services/characters.js";
 import { createEpisodeService, type EpisodeService } from "./services/episodes.js";
 import { createRickAndMortyClient } from "./upstream/rick-and-morty/client.js";
 import { UpstreamError } from "./upstream/rick-and-morty/errors.js";
@@ -13,6 +15,7 @@ export interface BuildAppOptions {
   config?: AppConfig;
   /** Injected by tests so the suite never reaches the live upstream service. */
   episodeService?: EpisodeService;
+  characterService?: CharacterService;
 }
 
 export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyInstance> {
@@ -74,18 +77,18 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
     }),
   );
 
-  const episodeService =
-    options.episodeService ??
-    createEpisodeService(
-      createRickAndMortyClient({
-        baseUrl: config.upstream.rickAndMortyBaseUrl,
-        requestTimeoutMs: config.upstream.requestTimeoutMs,
-      }),
-    );
+  const upstreamClient = createRickAndMortyClient({
+    baseUrl: config.upstream.rickAndMortyBaseUrl,
+    requestTimeoutMs: config.upstream.requestTimeoutMs,
+  });
+
+  const episodeService = options.episodeService ?? createEpisodeService(upstreamClient);
+  const characterService = options.characterService ?? createCharacterService(upstreamClient);
 
   // Operational routes stay outside the versioned product contract.
   await app.register(healthRoutes);
   await app.register(episodeRoutes, { prefix: "/v1", episodeService });
+  await app.register(characterRoutes, { prefix: "/v1", characterService });
 
   return app;
 }

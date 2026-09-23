@@ -151,3 +151,34 @@ describe("OpenAPI episode detail documentation", () => {
     );
   });
 });
+
+describe("OpenAPI character documentation", () => {
+  it("documents the character detail endpoint with its path parameter", async () => {
+    const server = await buildDocumentedApp();
+
+    const document = (await server.inject({ method: "GET", url: "/docs/json" })).json();
+    const operation = document.paths["/v1/characters/{characterId}"]?.get;
+
+    expect(operation.operationId).toBe("getCharacter");
+    expect(operation.tags).toContain("characters");
+    expect(operation.parameters[0].name).toBe("characterId");
+    expect(operation.parameters[0].in).toBe("path");
+  });
+
+  it("documents the episode reference shape and the failure responses", async () => {
+    const server = await buildDocumentedApp();
+
+    const document = (await server.inject({ method: "GET", url: "/docs/json" })).json();
+    const operation = document.paths["/v1/characters/{characterId}"].get;
+    const data = operation.responses["200"].content["application/json"].schema.properties.data;
+
+    expect(Object.keys(data.properties.episodes.items.properties)).toEqual([
+      "id",
+      "code",
+      "name",
+    ]);
+    expect(Object.keys(operation.responses)).toEqual(
+      expect.arrayContaining(["200", "400", "404", "500", "502"]),
+    );
+  });
+});

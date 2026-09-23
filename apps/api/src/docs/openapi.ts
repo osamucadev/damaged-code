@@ -24,6 +24,7 @@ export async function registerOpenApi(app: FastifyInstance): Promise<void> {
       },
       tags: [
         { name: "episodes", description: "Rick and Morty episodes, in the project contract." },
+        { name: "characters", description: "Characters and their episode appearances." },
         { name: "operations", description: "Operational endpoints, outside the product contract." },
       ],
     },

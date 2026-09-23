@@ -18,6 +18,8 @@ describe("createEpisodeService", () => {
       fetchAllEpisodes: vi.fn().mockResolvedValue([episode(3), episode(1), episode(2)]),
       fetchEpisode: vi.fn(),
       fetchEpisodeCharacters: vi.fn(),
+      fetchCharacter: vi.fn(),
+      fetchEpisodesByIds: vi.fn(),
     };
 
     const episodes = await createEpisodeService(client).listEpisodes();
@@ -30,6 +32,8 @@ describe("createEpisodeService", () => {
       fetchAllEpisodes: vi.fn().mockRejectedValue(new Error("upstream down")),
       fetchEpisode: vi.fn(),
       fetchEpisodeCharacters: vi.fn(),
+      fetchCharacter: vi.fn(),
+      fetchEpisodesByIds: vi.fn(),
     };
 
     await expect(createEpisodeService(client).listEpisodes()).rejects.toThrow("upstream down");
@@ -55,6 +59,8 @@ describe("listEpisodeCharacters", () => {
     const client = {
       fetchAllEpisodes: vi.fn(),
       fetchEpisode: vi.fn(),
+      fetchCharacter: vi.fn(),
+      fetchEpisodesByIds: vi.fn(),
       fetchEpisodeCharacters: vi
         .fn()
         .mockResolvedValue([
@@ -79,6 +85,8 @@ describe("listEpisodeCharacters", () => {
     const client = {
       fetchAllEpisodes: vi.fn(),
       fetchEpisode: vi.fn(),
+      fetchCharacter: vi.fn(),
+      fetchEpisodesByIds: vi.fn(),
       fetchEpisodeCharacters: vi
         .fn()
         .mockResolvedValue([character(9, "Rick Sanchez"), character(4, "Rick Sanchez")]),
@@ -91,7 +99,13 @@ describe("listEpisodeCharacters", () => {
 
   it("asks the upstream adapter for the requested episode", async () => {
     const fetchEpisodeCharacters = vi.fn().mockResolvedValue([]);
-    const client = { fetchAllEpisodes: vi.fn(), fetchEpisode: vi.fn(), fetchEpisodeCharacters };
+    const client = {
+      fetchAllEpisodes: vi.fn(),
+      fetchEpisode: vi.fn(),
+      fetchEpisodeCharacters,
+      fetchCharacter: vi.fn(),
+      fetchEpisodesByIds: vi.fn(),
+    };
 
     await expect(createEpisodeService(client).listEpisodeCharacters(28)).resolves.toEqual([]);
     expect(fetchEpisodeCharacters).toHaveBeenCalledWith(28);
@@ -105,6 +119,8 @@ describe("getEpisode", () => {
       fetchAllEpisodes: vi.fn(),
       fetchEpisode,
       fetchEpisodeCharacters: vi.fn(),
+      fetchCharacter: vi.fn(),
+      fetchEpisodesByIds: vi.fn(),
     };
 
     await expect(createEpisodeService(client).getEpisode(28)).resolves.toEqual(episode(28));

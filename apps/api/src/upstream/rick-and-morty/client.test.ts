@@ -277,7 +277,7 @@ describe("fetchEpisodeCharacters", () => {
     const characters = await createRickAndMortyClient({
       baseUrl,
       fetchImpl,
-      characterBatchSize: 2,
+      batchSize: 2,
     }).fetchEpisodeCharacters(1);
 
     expect(characters).toHaveLength(5);
@@ -327,5 +327,105 @@ describe("fetchEpisodeCharacters", () => {
     await expect(
       createRickAndMortyClient({ baseUrl, fetchImpl }).fetchEpisodeCharacters(1),
     ).rejects.toMatchObject({ code: "UPSTREAM_UNAVAILABLE" });
+  });
+});
+
+function upstreamCharacterWithEpisodes(id: number, episodeIds: number[]) {
+  return {
+    ...upstreamCharacter(id, `Character ${id}`),
+    episode: episodeIds.map((episodeId) => `${baseUrl}/episode/${episodeId}`),
+  };
+}
+
+describe("fetchCharacter", () => {
+  it("returns the character and the ids read from its episode urls", async () => {
+    const fetchImpl = vi
+      .fn()
+      .mockReturnValueOnce(jsonResponse(upstreamCharacterWithEpisodes(2, [1, 2, 3])));
+
+    const result = await createRickAndMortyClient({ baseUrl, fetchImpl }).fetchCharacter(2);
+
+    expect(result.character.id).toBe(2);
+    expect(result.episodeIds).toEqual([1, 2, 3]);
+    expect(fetchImpl.mock.calls[0]?.[0]).toBe(`${baseUrl}/character/2`);
+    expect(JSON.stringify(result.character)).not.toContain("/episode/");
+  });
+
+  it("reports a missing character as its own error code", async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(new Response("Character not found", { status: 404 }));
+
+    await expect(
+      createRickAndMortyClient({ baseUrl, fetchImpl }).fetchCharacter(9999),
+    ).rejects.toMatchObject({ code: "CHARACTER_NOT_FOUND", status: 404 });
+  });
+
+  it("reports an invalid response when an episode reference is not usable", async () => {
+    const fetchImpl = vi.fn().mockReturnValueOnce(
+      jsonResponse({ ...upstreamCharacter(2, "Morty Smith"), episode: ["not-an-episode-url"] }),
+    );
+
+    await expect(
+      createRickAndMortyClient({ baseUrl, fetchImpl }).fetchCharacter(2),
+    ).rejects.toMatchObject({ code: "UPSTREAM_INVALID_RESPONSE" });
+  });
+
+  it("reports an invalid response when the episode list is missing", async () => {
+    const fetchImpl = vi
+      .fn()
+      .mockReturnValueOnce(jsonResponse(upstreamCharacter(2, "Morty Smith")));
+
+    await expect(
+      createRickAndMortyClient({ baseUrl, fetchImpl }).fetchCharacter(2),
+    ).rejects.toMatchObject({ code: "UPSTREAM_INVALID_RESPONSE" });
+  });
+});
+
+describe("fetchEpisodesByIds", () => {
+  it("resolves many episodes in a single batched request", async () => {
+    const fetchImpl = vi
+      .fn()
+      .mockReturnValueOnce(jsonResponse([episode(1), episode(2), episode(3)]));
+
+    const episodes = await createRickAndMortyClient({ baseUrl, fetchImpl }).fetchEpisodesByIds([
+      1, 2, 3,
+    ]);
+
+    expect(episodes.map((item) => item.id)).toEqual([1, 2, 3]);
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(fetchImpl.mock.calls[0]?.[0]).toBe(`${baseUrl}/episode/1,2,3`);
+  });
+
+  it("handles the single object upstream returns for one id", async () => {
+    const fetchImpl = vi.fn().mockReturnValueOnce(jsonResponse(episode(7)));
+
+    const episodes = await createRickAndMortyClient({ baseUrl, fetchImpl }).fetchEpisodesByIds([7]);
+
+    expect(episodes.map((item) => item.id)).toEqual([7]);
+    expect(fetchImpl.mock.calls[0]?.[0]).toBe(`${baseUrl}/episode/7`);
+  });
+
+  it("makes no request when there is nothing to resolve", async () => {
+    const fetchImpl = vi.fn();
+
+    await expect(
+      createRickAndMortyClient({ baseUrl, fetchImpl }).fetchEpisodesByIds([]),
+    ).resolves.toEqual([]);
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it("splits very long appearance lists into bounded batches", async () => {
+    const fetchImpl = vi
+      .fn()
+      .mockReturnValueOnce(jsonResponse([episode(1), episode(2)]))
+      .mockReturnValueOnce(jsonResponse(episode(3)));
+
+    const episodes = await createRickAndMortyClient({
+      baseUrl,
+      fetchImpl,
+      batchSize: 2,
+    }).fetchEpisodesByIds([1, 2, 3]);
+
+    expect(episodes).toHaveLength(3);
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
   });
 });
