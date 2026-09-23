@@ -1,0 +1,18 @@
+{
+  "functions": [
+    {
+      "source": "apps/api",
+      "codebase": "damaged-code-api",
+      "runtime": "nodejs22",
+      "ignore": [
+        ".git",
+        ".gitignore",
+        "node_modules",
+        "src",
+        "coverage",
+        "*.log"
+      ],
+      "predeploy": ["pnpm --filter @damaged-code/api build"]
+    }
+  ]
+}
