@@ -17,6 +17,7 @@ export interface RickAndMortyClientOptions {
 
 export interface RickAndMortyClient {
   fetchAllEpisodes(): Promise<Episode[]>;
+  fetchEpisode(episodeId: number): Promise<Episode>;
   fetchEpisodeCharacters(episodeId: number): Promise<Character[]>;
 }
 
@@ -113,6 +114,15 @@ export function createRickAndMortyClient(
       }
 
       return episodes;
+    },
+
+    async fetchEpisode(episodeId: number): Promise<Episode> {
+      const episode = await requestJson(`${baseUrl}/episode/${episodeId}`, {
+        code: "EPISODE_NOT_FOUND",
+        message: `Episode ${episodeId} does not exist.`,
+      });
+
+      return toEpisode(episode);
     },
 
     /**

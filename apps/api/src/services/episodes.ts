@@ -4,6 +4,7 @@ import type { RickAndMortyClient } from "../upstream/rick-and-morty/client.js";
 
 export interface EpisodeService {
   listEpisodes(): Promise<Episode[]>;
+  getEpisode(episodeId: number): Promise<Episode>;
   listEpisodeCharacters(episodeId: number): Promise<Character[]>;
 }
 
@@ -26,6 +27,10 @@ export function createEpisodeService(client: RickAndMortyClient): EpisodeService
       const episodes = await client.fetchAllEpisodes();
 
       return [...episodes].sort((first, second) => first.id - second.id);
+    },
+
+    getEpisode(episodeId: number): Promise<Episode> {
+      return client.fetchEpisode(episodeId);
     },
 
     async listEpisodeCharacters(episodeId: number): Promise<Character[]> {

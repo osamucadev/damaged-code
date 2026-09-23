@@ -108,6 +108,14 @@ const episodeListSchema = {
   },
 } as const;
 
+const episodeResponseSchema = {
+  type: "object",
+  required: ["data"],
+  properties: {
+    data: episodeSchema,
+  },
+} as const;
+
 export const errorSchema = {
   type: "object",
   required: ["error"],
@@ -157,6 +165,31 @@ export async function episodeRoutes(
       const episodes = await episodeService.listEpisodes();
 
       return { data: episodes, meta: { total: episodes.length } };
+    },
+  );
+
+  app.get<{ Params: { episodeId: number } }>(
+    "/episodes/:episodeId",
+    {
+      schema: {
+        operationId: "getEpisode",
+        summary: "Get one episode",
+        description: "Returns one episode through the project contract.",
+        tags: ["episodes"],
+        params: episodeParamsSchema,
+        response: {
+          200: episodeResponseSchema,
+          400: { ...errorSchema, description: "The episode id is not a valid identifier." },
+          404: { ...errorSchema, description: "No episode exists with that id." },
+          502: { ...errorSchema, description: "The upstream episode source failed." },
+          500: { ...errorSchema, description: "Unexpected server error." },
+        },
+      },
+    },
+    async (request) => {
+      const episode = await episodeService.getEpisode(request.params.episodeId);
+
+      return { data: episode };
     },
   );
 

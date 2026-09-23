@@ -144,6 +144,53 @@ describe("createRickAndMortyClient", () => {
   });
 });
 
+describe("fetchEpisode", () => {
+  it("normalizes one upstream episode into the project model", async () => {
+    const fetchImpl = vi.fn().mockReturnValue(
+      jsonResponse({
+        id: 28,
+        name: "The Ricklantis Mixup",
+        air_date: "September 10, 2017",
+        episode: "S03E07",
+        characters: Array.from(
+          { length: 40 },
+          (_, index) => `${baseUrl}/character/${index + 1}`,
+        ),
+      }),
+    );
+
+    await expect(
+      createRickAndMortyClient({ baseUrl, fetchImpl }).fetchEpisode(28),
+    ).resolves.toEqual({
+      id: 28,
+      code: "S03E07",
+      name: "The Ricklantis Mixup",
+      airDate: "September 10, 2017",
+      characterCount: 40,
+    });
+    expect(fetchImpl).toHaveBeenCalledWith(
+      `${baseUrl}/episode/28`,
+      expect.objectContaining({ headers: { accept: "application/json" } }),
+    );
+  });
+
+  it("reports a missing episode with the stable error code", async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(new Response("missing", { status: 404 }));
+
+    await expect(
+      createRickAndMortyClient({ baseUrl, fetchImpl }).fetchEpisode(9999),
+    ).rejects.toMatchObject({ code: "EPISODE_NOT_FOUND", status: 404 });
+  });
+
+  it("reports an upstream failure", async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(new Response("down", { status: 503 }));
+
+    await expect(
+      createRickAndMortyClient({ baseUrl, fetchImpl }).fetchEpisode(28),
+    ).rejects.toMatchObject({ code: "UPSTREAM_UNAVAILABLE" });
+  });
+});
+
 function upstreamCharacter(id: number, name: string) {
   return {
     id,

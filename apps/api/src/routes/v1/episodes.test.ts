@@ -22,10 +22,11 @@ let app: FastifyInstance;
 async function buildWith(
   listEpisodes: () => Promise<Episode[]>,
   listEpisodeCharacters: (episodeId: number) => Promise<Character[]> = async () => [],
+  getEpisode: (episodeId: number) => Promise<Episode> = async (episodeId) => episode(episodeId),
 ): Promise<FastifyInstance> {
   app = await buildApp({
     config: loadConfig({ NODE_ENV: "test" }),
-    episodeService: { listEpisodes, listEpisodeCharacters },
+    episodeService: { listEpisodes, getEpisode, listEpisodeCharacters },
   });
 
   await app.ready();
@@ -119,6 +120,48 @@ describe("GET /v1/episodes", () => {
 
     expect((await server.inject({ method: "GET", url: "/health" })).statusCode).toBe(200);
     expect((await server.inject({ method: "GET", url: "/v1/health" })).statusCode).toBe(404);
+  });
+});
+
+describe("GET /v1/episodes/:episodeId", () => {
+  it("answers with one episode through the project contract", async () => {
+    const server = await buildWith(async () => [], undefined, async () => episode(28));
+
+    const response = await server.inject({ method: "GET", url: "/v1/episodes/28" });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({ data: episode(28) });
+  });
+
+  it("answers with 404 when the episode does not exist", async () => {
+    const server = await buildWith(async () => [], undefined, async () => {
+      throw new UpstreamError("EPISODE_NOT_FOUND", "Episode 9999 does not exist.");
+    });
+
+    const response = await server.inject({ method: "GET", url: "/v1/episodes/9999" });
+
+    expect(response.statusCode).toBe(404);
+    expect(response.json().error.code).toBe("EPISODE_NOT_FOUND");
+  });
+
+  it("rejects an invalid episode id", async () => {
+    const server = await buildWith(async () => []);
+
+    const response = await server.inject({ method: "GET", url: "/v1/episodes/nope" });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.json().error.code).toBe("INVALID_REQUEST");
+  });
+
+  it("maps an upstream failure to the project error envelope", async () => {
+    const server = await buildWith(async () => [], undefined, async () => {
+      throw new UpstreamError("UPSTREAM_UNAVAILABLE", "the upstream service is down");
+    });
+
+    const response = await server.inject({ method: "GET", url: "/v1/episodes/28" });
+
+    expect(response.statusCode).toBe(502);
+    expect(response.json().error.code).toBe("UPSTREAM_UNAVAILABLE");
   });
 });
 

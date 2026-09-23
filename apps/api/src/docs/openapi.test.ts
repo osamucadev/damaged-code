@@ -13,7 +13,17 @@ afterEach(async () => {
 async function buildDocumentedApp(): Promise<FastifyInstance> {
   app = await buildApp({
     config: loadConfig({ NODE_ENV: "test" }),
-    episodeService: { listEpisodes: async () => [], listEpisodeCharacters: async () => [] },
+    episodeService: {
+      listEpisodes: async () => [],
+      getEpisode: async () => ({
+        id: 1,
+        code: "S01E01",
+        name: "Pilot",
+        airDate: "December 2, 2013",
+        characterCount: 19,
+      }),
+      listEpisodeCharacters: async () => [],
+    },
   });
 
   await app.ready();
@@ -117,6 +127,25 @@ describe("OpenAPI character documentation", () => {
       "origin",
       "location",
     ]);
+    expect(Object.keys(operation.responses)).toEqual(
+      expect.arrayContaining(["200", "400", "404", "500", "502"]),
+    );
+  });
+});
+
+describe("OpenAPI episode detail documentation", () => {
+  it("documents the single episode endpoint and its failure responses", async () => {
+    const server = await buildDocumentedApp();
+
+    const document = (await server.inject({ method: "GET", url: "/docs/json" })).json();
+    const operation = document.paths["/v1/episodes/{episodeId}"].get;
+
+    expect(operation.operationId).toBe("getEpisode");
+    expect(operation.parameters[0]).toMatchObject({
+      name: "episodeId",
+      in: "path",
+      required: true,
+    });
     expect(Object.keys(operation.responses)).toEqual(
       expect.arrayContaining(["200", "400", "404", "500", "502"]),
     );
