@@ -213,6 +213,8 @@ Both commands also exist inside the web application workspace.
 
 Storybook builds and runs with no application server, no API, and no network access.
 
+The static build is also published as its own Firebase Hosting site, `damaged-code-storybook`, at https://damaged-code-storybook.web.app, kept separate from the `damaged-code-web` site that serves the Next.js application. It exists so an evaluator can browse the component library without running Docker.
+
 Integration:
 
 ```text

@@ -377,11 +377,17 @@ Firebase project   samuelcaetitedev
 
 Public web         Firebase Hosting site: damaged-code-web
                    https://damaged-code-web.web.app
+                   custom domain: zrp.samuelcaetite.dev
 
 Next.js runtime    Cloud Run service: damaged-code-web
                    region: us-central1
                    container port: 3000
                    maximum instances: 5
+
+Storybook          Firebase Hosting site: damaged-code-storybook
+                   https://damaged-code-storybook.web.app
+                   static build from apps/web/storybook-static
+                   custom domain: sb.zrp.samuelcaetite.dev, DNS configured, certificate provisioning
 
 BFF                Cloud Functions
                    function name: damagedCodeApi
@@ -394,6 +400,12 @@ Cache              in process, one hour lifetime
 
 Firestore          not used by production Damaged Code
 ```
+
+Storybook is a second Firebase Hosting site rather than a route inside `damaged-code-web`, so its static files are served directly by Hosting instead of being routed through the Next.js Cloud Run service. This keeps the design system reviewable independently of the application, and it needed no rewrite rule change on the existing `damaged-code-web` site.
+
+### Production Swagger UI
+
+The interactive documentation works at `/docs/#/`, with a trailing slash before the fragment, rather than at `/docs` alone. `@fastify/swagger-ui` decides whether to emit relative or absolute asset links based on whether the incoming request path itself ends in a trailing slash. The Cloud Functions gen 2 URL adds a `damagedCodeApi` path segment that routing strips before the request reaches Fastify, so Fastify has no way to know about that outer segment. An absolute link generated for `/docs` therefore resolves to the wrong address in the browser, missing the `damagedCodeApi` segment, while a relative link generated for `/docs/` resolves correctly against the page it was served from regardless of that outer prefix. No application code changed to fix this: it already worked once the correct address was used, and the README and hero link to the trailing-slash address.
 
 App Hosting was evaluated first. Firebase documents PNPM support, but its monorepo guidance supports Nx and Turborepo rather than this repository's plain PNPM workspace with one root lockfile. A bounded compatibility check found no supported path that preserved the root lockfile without an Nx or Turborepo migration or a duplicate lockfile added only for deployment convenience, so App Hosting was rejected and no App Hosting backend was created. The deployment therefore uses the existing production Dockerfile from the monorepo root, with no copied lockfile and no workspace restructuring, deployed through Cloud Run behind the dedicated Firebase Hosting site.
 

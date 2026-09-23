@@ -590,3 +590,42 @@ Relevant commits:
 1. `feat(web): expose Android release download`
 2. `fix(mobile): support local BFF in debug builds`
 3. `docs: prepare v0.1.0 release`
+
+## 2026-09-23: Final reviewability pass
+
+Checkpoint: 11, Release review, post-release follow-up
+
+Goal:
+
+Make Storybook and the interactive Swagger UI reachable without local setup, and surface both as secondary technical review links in the existing hero, without touching the tagged `v0.1.0` release.
+
+What changed:
+
+1. Storybook is published as its own Firebase Hosting site, `damaged-code-storybook`, deployed from `apps/web/storybook-static` through a new Hosting target in `firebase.json` and `.firebaserc`. It does not route through Next.js or Cloud Run.
+2. Investigated the known production Swagger UI limitation instead of assuming the old diagnosis. `@fastify/swagger-ui` chooses relative or absolute asset links based on whether the requested path ends in a trailing slash, and the Cloud Functions URL prefix is invisible to Fastify. The address with a trailing slash, `/docs/#/`, already resolves every asset and the OpenAPI document correctly in production. No API code or route changed.
+3. The hero gained a compact `Technical resources` row beneath the two primary CTAs, linking to Storybook and to the Swagger UI, styled as outlined mono links rather than a third and fourth primary button.
+4. README and `docs/ARCHITECTURE.md` were updated with the verified Storybook and Swagger URLs, and the stale `Planned delivery` heading was renamed to `Architecture` to match the fact that the project is already delivered.
+5. Production web was rebuilt and redeployed through the existing `cloudbuild.web.yaml` and Cloud Run pipeline.
+
+Decisions:
+
+1. Storybook became a second Hosting site rather than a path inside `damaged-code-web`, so its static files are served directly by Hosting and the existing site's Cloud Run rewrite did not need to change.
+2. The custom domain `sb.zrp.samuelcaetite.dev` was left undocumented as a public link because Firebase was still serving its default `*.firebaseapp.com` certificate for it at validation time. The `.web.app` address is documented as canonical instead.
+3. The Swagger fix is a documentation and linking fix, not a code fix. The API already worked correctly at the trailing-slash address, so no Function redeploy was needed and none was performed.
+
+Validation:
+
+1. `pnpm check`, `pnpm build`, and `pnpm build-storybook` all pass.
+2. Production Storybook was opened in a browser: the shell, sidebar, and an iframe story rendered with no console errors.
+3. Production Swagger UI was opened at `/docs/#/` in a fresh browser tab: every static asset and the OpenAPI document returned 200, and the interface rendered fully with no console errors.
+4. Production web was validated after redeploy: hero, GitHub CTA, Android CTA, the new Storybook and Swagger links, API status, and episode navigation all work at `https://zrp.samuelcaetite.dev`.
+
+Known issues:
+
+1. `sb.zrp.samuelcaetite.dev` remains pending certificate provisioning by Firebase. The `.web.app` address stays canonical until that completes.
+
+Relevant commits:
+
+1. `chore(storybook): publish component library`
+2. `feat(web): expose technical review resources`
+3. `docs: document public review resources`

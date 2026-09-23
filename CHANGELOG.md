@@ -8,7 +8,14 @@ Checkpoints are delivery workflow markers and do not map directly to minor or pa
 
 ## Unreleased
 
-Nothing yet.
+### Added
+
+- Publicly hosted Storybook, deployed as its own Firebase Hosting site.
+- Storybook and Swagger UI links in the web hero, alongside the existing GitHub and Android CTAs.
+
+### Fixed
+
+- Documented and linked the working production Swagger UI address, `/docs/#/`, instead of the address that produced broken asset links.
 
 ## [0.1.0] - 2026-09-23
 

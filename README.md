@@ -21,10 +21,14 @@ If any reference or bit of canon is slightly off, please treat it as an accident
 | Live web | [https://zrp.samuelcaetite.dev](https://zrp.samuelcaetite.dev) |
 | GitHub repository | [https://github.com/osamucadev/damaged-code](https://github.com/osamucadev/damaged-code) |
 | Android APK | [v0.1.0 release](https://github.com/osamucadev/damaged-code/releases/tag/v0.1.0) |
+| Storybook | [https://damaged-code-storybook.web.app](https://damaged-code-storybook.web.app) |
+| Swagger UI | [/docs/#/](https://us-central1-samuelcaetitedev.cloudfunctions.net/damagedCodeApi/docs/#/) |
+| Raw OpenAPI | [/docs/json](https://us-central1-samuelcaetitedev.cloudfunctions.net/damagedCodeApi/docs/json) |
 | Production API | [https://us-central1-samuelcaetitedev.cloudfunctions.net/damagedCodeApi](https://us-central1-samuelcaetitedev.cloudfunctions.net/damagedCodeApi) |
-| OpenAPI document | [/docs/json](https://us-central1-samuelcaetitedev.cloudfunctions.net/damagedCodeApi/docs/json) |
 
 `zrp.samuelcaetite.dev` is the canonical public demo. [https://damaged-code-web.web.app](https://damaged-code-web.web.app) is the underlying Firebase Hosting URL and stays documented as an infrastructure fallback.
+
+`https://damaged-code-storybook.web.app` is the canonical Storybook URL. A custom domain, `sb.zrp.samuelcaetite.dev`, is configured in DNS and pointed at the same Firebase Hosting site, but its certificate is still provisioning, so it is not yet used as a public link.
 
 The Android release APK is an evaluator distribution build. It is ready to install, already configured to call the production API above, and does not require the reviewer to run Docker. See [Flutter evaluation](#flutter-evaluation) for details and for the optional local development path.
 
@@ -41,9 +45,9 @@ The upstream REST API is documented at:
 
 https://rickandmortyapi.com/documentation#rest
 
-## Planned delivery
+## Architecture
 
-The project is being built as a monorepo with three application surfaces:
+The project is delivered as a monorepo with three application surfaces:
 
 ```text
 apps/
@@ -186,13 +190,14 @@ Outside Docker the applications use their conventional ports, so the web client 
 
 ### Design system
 
-The reusable interface components are documented in Storybook, which runs as a Compose service at http://localhost:17322 and is also available on the host:
+The reusable interface components are documented in Storybook.
 
-```bash
-pnpm storybook
+```text
+Local Storybook:  http://localhost:17322, as a Compose service, or through pnpm storybook on the host
+Public Storybook: https://damaged-code-storybook.web.app
 ```
 
-Storybook needs no API, no database, and no network access. See [docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md) for the component rules and token philosophy.
+Storybook needs no API, no database, and no network access. It is published as its own Firebase Hosting site, `damaged-code-storybook`, deployed from the static build at `apps/web/storybook-static` and kept separate from the `damaged-code-web` site that serves the Next.js application. See [docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md) for the component rules and token philosophy.
 
 ### Quality checks
 
@@ -289,16 +294,18 @@ Episode names and air dates are domain data and stay exactly as the upstream API
 The production web application and REST API are deployed from this repository.
 
 ```text
-Web:      https://zrp.samuelcaetite.dev
+Web:        https://zrp.samuelcaetite.dev
 Web (fallback): https://damaged-code-web.web.app
-API:      https://us-central1-samuelcaetitedev.cloudfunctions.net/damagedCodeApi
-OpenAPI:  https://us-central1-samuelcaetitedev.cloudfunctions.net/damagedCodeApi/docs/json
-APK:      GitHub Release v0.1.0, damaged-code-android-v0.1.0.apk
+API:        https://us-central1-samuelcaetitedev.cloudfunctions.net/damagedCodeApi
+Swagger UI: https://us-central1-samuelcaetitedev.cloudfunctions.net/damagedCodeApi/docs/#/
+OpenAPI:    https://us-central1-samuelcaetitedev.cloudfunctions.net/damagedCodeApi/docs/json
+Storybook:  https://damaged-code-storybook.web.app
+APK:        GitHub Release v0.1.0, damaged-code-android-v0.1.0.apk
 ```
 
 `zrp.samuelcaetite.dev` is a custom domain in front of the same Firebase Hosting site and is the canonical public demo. Firebase Hosting owns the dedicated `damaged-code-web` site and rewrites every request to the public `damaged-code-web` Cloud Run service in `us-central1`. The browser bundle calls only the production BFF. The production API uses its in-process cache, and Firestore is not used by the deployed application.
 
-The Swagger UI route is deployed at `/docs`, but its current asset prefix is a minor known limitation. The raw OpenAPI document at `/docs/json` is the reliable production reference.
+The Swagger UI works at `/docs/#/`, with the trailing slash before the fragment. The Cloud Functions URL adds a `damagedCodeApi` path segment that the Fastify application itself does not know about, so the plain `/docs` address without a trailing slash generates asset links that resolve incorrectly. The trailing-slash address makes `@fastify/swagger-ui` emit asset links relative to the current page instead, which resolves correctly regardless of that outer prefix, both locally and in production. The raw OpenAPI document at `/docs/json` keeps working either way.
 
 ## Key engineering decisions
 
