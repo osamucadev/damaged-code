@@ -70,6 +70,8 @@
     "retry": "Try again",
     "retryLoading": "Loading characters",
     "portraitAlt": "Portrait of {name}",
+    "portraitLoading": "Scanning portrait",
+    "portraitError": "Image signal lost",
     "statusLabel": "Status",
     "speciesLabel": "Species",
     "typeLabel": "Type",

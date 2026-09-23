@@ -16,6 +16,8 @@ const meta = {
     name: "Rick Sanchez",
     image: portrait,
     imageAlt: "Portrait of Rick Sanchez",
+    loadingLabel: "Scanning portrait",
+    errorLabel: "Image signal lost",
   },
   decorators: [
     (Story) => (
@@ -30,10 +32,21 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const LoadedPortrait: Story = {
+  args: { portraitState: "loaded" },
+};
+
+export const LoadingPortrait: Story = {
+  args: { portraitState: "loading" },
+};
+
+export const FailedPortrait: Story = {
+  args: { portraitState: "error" },
+};
 
 export const WithStatusAndDetails: Story = {
   args: {
+    portraitState: "loaded",
     status: <StatusIndicator tone="ok">Alive</StatusIndicator>,
     children: (
       <>
@@ -47,6 +60,7 @@ export const WithStatusAndDetails: Story = {
 
 export const LongContent: Story = {
   args: {
+    portraitState: "loaded",
     name: "Abradolf Lincler from a replacement dimension",
     status: <StatusIndicator tone="neutral">unknown</StatusIndicator>,
     children: (
@@ -56,4 +70,19 @@ export const LongContent: Story = {
       </>
     ),
   },
+};
+
+export const NarrowPresentation: Story = {
+  args: {
+    ...WithStatusAndDetails.args,
+    portraitState: "loaded",
+  },
+  decorators: [
+    (Story) => (
+      <div style={{ width: "20rem" }}>
+        <Story />
+      </div>
+    ),
+  ],
+  parameters: { viewport: { defaultViewport: "mobile1" } },
 };

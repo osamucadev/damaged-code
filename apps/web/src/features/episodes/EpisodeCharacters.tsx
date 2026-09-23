@@ -101,6 +101,8 @@ export function EpisodeCharacters({ episode }: EpisodeCharactersProps) {
               name={character.name}
               image={character.image}
               imageAlt={t("portraitAlt", { name: character.name })}
+              loadingLabel={t("portraitLoading")}
+              errorLabel={t("portraitError")}
               status={
                 <StatusIndicator tone={statusTone(character.status)}>
                   {character.status}

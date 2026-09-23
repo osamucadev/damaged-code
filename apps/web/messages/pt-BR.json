@@ -70,6 +70,8 @@
     "retry": "Tentar novamente",
     "retryLoading": "Carregando personagens",
     "portraitAlt": "Retrato de {name}",
+    "portraitLoading": "Escaneando retrato",
+    "portraitError": "Sinal da imagem perdido",
     "statusLabel": "Status",
     "speciesLabel": "Espécie",
     "typeLabel": "Tipo",

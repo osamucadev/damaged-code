@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { PropertyRow } from "../PropertyRow/PropertyRow";
@@ -12,6 +12,8 @@ function renderCard(props: Partial<React.ComponentProps<typeof CharacterCard>> =
         name="Rick Sanchez"
         image="https://upstream.test/avatar/1.jpeg"
         imageAlt="Portrait of Rick Sanchez"
+        loadingLabel="Scanning portrait"
+        errorLabel="Image signal lost"
         {...props}
       />
     </ul>,
@@ -41,5 +43,21 @@ describe("CharacterCard", () => {
 
     expect(screen.getByText("Species")).toBeInTheDocument();
     expect(screen.getByText("Human")).toBeInTheDocument();
+  });
+
+  it("replaces the loading scanner when the portrait loads", () => {
+    renderCard();
+
+    expect(screen.getByText("Scanning portrait")).toBeInTheDocument();
+    fireEvent.load(screen.getByRole("img", { name: "Portrait of Rick Sanchez" }));
+    expect(screen.queryByText("Scanning portrait")).not.toBeInTheDocument();
+  });
+
+  it("shows a distinct signal loss treatment when the portrait fails", () => {
+    renderCard();
+
+    fireEvent.error(screen.getByRole("img", { name: "Portrait of Rick Sanchez" }));
+    expect(screen.getByText("Image signal lost")).toBeInTheDocument();
+    expect(screen.queryByText("Scanning portrait")).not.toBeInTheDocument();
   });
 });
