@@ -146,6 +146,45 @@
   .github, .android { justify-content: center; }
 }
 
+.technicalResources {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--dc-space-3);
+  justify-self: start;
+  margin-top: var(--dc-space-4);
+}
+
+.technicalLabel {
+  color: var(--dc-color-text-secondary);
+  font-family: var(--dc-font-family-mono);
+  font-size: var(--dc-font-size-xs);
+  letter-spacing: var(--dc-letter-spacing-wider);
+  text-transform: uppercase;
+}
+
+.technicalLink {
+  border: var(--dc-border-width-hairline) solid var(--dc-color-border-hairline);
+  border-radius: var(--dc-radius-sm);
+  color: var(--dc-color-text-secondary);
+  font-family: var(--dc-font-family-mono);
+  font-size: var(--dc-font-size-xs);
+  letter-spacing: var(--dc-letter-spacing-wide);
+  padding: var(--dc-space-1) var(--dc-space-3);
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: border-color var(--dc-motion-fast) var(--dc-ease-mechanical), color var(--dc-motion-fast) var(--dc-ease-mechanical);
+}
+
+.technicalLink:hover, .technicalLink:focus-visible {
+  border-color: var(--dc-color-accent-display);
+  color: var(--dc-color-accent-display);
+}
+
+@media (max-width: 26rem) {
+  .technicalResources { flex-direction: column; align-items: flex-start; }
+}
+
 .monitor {
   align-self: center;
   background: var(--dc-color-surface-screen);

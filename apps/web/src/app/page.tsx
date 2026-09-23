@@ -54,6 +54,25 @@ export default async function HomePage() {
               </span>
             </a>
           </div>
+          <div className={styles.technicalResources}>
+            <span className={styles.technicalLabel}>{t("technicalResources")}</span>
+            <a
+              className={styles.technicalLink}
+              href="https://damaged-code-storybook.web.app"
+              rel="noreferrer"
+              target="_blank"
+            >
+              {t("storybook")}
+            </a>
+            <a
+              className={styles.technicalLink}
+              href="https://us-central1-samuelcaetitedev.cloudfunctions.net/damagedCodeApi/docs/#/"
+              rel="noreferrer"
+              target="_blank"
+            >
+              {t("swagger")}
+            </a>
+          </div>
         </div>
         <div aria-hidden="true" className={styles.monitor}>
           <span className={styles.scanline} />

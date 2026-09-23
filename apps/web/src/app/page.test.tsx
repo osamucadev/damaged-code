@@ -71,4 +71,22 @@ describe("HomePage", () => {
       "https://github.com/osamucadev/damaged-code/releases/download/v0.1.0/damaged-code-android-v0.1.0.apk",
     );
   });
+
+  it("links to the public Storybook", async () => {
+    renderWithIntl(await HomePage());
+
+    expect(screen.getByRole("link", { name: "Storybook" })).toHaveAttribute(
+      "href",
+      "https://damaged-code-storybook.web.app",
+    );
+  });
+
+  it("links to the production Swagger UI", async () => {
+    renderWithIntl(await HomePage());
+
+    expect(screen.getByRole("link", { name: /swagger api/i })).toHaveAttribute(
+      "href",
+      "https://us-central1-samuelcaetitedev.cloudfunctions.net/damagedCodeApi/docs/#/",
+    );
+  });
 });
