@@ -140,6 +140,21 @@ The web navigation redesign extends this coverage with the season browser, seman
 
 No test reaches the live Rick and Morty API. The upstream boundary is replaced with an injected fetch in the adapter tests, and the episode service is injected into the application factory for route tests. The web tests replace `fetch` at the browser boundary.
 
+## Production deployment validation
+
+Checkpoint 07 added a manual smoke pass against the deployed Firebase and Cloud Run environment:
+
+1. the Hosting root and a direct `/episodes/1` request return successfully;
+2. a hard refresh of the episode route reaches Next.js through the Hosting rewrite;
+3. home, episode, previous and next episode, character dossier, and appearance navigation work in the browser;
+4. character portraits load through the published BFF contract;
+5. the API status and episode data load through production CORS;
+6. the client build points to the production `damagedCodeApi` URL and contains no localhost API target;
+7. a 390 by 844 viewport preserves the episode header, metadata, and navigator without visible horizontal overflow;
+8. the API smoke suite covers health, episodes, one episode, episode characters, one character, OpenAPI, stable invalid-id errors, and the sanitized project 404 envelope.
+
+This is deployment acceptance evidence rather than a new end-to-end test suite. Automated browser end-to-end coverage remains in the backlog.
+
 ## External dependencies
 
 Automated tests should not depend on the live upstream API for basic correctness.

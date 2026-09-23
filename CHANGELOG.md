@@ -39,12 +39,15 @@ Checkpoints are delivery workflow markers and do not map directly to minor or pa
 - Character detail endpoint `GET /v1/characters/{characterId}` with normalized episode appearances.
 - Character dossier in the web client, opened from a character card, with episode appearance links.
 - Caching behind the BFF, in process by default and Firestore backed in the Firebase mode.
+- Production API deployment as the isolated `damagedCodeApi` Firebase Functions codebase.
+- Production web deployment through a dedicated Firebase Hosting site and Cloud Run service.
 
 ### Changed
 
 - Published local development ports moved to a project specific block starting at 17320, configurable through environment variables.
 - The web information architecture now separates the project landing page from dedicated episode pages.
 - API health now appears as a secondary operational disclosure instead of the primary content panel.
+- Production web builds now compile the public `damagedCodeApi` URL into the Next.js client.
 
 ### Fixed
 

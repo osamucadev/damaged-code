@@ -346,33 +346,46 @@ production deployment through Firebase
 
 The project should not maintain separate local and production implementations.
 
-### Planned production target
-
-Nothing below is provisioned or deployed yet. It is recorded so the local environment grows toward a known destination. Provisioning belongs to the Firebase deployment checkpoint.
+### Deployed production target
 
 ```text
 Firebase project   samuelcaetitedev
 
-Next.js web        Firebase App Hosting
-                   planned backend name: damaged-code-web
+Public web         Firebase Hosting site: damaged-code-web
+                   https://damaged-code-web.web.app
+
+Next.js runtime    Cloud Run service: damaged-code-web
+                   region: us-central1
+                   container port: 3000
+                   maximum instances: 5
 
 BFF                Cloud Functions
-                   planned function name: damagedCodeApi
+                   function name: damagedCodeApi
+                   codebase: damaged-code-api
+                   generation: 2
+                   runtime: Node.js 22
+                   region: us-central1
 
-Firestore          planned named database: damaged-code
+Cache              in process, one hour lifetime
+
+Firestore          not used by production Damaged Code
 ```
+
+App Hosting was evaluated first. Firebase documents PNPM support, but its monorepo guidance supports Nx and Turborepo rather than this repository's plain PNPM workspace with one root lockfile. The deployment therefore uses the existing production Dockerfile from the monorepo root, with no copied lockfile and no workspace restructuring.
+
+Cloud Build creates the production image with `NEXT_PUBLIC_API_URL` present at build time. Cloud Run executes that immutable image. The dedicated Firebase Hosting site is the stable public edge and rewrites every path to Cloud Run, so direct episode routes and hard refreshes reach Next.js correctly.
 
 The existing Firebase project already hosts unrelated work, so these constraints apply:
 
-1. Do not modify the existing Firebase Hosting sites.
-2. Do not modify the existing Cloud Functions.
-3. Do not use the existing default Firestore database for Damaged Code application data.
-4. Do not provision the named Firestore database before that checkpoint.
-5. Do not create App Hosting resources before that checkpoint.
+1. The preexisting Firebase Hosting sites remain unchanged.
+2. The preexisting `contact` and `api` Cloud Functions remain unchanged.
+3. The default Firestore database remains unchanged and is not used by Damaged Code production.
+4. No named Firestore database was provisioned.
+5. No App Hosting backend was created.
 
-Firebase Hosting is not part of the local environment. The production web target is Firebase App Hosting, and the local environment models only the parts that affect development, which today means Firestore.
+Firebase Hosting and Cloud Run are not part of the local environment. Docker Compose remains the reproducible local path for the same application code.
 
-The client boundary does not change in production. Clients talk to the BFF, and only the BFF talks to Firestore, using server side credentials.
+The client boundary does not change in production. Clients talk to the BFF, and the BFF alone talks to the upstream provider. The production BFF uses the standard in-process cache and never reads or writes Firestore.
 
 ## Testing boundaries
 

@@ -65,7 +65,7 @@ Client applications do not access Firebase services directly and do not access t
 | Mobile and desktop | Flutter |
 | JavaScript package manager | PNPM only |
 | Local environment | Docker and Docker Compose |
-| Production | Firebase managed services from the same codebase |
+| Production | Firebase Functions, Cloud Run, and Firebase Hosting |
 | Internationalization | English and Portuguese, pt-BR |
 | Testing | Unit and integration tests |
 | End-to-end tests | Backlog |
@@ -219,14 +219,18 @@ Episode names and air dates are domain data and stay exactly as the upstream API
 
 ## Production demo
 
-Production URLs and downloadable Flutter artifacts will be added after the deployment checkpoint.
+The production web application and REST API are deployed from this repository.
 
 ```text
-Web: pending
-API: pending
-OpenAPI: pending
+Web: https://damaged-code-web.web.app
+API: https://us-central1-samuelcaetitedev.cloudfunctions.net/damagedCodeApi
+OpenAPI: https://us-central1-samuelcaetitedev.cloudfunctions.net/damagedCodeApi/docs/json
 APK: pending
 ```
+
+Firebase Hosting owns the dedicated `damaged-code-web` site and rewrites every request to the public `damaged-code-web` Cloud Run service in `us-central1`. The browser bundle calls only the production BFF. The production API uses its in-process cache, and Firestore is not used by the deployed application.
+
+The Swagger UI route is deployed at `/docs`, but its current asset prefix is a minor known limitation. The raw OpenAPI document at `/docs/json` is the reliable production reference.
 
 ## Quality
 
@@ -251,7 +255,7 @@ The initial delivery intentionally excludes end-to-end tests. They remain availa
 
 ## Project status
 
-The workspace foundation is in place: the web and API applications run together through Docker Compose, and the web client reports the API health state through the project BFF. Rick and Morty episode data is not integrated yet.
+The web and API applications run together through Docker Compose and are deployed to Firebase managed infrastructure. The production experience includes the season archive, shareable episode routes, character dossiers, and navigation through character appearances, all through the project BFF.
 
 Check [docs/CHECKPOINTS.md](./docs/CHECKPOINTS.md) for the current delivery checkpoint.
 

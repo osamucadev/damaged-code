@@ -243,20 +243,21 @@ Target outcomes:
 
 ## Checkpoint 07: Firebase production deployment
 
-Status: PENDING
+Status: COMPLETE
 
 Goal: make the challenge easy to evaluate without local setup.
 
-Planned resources, documented in `docs/ARCHITECTURE.md` and not provisioned yet:
+Deployed resources:
 
 ```text
 project     samuelcaetitedev
-web         Firebase App Hosting, backend damaged-code-web
-api         Cloud Functions, function damagedCodeApi
-firestore   named database damaged-code
+web edge    Firebase Hosting site damaged-code-web
+web runtime Cloud Run service damaged-code-web, us-central1
+api         Cloud Functions Gen 2 function damagedCodeApi, us-central1
+firestore   untouched and unused in production
 ```
 
-Existing Hosting sites, existing Functions, and the default Firestore database of that project must not be touched.
+The original App Hosting plan was replaced after the bounded compatibility check found no supported plain PNPM workspace path that preserved the root lockfile. The Docker based Cloud Run fallback keeps the repository structure intact. Existing Hosting sites, Functions `contact` and `api`, and Firestore `(default)` remain untouched.
 
 Target outcomes:
 
@@ -267,6 +268,8 @@ Target outcomes:
 5. public demo URLs are added to the README;
 6. OpenAPI documentation is reachable or clearly documented;
 7. deployment decisions are recorded in architecture docs.
+
+All target outcomes are complete. The raw production OpenAPI document is available at `/docs/json`; the Swagger UI asset prefix remains a minor known limitation.
 
 ## Checkpoint 08: Flutter client
 

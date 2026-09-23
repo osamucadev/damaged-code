@@ -466,3 +466,42 @@ Relevant commits:
 2. `feat(api): expose character detail with normalized episode references`
 3. `feat(api): cache normalized responses behind the BFF`
 4. `feat(web): open a character dossier from the episode grid`
+
+## 2026-09-23: Firebase production deployment
+
+Checkpoint: 07, Firebase production deployment
+
+Goal:
+
+Publish the existing API and web application without changing their client boundary or affecting unrelated resources in the shared Firebase project.
+
+What changed:
+
+1. The isolated `damaged-code-api` Firebase codebase was deployed as the Gen 2 `damagedCodeApi` function in `us-central1` on Node.js 22.
+2. The production API uses the standard in-process cache. Firestore remains untouched.
+3. App Hosting was evaluated against the plain PNPM workspace, then rejected because the documented monorepo path did not support this shape without changing the root lockfile arrangement.
+4. Cloud Build now builds the existing web production Dockerfile from the monorepo root, with the production API URL available during the Next.js build.
+5. The image runs as the public `damaged-code-web` Cloud Run service in `us-central1`, with one CPU, 512 MiB memory, concurrency 80, and a maximum of five instances.
+6. The dedicated `damaged-code-web` Firebase Hosting site rewrites all requests to that Cloud Run service.
+7. API CORS permits both the temporary Hosting origin and the intended `zrp.samuelcaetite.dev` origin, with no wildcard.
+
+Decisions:
+
+1. The fallback keeps one PNPM workspace, one root lockfile, and the existing application paths. No deployment-only copy of the app was introduced.
+2. Firebase Hosting is the stable public entry point. Cloud Run is an implementation detail behind its rewrite.
+3. `NEXT_PUBLIC_API_URL` is a Docker build argument because Next.js compiles public environment values into browser assets.
+4. Production keeps the in-process cache requested for this checkpoint. The Firebase emulator and Firestore cache remain local integration options, not production dependencies.
+5. Deployment commands were always scoped to the Damaged Code function codebase or Hosting target. Generic Firebase deployment was not used.
+
+Validation:
+
+1. The API endpoints, stable errors, sanitized 404 response, and raw OpenAPI document passed read-only production smoke tests.
+2. The Hosting root, direct episode route, hard refresh, home and episode navigation, character dossier, appearance links, and portraits passed in the deployed browser environment.
+3. The episode page passed a 390 by 844 mobile viewport inspection.
+4. The production client reaches `damagedCodeApi` with successful CORS and contains no localhost API target.
+5. A fresh inventory confirmed that Functions `contact` and `api`, all five preexisting Hosting sites, App Hosting, and Firestore `(default)` remain unchanged.
+
+Known issues:
+
+1. The Swagger UI route at `/docs` has an asset prefix issue. `/docs/json` is healthy and is the production OpenAPI reference for this checkpoint.
+2. The custom domain is not considered live until Firebase supplies DNS records, the owner applies them, and propagation completes.
