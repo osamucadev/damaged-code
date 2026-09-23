@@ -93,6 +93,7 @@
     "dossierNotFound": "That character does not exist.",
     "appearancesTitle": "Episode appearances",
     "appearancesCount": "{total, plural, =0 {No episodes} one {# episode} other {# episodes}}",
-    "appearancesEmpty": "No episode appearances were returned for this character."
+    "appearancesEmpty": "No episode appearances were returned for this character.",
+    "currentAppearanceLabel": "Return to {name}"
   }
 }

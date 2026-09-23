@@ -44,9 +44,15 @@ function statusTone(status: string): StatusTone {
   return "neutral";
 }
 
+interface Selection {
+  character: Character;
+  /** The card control that opened the dossier, so it can grow out of it. */
+  origin: HTMLButtonElement;
+}
+
 export function EpisodeCharacters({ episode }: EpisodeCharactersProps) {
   const t = useTranslations("characters");
-  const [selected, setSelected] = useState<Character | null>(null);
+  const [selected, setSelected] = useState<Selection | null>(null);
   const episodeId = episode?.id ?? null;
   const { data, isPending, isError, error, refetch, isFetching } = useEpisodeCharacters(episodeId);
 
@@ -107,8 +113,8 @@ export function EpisodeCharacters({ episode }: EpisodeCharactersProps) {
               imageAlt={t("portraitAlt", { name: character.name })}
               loadingLabel={t("portraitLoading")}
               errorLabel={t("portraitError")}
-              onSelect={() => {
-                setSelected(character);
+              onOpen={(origin) => {
+                setSelected({ character, origin });
               }}
               selectLabel={t("openDossier", { name: character.name })}
               status={
@@ -131,9 +137,10 @@ export function EpisodeCharacters({ episode }: EpisodeCharactersProps) {
 
       {selected === null ? null : (
         <CharacterDossier
-          characterId={selected.id}
+          characterId={selected.character.id}
           currentEpisodeId={episode?.id}
-          fallbackName={selected.name}
+          fallbackName={selected.character.name}
+          originElement={selected.origin}
           onClose={() => {
             setSelected(null);
           }}

@@ -103,12 +103,31 @@ describe("character dossier", () => {
     });
   });
 
-  it("shows a loading state while the detail is being read", async () => {
+  it("shows a structural skeleton with an accessible status while the detail is read", async () => {
     vi.stubGlobal("fetch", routeFetch({ detail: () => new Promise(() => {}) as never }));
+
+    const { card } = await openDossier();
+    const dialog = await screen.findByRole("dialog");
+
+    // The header already knows the name from the card that opened it.
+    expect(within(dialog).getByRole("heading", { name: "Rick Sanchez" })).toBeInTheDocument();
+    expect(within(dialog).getByRole("status")).toHaveTextContent("Reading character file...");
+    // Nothing from the actual character detail has arrived yet.
+    expect(within(dialog).queryByText("Citadel of Ricks")).not.toBeInTheDocument();
+    expect(card).toBeInTheDocument();
+  });
+
+  it("replaces the skeleton once character data arrives", async () => {
+    vi.stubGlobal("fetch", routeFetch());
 
     await openDossier();
 
-    expect(await screen.findByText("Reading character file...")).toBeInTheDocument();
+    const dialog = await screen.findByRole("dialog");
+
+    await waitFor(() => {
+      expect(within(dialog).getByText("Citadel of Ricks")).toBeInTheDocument();
+    });
+    expect(within(dialog).queryByRole("status")).not.toBeInTheDocument();
   });
 
   it("shows the character facts once the detail arrives", async () => {
@@ -125,7 +144,7 @@ describe("character dossier", () => {
     expect(within(dialog).getByRole("img", { name: /portrait of Rick Sanchez/i })).toBeInTheDocument();
   });
 
-  it("links every appearance to the project episode page", async () => {
+  it("links a different episode appearance to the project episode page", async () => {
     vi.stubGlobal("fetch", routeFetch());
 
     await openDossier();
@@ -133,18 +152,18 @@ describe("character dossier", () => {
     const link = await screen.findByRole("link", { name: /Anatomy Park/ });
 
     expect(link).toHaveAttribute("href", "/episodes/3");
-    expect(screen.getByRole("link", { name: /Pilot/ })).toHaveAttribute("href", "/episodes/1");
+    expect(link).not.toHaveAttribute("aria-current");
   });
 
-  it("marks the appearance the reader is already viewing", async () => {
+  it("marks the appearance the reader is already viewing as current, without a link", async () => {
     vi.stubGlobal("fetch", routeFetch());
 
     await openDossier();
 
-    const current = await screen.findByRole("link", { name: /Pilot/ });
+    const current = await screen.findByRole("button", { name: /Pilot/i });
 
     expect(current).toHaveAttribute("aria-current", "page");
-    expect(screen.getByRole("link", { name: /Anatomy Park/ })).not.toHaveAttribute("aria-current");
+    expect(screen.queryByRole("link", { name: /Pilot/ })).not.toBeInTheDocument();
   });
 
   it("shows an error state and recovers through retry", async () => {
@@ -207,6 +226,22 @@ describe("character dossier", () => {
     expect(card).toHaveFocus();
   });
 
+  it("closes the dossier when the current episode appearance is activated, instead of navigating", async () => {
+    vi.stubGlobal("fetch", routeFetch());
+
+    const { user, card } = await openDossier();
+    await screen.findByRole("dialog");
+
+    const current = await screen.findByRole("button", { name: /Pilot/i });
+
+    await user.click(current);
+
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+    expect(card).toHaveFocus();
+  });
+
   it("closes when Escape is pressed", async () => {
     vi.stubGlobal("fetch", routeFetch());
 
@@ -255,6 +290,35 @@ describe("character dossier", () => {
     expect(
       await screen.findByText("No episode appearances were returned for this character."),
     ).toBeInTheDocument();
+  });
+
+  it("still closes and restores focus under reduced motion, with no spatial transition", async () => {
+    // A stub matchMedia is required here: jsdom has none by default, which is
+    // also why the implementation treats a missing matchMedia as motion
+    // allowed rather than throwing.
+    vi.stubGlobal(
+      "matchMedia",
+      vi.fn().mockImplementation((query: string) => ({
+        matches: query.includes("prefers-reduced-motion"),
+        media: query,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      })),
+    );
+    vi.stubGlobal("fetch", routeFetch());
+
+    const { user, card } = await openDossier();
+    await screen.findByRole("dialog");
+
+    await user.click(screen.getByRole("button", { name: /close the dossier/i }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+    expect(card).toHaveFocus();
   });
 
   it("renders its own copy in Portuguese while leaving character data untranslated", async () => {

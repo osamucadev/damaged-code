@@ -15,9 +15,15 @@ export interface CharacterCardProps extends HTMLAttributes<HTMLLIElement> {
   errorLabel: string;
   /** Controlled portrait state for documentation and deterministic previews. */
   portraitState?: "loading" | "loaded" | "error";
-  /** Makes the whole card open something. Without it the card is static. */
-  onSelect?: () => void;
-  /** Localized accessible name of the card control. Required with onSelect. */
+  /**
+   * Makes the whole card open something. Without it the card is static.
+   *
+   * Receives the control that was activated, so a caller can visually connect
+   * whatever opens to this card's position, such as a dossier growing out of
+   * it.
+   */
+  onOpen?: (origin: HTMLButtonElement) => void;
+  /** Localized accessible name of the card control. Required with onOpen. */
   selectLabel?: string;
   /** Optional status presentation, such as a StatusIndicator. */
   status?: ReactNode;
@@ -103,14 +109,14 @@ export function CharacterCard({
   loadingLabel,
   errorLabel,
   portraitState,
-  onSelect,
+  onOpen,
   selectLabel,
   status,
   className,
   children,
   ...rest
 }: CharacterCardProps) {
-  const classes = [styles.card, onSelect === undefined ? undefined : styles.selectable, className]
+  const classes = [styles.card, onOpen === undefined ? undefined : styles.selectable, className]
     .filter(Boolean)
     .join(" ");
 
@@ -121,8 +127,15 @@ export function CharacterCard({
         stays one large target while the description list below stays outside
         the button, where a description list is allowed to live.
       */}
-      {onSelect === undefined ? null : (
-        <button aria-label={selectLabel} className={styles.trigger} onClick={onSelect} type="button" />
+      {onOpen === undefined ? null : (
+        <button
+          aria-label={selectLabel}
+          className={styles.trigger}
+          onClick={(event) => {
+            onOpen(event.currentTarget);
+          }}
+          type="button"
+        />
       )}
       <CharacterPortrait
         key={image}

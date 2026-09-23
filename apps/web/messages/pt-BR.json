@@ -93,6 +93,7 @@
     "dossierNotFound": "Esse personagem não existe.",
     "appearancesTitle": "Aparições em episódios",
     "appearancesCount": "{total, plural, =0 {Nenhum episódio} one {# episódio} other {# episódios}}",
-    "appearancesEmpty": "Nenhuma aparição em episódio foi retornada para este personagem."
+    "appearancesEmpty": "Nenhuma aparição em episódio foi retornada para este personagem.",
+    "currentAppearanceLabel": "Voltar para {name}"
   }
 }

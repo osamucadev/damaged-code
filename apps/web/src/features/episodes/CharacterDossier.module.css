@@ -3,14 +3,6 @@
   gap: var(--dc-space-5);
 }
 
-.state {
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--dc-space-4);
-  justify-content: space-between;
-}
-
 .retry { margin-top: var(--dc-space-4); }
 
 .identity {
@@ -57,16 +49,24 @@
   padding: 0;
 }
 
+/*
+ * Shared by the episode links and the current episode button, so both read as
+ * the same kind of tile regardless of which element renders them.
+ */
 .appearance {
   align-items: center;
   background: var(--dc-color-surface-recess);
   border: var(--dc-border-width-heavy) solid var(--dc-color-border-heavy);
   border-radius: var(--dc-radius-sm);
   color: var(--dc-color-text-primary);
+  cursor: pointer;
   display: flex;
+  font: inherit;
   gap: var(--dc-space-2);
   padding: var(--dc-space-2) var(--dc-space-3);
+  text-align: left;
   text-decoration: none;
+  width: 100%;
 }
 
 .appearance:hover { border-color: var(--dc-color-accent-display); }
@@ -84,4 +84,124 @@
 @media (max-width: 42rem) {
   .identity { grid-template-columns: minmax(0, 1fr); }
   .portrait { max-width: 12rem; }
+}
+
+/*
+ * Loading skeleton.
+ *
+ * Mirrors the geometry above (.identity, .appearances) so the loaded dossier
+ * does not jump when data arrives. Visuals reuse the CharacterCard portrait
+ * skeleton language: a CRT scanline sweep over a screen colored surface, plus
+ * a restrained pulse on the placeholder bars.
+ */
+.skeleton {
+  display: grid;
+  gap: var(--dc-space-5);
+}
+
+.srOnly {
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+.skeletonIdentity {
+  display: grid;
+  gap: var(--dc-space-4);
+  grid-template-columns: minmax(0, 14rem) minmax(0, 1fr);
+}
+
+.skeletonPortrait {
+  aspect-ratio: 1 / 1;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 5px, rgb(79 212 238 / 7%) 5px 6px),
+    var(--dc-color-surface-screen);
+  border: var(--dc-border-width-heavy) solid var(--dc-color-border-heavy);
+  border-radius: var(--dc-radius-md);
+  overflow: hidden;
+  position: relative;
+}
+
+.skeletonPortrait::after {
+  animation: dossierSkeletonScan 1.8s linear infinite;
+  background: linear-gradient(transparent, rgb(79 212 238 / 24%), transparent);
+  content: "";
+  height: 28%;
+  inset-inline: 0;
+  position: absolute;
+}
+
+.skeletonFacts {
+  display: grid;
+  gap: var(--dc-space-2);
+  align-content: start;
+}
+
+.skeletonRow {
+  align-items: center;
+  border-bottom: var(--dc-border-width-hairline) solid var(--dc-color-border-hairline);
+  display: flex;
+  justify-content: space-between;
+  padding: var(--dc-space-2) 0;
+}
+
+.skeletonLabel,
+.skeletonValue,
+.skeletonHeading,
+.skeletonBadge,
+.skeletonTile {
+  animation: dossierSkeletonPulse 1.8s var(--dc-ease-mechanical) infinite;
+  background: var(--dc-color-surface-recess);
+  border-radius: var(--dc-radius-sm);
+}
+
+.skeletonLabel { height: 0.6rem; width: 4rem; }
+.skeletonValue { height: 0.75rem; width: 6rem; }
+
+.skeletonAppearances { display: grid; gap: var(--dc-space-3); }
+
+.skeletonAppearancesHeader {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.skeletonHeading { height: 1rem; width: 10rem; }
+.skeletonBadge { height: 1.5rem; width: 5rem; }
+
+.skeletonAppearanceList {
+  display: grid;
+  gap: var(--dc-space-2);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+}
+
+.skeletonTile { height: 2.75rem; }
+
+@keyframes dossierSkeletonScan {
+  from { transform: translateY(-110%); }
+  to { transform: translateY(370%); }
+}
+
+@keyframes dossierSkeletonPulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+@media (max-width: 42rem) {
+  .skeletonIdentity { grid-template-columns: minmax(0, 1fr); }
+  .skeletonPortrait { max-width: 12rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeletonPortrait::after,
+  .skeletonLabel,
+  .skeletonValue,
+  .skeletonHeading,
+  .skeletonBadge,
+  .skeletonTile {
+    animation: none;
+  }
 }

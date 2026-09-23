@@ -31,4 +31,8 @@ export {
   EpisodeBoundaryCard,
   type EpisodeBoundaryCardProps,
 } from "./molecules/EpisodeBoundaryCard/EpisodeBoundaryCard";
-export { Dossier, type DossierProps } from "./organisms/Dossier/Dossier";
+export {
+  Dossier,
+  useDossierClose,
+  type DossierProps,
+} from "./organisms/Dossier/Dossier";
