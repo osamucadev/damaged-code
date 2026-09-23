@@ -165,7 +165,7 @@ The character list endpoint stays lean. A grid needs a portrait and a few facts,
 
 Upstream publishes appearances as provider URLs such as `https://rickandmortyapi.com/api/episode/1`. The adapter extracts the ids and the service resolves them into that reference, which carries identity and nothing else.
 
-A reference has no `href`, no `webPath`, and no route name, because a URL belongs to whoever renders it. The web turns id 3 into `/episodes/3`, and the planned Flutter client turns the same id into its own navigation action. If the BFF emitted `/episodes/3` it would be shipping one client's routing table to every client, and the mobile client would have to ignore it.
+A reference has no `href`, no `webPath`, and no route name, because a URL belongs to whoever renders it. The web turns id 3 into `/episodes/3`, and Flutter turns the same id into its own navigation action. If the BFF emitted `/episodes/3` it would be shipping one client's routing table to every client, and the mobile client would have to ignore it.
 
 Appearances are resolved in one request. Upstream accepts a comma separated id list, so a character appearing in 51 episodes costs one batched call rather than 51, the same technique the episode cast already uses in the opposite direction. The result is ordered by episode id, so every client sees the same canonical sequence.
 
@@ -280,6 +280,29 @@ The BFF should prefer stable error codes over localized prose.
 
 Upstream domain content such as episode and character names remains unchanged unless an explicit enrichment feature is later added.
 
+## Flutter client
+
+The mobile client lives in `apps/mobile` and uses Flutter 3.47.2. Its package identity is `dev.samuelcaetite.damagedcode` and its initial application version is `0.1.0+1`.
+
+The structure stays feature oriented:
+
+```text
+lib/
+  app/                  application composition
+  core/                 configuration, HTTP, theme, shared widgets
+  features/episodes/    models, repository, archive and detail screens
+  features/characters/  models, repository and dossier screen
+  l10n/                 English and Portuguese ARB catalogs
+```
+
+The `http` package is the only external runtime dependency. `ApiClient` owns JSON transport and stable error-code extraction. Repositories validate DTOs and expose project models. Each remote screen owns one future and an explicit retry transition, which is enough state management for three read-only screens and remains easy to inject in widget tests.
+
+Navigation uses Flutter's native `Navigator` and `MaterialPageRoute`. An appearance pushes another episode detail route onto the existing stack, so Android back navigation returns through character, original episode, and archive without a parallel navigation model.
+
+`API_BASE_URL` is read through `--dart-define`. Its production default is the public `damagedCodeApi` URL. The application contains no Firebase SDK, Firestore dependency, provider endpoint, authentication, or mobile-owned business sorting.
+
+The mobile visual system translates the existing industrial direction into touch-first widgets. It reuses the dark machine surface, raised metal panels, paper dossier, cyan display text, and acid-green controls while keeping 48 logical pixel actions, semantic labels, responsive grids, and native scrolling.
+
 ## Local environment
 
 Docker and Docker Compose provide the reproducible local environment for web and API applications.
@@ -294,6 +317,7 @@ The local environment should make the architecture observable without requiring 
 web         http://localhost:17320   Next.js App Router, React, TypeScript
 api         http://localhost:17321   Fastify, TypeScript
 storybook   http://localhost:17322   design system documentation
+mobile      Flutter 3.47.2           Android, Linux, or web target
 ```
 
 Published host ports use an uncommon project specific block so the environment does not collide with other work on a reviewer's machine. They are configurable. Ports inside the Compose network stay conventional, and services always reach each other through service DNS, for example `http://api:4000`.

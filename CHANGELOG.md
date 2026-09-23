@@ -41,6 +41,8 @@ Checkpoints are delivery workflow markers and do not map directly to minor or pa
 - Caching behind the BFF, in process by default and Firestore backed in the Firebase mode.
 - Production API deployment as the isolated `damagedCodeApi` Firebase Functions codebase.
 - Production web deployment through a dedicated Firebase Hosting site and Cloud Run service.
+- Flutter mobile client with episode browsing, character dossiers, appearance navigation, and Android release builds.
+- English and Brazilian Portuguese Flutter localization through generated ARB catalogs.
 
 ### Changed
 

@@ -273,7 +273,7 @@ All target outcomes are complete. The raw production OpenAPI document is availab
 
 ## Checkpoint 08: Flutter client
 
-Status: PENDING
+Status: COMPLETE
 
 Goal: demonstrate the same product contract through Flutter.
 
@@ -291,6 +291,19 @@ Target outcomes:
 10. Android production APK is produced if environment and time allow.
 
 Desktop targets may be validated where the development host supports them.
+
+Delivered state:
+
+1. `apps/mobile` is a Flutter 3.47.2 application with Android, Linux, and web targets.
+2. The production BFF is the default `API_BASE_URL`, with `--dart-define` available for local overrides.
+3. The archive lists all episodes by season and opens a dedicated episode screen.
+4. Episode detail shows metadata and the complete character contract in BFF order.
+5. Character detail shows normalized facts and navigable episode appearances.
+6. Native navigation preserves the full Android back stack.
+7. English and Brazilian Portuguese use `flutter_localizations`, `gen_l10n`, and ARB catalogs.
+8. Every remote screen has loading, sanitized error, retry, and relevant empty states.
+9. Eleven focused unit and widget tests cover transport, parsing, contract drift, locale selection, state, retry, and the critical navigation flow.
+10. Debug and release APK builds succeed, and the release application was validated against the production API on a Pixel 8 emulator.
 
 ## Checkpoint 09: Visual polish
 

@@ -505,3 +505,49 @@ Known issues:
 
 1. The Swagger UI route at `/docs` has an asset prefix issue. `/docs/json` is healthy and is the production OpenAPI reference for this checkpoint.
 2. The custom domain is not considered live until Firebase supplies DNS records, the owner applies them, and propagation completes.
+
+## 2026-09-23: Flutter mobile application
+
+Checkpoint: 08, Flutter client
+
+Goal:
+
+Deliver a production-quality Android differential that exercises the same project REST contract as the web client without duplicating backend behavior.
+
+What changed:
+
+1. `apps/mobile` was created with Flutter 3.47.2 and the package identity `dev.samuelcaetite.damagedcode`.
+2. The episode archive groups all 51 episodes by season and exposes code, title, air date, and character count.
+3. Episode detail loads the single episode resource and its character manifest concurrently.
+4. Character dossier uses the normalized character endpoint and links every appearance back to episode detail.
+5. English and Brazilian Portuguese use Flutter's generated localization path with ARB catalogs.
+6. Loading, empty, sanitized error, retry, portrait loading, and unavailable-image states are explicit.
+7. The production BFF is the default API, and `API_BASE_URL` can be replaced with `--dart-define` for local development.
+8. The mobile visual system carries the web palette and industrial panel language into responsive, touch-first Flutter widgets.
+
+Decisions:
+
+1. The `http` package is the only external runtime dependency. The application does not need a state framework for three read-only screens.
+2. Repositories are interfaces with HTTP implementations, which makes transport and screen behavior independently testable without generated architecture boilerplate.
+3. Screen state uses one future and an explicit retry transition. The BFF already owns caching, normalization, and character order.
+4. Navigation uses native `Navigator` routes. Each appearance pushes an episode, preserving Android back behavior without web paths or a route dependency.
+5. The app does not sort characters. Alphabetical ordering is a BFF contract rule, and the client renders the received sequence.
+6. Domain data remains unchanged. Only application labels and state messages are localized.
+7. Release builds keep Flutter's generated debug signing configuration because this APK is for evaluator distribution, not Play Store publication.
+
+Validation:
+
+1. `flutter analyze` passes with no issues.
+2. `flutter test` passes with 11 tests covering HTTP envelopes, stable errors, malformed responses, model parsing, contract order, locale selection, loading, sanitized error, retry, and navigation.
+3. `flutter build apk --debug` succeeds.
+4. `flutter build apk --release` succeeds and produces a 47.6 MB APK.
+5. The release APK was installed on the existing Pixel 8 emulator at 1080 by 2400.
+6. The application loaded all 51 episodes and live portraits through the production BFF.
+7. The real critical flow passed: archive, episode 1, Rick Sanchez, episode 2 through an appearance, then Android back through dossier, original episode, and archive.
+8. The final release binary contains the production `damagedCodeApi` URL. Mobile source and dependencies contain no direct upstream endpoint, Firebase SDK, Firestore integration, or localhost default.
+
+Known limitations:
+
+1. Locale selection follows the device. There is no in-app language switch because the checkpoint asked for device locale behavior.
+2. The app has no offline database. A lost connection shows the retry state, which is intentional for this read-only client.
+3. Portrait fallback is intentionally simple and does not reproduce the web client's advanced recovery sequence.

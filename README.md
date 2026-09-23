@@ -38,7 +38,7 @@ apps/
   mobile/    Flutter multiplatform client
 ```
 
-The web and API applications exist. The Flutter client arrives in its own checkpoint.
+All three application surfaces exist. Web and Flutter consume the same project REST API.
 
 The web and Flutter clients communicate exclusively with the project BFF.
 
@@ -184,6 +184,32 @@ pnpm check
 
 That runs linting, type checking, and the test suites of every workspace application. The individual scripts are `pnpm lint`, `pnpm typecheck`, and `pnpm test`.
 
+### Flutter mobile client
+
+The mobile application uses Flutter 3.47.2 and lives at `apps/mobile`. It runs outside Docker and defaults to the production BFF.
+
+```bash
+cd apps/mobile
+flutter pub get
+flutter run
+```
+
+Override the API for local development without changing source:
+
+```bash
+flutter run --dart-define=API_BASE_URL=http://10.0.2.2:4000
+```
+
+Run its quality gates and create the evaluator APK:
+
+```bash
+flutter analyze
+flutter test
+flutter build apk --release
+```
+
+The release artifact is generated at `apps/mobile/build/app/outputs/flutter-apk/app-release.apk`. Build artifacts are intentionally ignored by Git.
+
 The same application code developed locally will be used for the Firebase production deployment. Docker is the local development and evaluation environment, not a separate implementation of the product.
 
 Each Dockerfile also has a `production` target that builds the deployable image for that application, so local and production execution share one source tree.
@@ -225,7 +251,7 @@ The production web application and REST API are deployed from this repository.
 Web: https://damaged-code-web.web.app
 API: https://us-central1-samuelcaetitedev.cloudfunctions.net/damagedCodeApi
 OpenAPI: https://us-central1-samuelcaetitedev.cloudfunctions.net/damagedCodeApi/docs/json
-APK: pending
+APK: build from apps/mobile with flutter build apk --release
 ```
 
 Firebase Hosting owns the dedicated `damaged-code-web` site and rewrites every request to the public `damaged-code-web` Cloud Run service in `us-central1`. The browser bundle calls only the production BFF. The production API uses its in-process cache, and Firestore is not used by the deployed application.
@@ -255,7 +281,7 @@ The initial delivery intentionally excludes end-to-end tests. They remain availa
 
 ## Project status
 
-The web and API applications run together through Docker Compose and are deployed to Firebase managed infrastructure. The production experience includes the season archive, shareable episode routes, character dossiers, and navigation through character appearances, all through the project BFF.
+The web and API applications run together through Docker Compose and are deployed to Firebase managed infrastructure. The Flutter application provides the same episode, character, and appearance journey on Android through the project BFF.
 
 Check [docs/CHECKPOINTS.md](./docs/CHECKPOINTS.md) for the current delivery checkpoint.
 
