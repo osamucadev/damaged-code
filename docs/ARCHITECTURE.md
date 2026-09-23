@@ -101,6 +101,7 @@ GET /health                                operational, outside the product cont
 GET /v1/episodes                           every episode, in the project model
 GET /v1/episodes/{episodeId}               one episode, in the project model
 GET /v1/episodes/{episodeId}/characters    every character of one episode, alphabetically
+GET /v1/characters/{characterId}           one character with its episode appearances
 GET /docs                                  OpenAPI documentation, raw document at /docs/json
 ```
 
@@ -141,11 +142,40 @@ The single episode endpoint uses the same model and envelope as the list:
 
 The web route `/episodes/{episodeId}` reads that resource directly. Episode identity therefore lives in the URL and supports direct links, refresh, and browser history.
 
-Errors use one envelope with a stable code, because clients translate codes rather than server prose:
+### Character detail and episode references
+
+The character list endpoint stays lean. A grid needs a portrait and a few facts, so resolving every character's appearance history to render a list would be wasted work on every episode page. Appearances are resolved only by the detail endpoint, which a client calls when a reader actually opens one character:
 
 ```json
-{ "error": { "code": "UPSTREAM_UNAVAILABLE", "message": "developer facing detail" } }
+{
+  "data": {
+    "id": 2,
+    "name": "Morty Smith",
+    "image": "https://rickandmortyapi.com/api/character/avatar/2.jpeg",
+    "status": "Alive",
+    "species": "Human",
+    "type": "",
+    "gender": "Male",
+    "origin": "Earth (C-137)",
+    "location": "Citadel of Ricks",
+    "episodes": [{ "id": 1, "code": "S01E01", "name": "Pilot" }]
+  }
+}
 ```
+
+Upstream publishes appearances as provider URLs such as `https://rickandmortyapi.com/api/episode/1`. The adapter extracts the ids and the service resolves them into that reference, which carries identity and nothing else.
+
+A reference has no `href`, no `webPath`, and no route name, because a URL belongs to whoever renders it. The web turns id 3 into `/episodes/3`, and the planned Flutter client turns the same id into its own navigation action. If the BFF emitted `/episodes/3` it would be shipping one client's routing table to every client, and the mobile client would have to ignore it.
+
+Appearances are resolved in one request. Upstream accepts a comma separated id list, so a character appearing in 51 episodes costs one batched call rather than 51, the same technique the episode cast already uses in the opposite direction. The result is ordered by episode id, so every client sees the same canonical sequence.
+
+Errors use one envelope with a stable code, because clients branch on codes rather than on server prose:
+
+```json
+{ "error": { "code": "UPSTREAM_UNAVAILABLE", "message": "The data source is temporarily unavailable. Please try again." } }
+```
+
+The message is safe to show and stable. Diagnostic context, including the failing upstream URL, stays in the server log, so a client can never read where the data came from or which request failed.
 
 ### Upstream integration
 
@@ -181,15 +211,59 @@ OpenAPI should evolve in the same logical increment as the API behavior.
 
 ## Cache
 
-Caching belongs behind the BFF.
+Caching belongs behind the BFF, and it is an optimization rather than a second source of truth. Rick and Morty remains authoritative.
 
-The initial cache provider should be selected based on delivery time, operational simplicity, and actual value.
+### How it works
 
-A provider must not be introduced only to demonstrate familiarity with a technology.
+Every service result is read through the cache before the upstream source is asked:
 
-The project may use different freshness policies for data with different change profiles.
+```text
+request -> cache hit  -> return the normalized result
+        -> cache miss -> fetch upstream -> validate and normalize -> store -> return
+```
 
-The final choice and rationale should be recorded here when implemented.
+What is stored is the normalized project model, never a raw upstream payload, so nothing provider shaped can leak back out through a cached entry.
+
+### What is cached
+
+```text
+v1:episodes:all                episode catalog, which costs three upstream pages
+v1:episode:{id}                one episode
+v1:episode:{id}:characters     one episode cast
+v1:character:{id}              one character detail, appearances included
+```
+
+Four semantic keys, one per thing a client asks for repeatedly. The `v1` prefix is a schema version: if a normalized shape changes, the prefix changes with it and old entries are simply never read again. That is the only invalidation this project has, and it is enough, because nothing here needs to evict an entry early.
+
+### Lifetime
+
+One hour, for every entry. The upstream dataset is a finished television archive, so per entry freshness policies would be configuration without benefit. `CACHE_TTL_MS` overrides it. Expiry is enforced in application code, because a Firestore TTL policy deletes lazily and the emulator applies none, so an expired document is treated as a miss rather than trusted.
+
+### Which implementation
+
+The choice follows the two runtime modes the repository already has:
+
+```text
+standard mode    in-process cache, no external dependency
+Firebase mode    Firestore backed cache, shared between instances
+```
+
+The seam between them is two operations, `get` and `set`. It exists because there are genuinely two implementations, not to leave room for a third some day. There is no delete, no tagging, and no invalidation API, because nothing calls for one.
+
+The in-process cache is enough for local Docker, where a single API container serves everything. The BFF is planned for Cloud Functions, where instances are ephemeral and there can be several at once, so an in-process cache would mostly miss and every instance would repeat the same upstream work. A shared cache is the natural answer there, and the Firebase emulator mode that already exists is where it is developed locally. Firebase is imported dynamically, so the standard mode never loads the admin SDK.
+
+### When the cache fails
+
+A cache failure must not take the product down while the upstream source can still answer:
+
+```text
+read fails or times out    log with context, fetch upstream
+write fails or times out   log with context, return the upstream result anyway
+```
+
+Operations are bounded by a timeout, because a cache that hangs would be worse than one that fails: the request would be waiting on an optimization. A hang is handled on exactly the same path as an error.
+
+Startup configuration is a different matter. Asking for Firebase mode without a reachable target is a configuration error and still fails loudly at startup, because silently downgrading to an in-process cache would hide the mistake.
 
 ## Internationalization
 

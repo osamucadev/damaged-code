@@ -124,11 +124,17 @@ The Flutter `integration_test` package is not part of the initial scope because 
 ## Implemented coverage
 
 ```text
-API    67 tests   upstream adapter, normalization, pagination, service rules,
-                  configuration, route integration through inject, OpenAPI document
-Web    76 tests   design system behavior, BFF client contract handling,
-                  episode list and detail states, localization behavior, navigation
+API    122 tests  upstream adapter, normalization, pagination, batching, service
+                  rules, cache behavior, configuration, route integration through
+                  inject, error sanitization, OpenAPI document
+Web    101 tests  design system behavior, BFF client contract handling, episode
+                  list and detail states, character dossier interaction,
+                  localization behavior, navigation
 ```
+
+Cache behavior is covered at the seam rather than against a running backend: hit, miss, expiry, read failure, write failure, and a hanging backend all use an injected cache, so the unit suite never needs the Firestore emulator. The emulator is used for integration validation of the Firebase mode instead.
+
+Error sanitization has its own regression coverage, because a public response must never carry an upstream URL or the requested route back to a client.
 
 The web navigation redesign extends this coverage with the season browser, semantic episode links, direct episode rendering, metadata, previous and next links, current episode state, external evaluation links, and the BFF only request boundary.
 

@@ -199,7 +199,7 @@ The required challenge behavior is complete.
 
 ## Checkpoint 05: Reliability, cache, and contract hardening
 
-Status: ACTIVE
+Status: DONE
 
 Goal: make the core implementation robust without changing its product scope.
 
@@ -215,9 +215,20 @@ Target outcomes:
 
 Avoid infrastructure that is disproportionate to the challenge.
 
+Delivered state:
+
+1. `GET /v1/characters/{characterId}` returns a character with its episode appearances.
+2. Appearances are normalized into project references carrying id, code, and name, so no provider URL and no client route reaches the contract.
+3. Appearances are resolved in one batched upstream call, so there is no request per episode.
+4. Cache-aside caching sits behind the BFF with four semantic keys and a one hour lifetime, in process by default and Firestore backed in the Firebase mode.
+5. Cache read and write failures degrade to the upstream source, and cache operations are bounded so a hanging backend cannot hold a request.
+6. Public error responses no longer carry upstream URLs, and the not found handler no longer echoes the requested route.
+7. The web opens a character dossier from the character grid, with appearance links to the project episode pages.
+8. OpenAPI documents the new endpoint, its parameter, and its failure responses.
+
 ## Checkpoint 06: Internationalization and web completion
 
-Status: PENDING
+Status: ACTIVE
 
 Goal: complete the planned web experience in English and Portuguese.
 

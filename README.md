@@ -203,10 +203,13 @@ Implemented endpoints:
 GET /v1/episodes                          every episode, in the project contract
 GET /v1/episodes/{episodeId}              one episode, in the project contract
 GET /v1/episodes/{episodeId}/characters   episode characters, alphabetically
+GET /v1/characters/{characterId}          one character with its episode appearances
 GET /health                               operational, outside the versioned product contract
 ```
 
-Clients consume only this API. The Rick and Morty API is reached by the BFF alone, and upstream pagination and character URLs never reach a client.
+Clients consume only this API. The Rick and Morty API is reached by the BFF alone, and upstream pagination and provider URLs never reach a client.
+
+Responses are cached behind the BFF for one hour. The standard mode keeps entries in process, and the Firebase mode shares them through Firestore. The cache is only an optimization: if it fails, the request still goes upstream and still answers.
 
 ## Interface languages
 

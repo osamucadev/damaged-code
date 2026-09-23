@@ -36,9 +36,16 @@ Checkpoints are delivery workflow markers and do not map directly to minor or pa
 - Dedicated episode routes with shareable URLs, previous and next navigation, and a responsive episode navigator.
 - Prominent GitHub repository link, author footer, intentional metadata, and an original DC favicon.
 - Season based episode browser and reusable episode link cards.
+- Character detail endpoint `GET /v1/characters/{characterId}` with normalized episode appearances.
+- Character dossier in the web client, opened from a character card, with episode appearance links.
+- Caching behind the BFF, in process by default and Firestore backed in the Firebase mode.
 
 ### Changed
 
 - Published local development ports moved to a project specific block starting at 17320, configurable through environment variables.
 - The web information architecture now separates the project landing page from dedicated episode pages.
 - API health now appears as a secondary operational disclosure instead of the primary content panel.
+
+### Fixed
+
+- Public API error responses no longer expose upstream URLs or the requested route.

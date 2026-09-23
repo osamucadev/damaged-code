@@ -406,3 +406,63 @@ Known limits:
 1. The visible language selector still belongs to checkpoint 06.
 2. Cache work remains in checkpoint 05.
 3. The full character dossier interaction remains a later refinement.
+
+## 2026-09-22: Character detail, episode references, and BFF caching
+
+Checkpoint: 05, Reliability, cache, and contract hardening
+
+Goal:
+
+Add character detail with normalized episode appearances, put a proportional cache behind the BFF, and stop public errors from carrying upstream detail.
+
+What changed:
+
+1. `GET /v1/characters/{characterId}` returns a character together with the episodes it appears in.
+2. Upstream episode URLs are converted into project references carrying id, code, and name.
+3. Appearances are resolved in one batched upstream call.
+4. Cache-aside caching was added behind every service result, in process by default and Firestore backed in the explicit Firebase mode.
+5. Public error responses now carry a stable message per code instead of the thrown diagnostic text.
+6. The web opens a character dossier from the character grid, with links to the project episode pages.
+7. The shared character and error schemas moved into one module so both route files describe the same contract.
+
+Decisions:
+
+1. Character detail has its own endpoint, and the episode character list stays lean. A grid needs a portrait and a few facts, so resolving the appearance history of every character to render a list would be wasted work on every episode page.
+2. An episode reference carries identity only. It has no href and no route name, because a URL belongs to whoever renders it. The web builds `/episodes/3` from the id, and a Flutter client will build its own navigation from the same id. Emitting a web path from the BFF would ship one client's routing table to every client.
+3. Appearances are resolved through the upstream comma separated id endpoint. A character in 51 episodes costs one batched request rather than 51, and it reuses the technique the episode cast already used in the opposite direction, instead of introducing a second pattern.
+4. The alternative was resolving appearances from the cached episode catalog. Batching was chosen because it costs one request regardless of cache state and keeps character detail independent from the catalog.
+5. The cache seam has two operations, get and set. It exists because there are genuinely two implementations behind the two runtime modes this repository already has, not to leave room for a future third one. There is no delete and no invalidation API, because nothing calls for one.
+6. Firestore was chosen for the Firebase mode because the BFF is planned for Cloud Functions, where instances are ephemeral and there can be several, so an in-process cache would mostly miss. The emulator mode that already existed is where that is developed locally. Firebase is imported dynamically, so standard mode never loads the admin SDK.
+7. One hour is the single lifetime for every entry. The upstream dataset is a finished archive, so per entry policies would be configuration without benefit.
+8. Expiry is enforced in application code, because a Firestore TTL policy deletes lazily and the emulator applies none.
+9. Cache operations are bounded by a timeout. This was not a theoretical concern: with a dead cache backend the request first hung for a full minute, because the response was waiting on a cache write. A hang is now handled on the same path as an error.
+10. The public error message is now fixed per code. The thrown message keeps the failing URL for the log, which is the diagnostic value, without publishing the provider to clients.
+11. The dossier implements dialog behavior explicitly rather than using the native element, because jsdom 30 does not implement `showModal`, and the accessibility requirements needed explicit focus handling anyway.
+12. The card control is an overlay button rather than a wrapper, so the whole card is one target while the description list stays outside the button, where a description list is allowed to live.
+
+Validation:
+
+1. `pnpm check` passes with 223 tests, 122 on the API and 101 on the web client.
+2. `pnpm build` and `pnpm build-storybook` both succeed.
+3. Character detail was checked against the live upstream service. Morty returns 51 appearances, ordered by episode id, with no provider URL in the payload.
+4. Caching was measured live. The episode catalog went from 280ms to 1.3ms on the second request, and character detail from 101ms to 1ms.
+5. Cache behavior was proven rather than assumed: with the upstream base URL pointed at a dead port, previously cached entries still answered and an uncached one failed cleanly with the sanitized 502.
+6. The Firestore cache was validated against the emulator, including reuse across a process restart, which an in-process cache could not do. All four key kinds appear in the emulator.
+7. Cache degradation was validated with a dead cache backend: the request now answers in about two seconds with both failure paths logged, where it previously timed out after sixty.
+8. A Firebase cold start cost three seconds on the first lookup, caused by the auth library probing the GCP metadata server. The probe is disabled for the emulator target only, and the first lookup dropped to about 200ms.
+9. Standard Docker mode and Firebase Docker mode were both started from the compose files and exercised end to end, including web, API, OpenAPI, and Storybook.
+10. The dossier was validated in the browser at 1440, 1024, and 390 wide viewports, including a character with 51 appearances, appearance navigation, browser back, and the last episode where the boundary cards live.
+
+Known issues:
+
+1. Nothing evicts a cache entry before its hour expires, so a correction published upstream can take up to an hour to appear. This is acceptable for an archive and is the reason no invalidation mechanism exists.
+2. Two concurrent misses for the same key both reach upstream. Request coalescing was left out deliberately, because the traffic profile does not justify it.
+3. The Firestore cache has no automatic cleanup of expired documents, so the collection grows with the key space. The key space is bounded by the dataset, and a TTL policy can be attached at deployment time.
+4. Opening a dossier is client state and does not appear in the URL, so it cannot be linked or restored by a refresh.
+
+Relevant commits:
+
+1. `fix(api): keep upstream detail out of public error responses`
+2. `feat(api): expose character detail with normalized episode references`
+3. `feat(api): cache normalized responses behind the BFF`
+4. `feat(web): open a character dossier from the episode grid`
