@@ -1,12 +1,13 @@
 import { fireEvent, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { LOCALE_COOKIE } from "@/i18n/config";
 import { renderWithIntl } from "@/test/intl";
 
 import { LanguageSwitcher } from "./LanguageSwitcher";
 
 function clearLocaleCookie(): void {
-  document.cookie = "damaged-code-locale=; max-age=0; path=/";
+  document.cookie = `${LOCALE_COOKIE}=; max-age=0; path=/`;
 }
 
 describe("LanguageSwitcher", () => {
@@ -55,7 +56,17 @@ describe("LanguageSwitcher", () => {
     renderWithIntl(<LanguageSwitcher />, { locale: "en" });
     fireEvent.click(screen.getByRole("button", { name: /switch to portuguese, brazil/i }));
 
-    expect(document.cookie).toContain("damaged-code-locale=pt-BR");
+    expect(document.cookie).toContain(`${LOCALE_COOKIE}=pt-BR`);
+  });
+
+  /*
+   * Firebase Hosting's rewrite to the Cloud Run web service only forwards
+   * the __session cookie to the origin; any other cookie name is dropped at
+   * the edge, so the locale choice would never reach the server in
+   * production. This guards that specific, non-obvious requirement.
+   */
+  it("uses the __session cookie name so Firebase Hosting forwards it to Cloud Run", () => {
+    expect(LOCALE_COOKIE).toBe("__session");
   });
 
   it("reloads the current route in place instead of navigating elsewhere", () => {

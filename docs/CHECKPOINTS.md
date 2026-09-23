@@ -244,7 +244,7 @@ Target outcomes:
 Delivered state:
 
 1. English and Portuguese, pt-BR, message catalogs cover every user-facing string in the web client.
-2. Locale resolves from the `damaged-code-locale` cookie with an English fallback.
+2. Locale resolves from the `__session` cookie with an English fallback.
 3. A compact language selector in the header lets a reviewer switch locales directly, updating the interface immediately while preserving the current route.
 4. Localization behavior is covered by web tests.
 

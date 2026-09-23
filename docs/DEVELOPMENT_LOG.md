@@ -659,27 +659,30 @@ Checkpoint: 06, Internationalization and web completion, post-release follow-up
 
 Goal:
 
-Expose the already implemented English and Portuguese localization through a visible control, instead of requiring a reviewer to edit the `damaged-code-locale` cookie by hand.
+Expose the already implemented English and Portuguese localization through a visible control, instead of requiring a reviewer to edit the locale cookie by hand.
 
 What changed:
 
 1. A `LanguageSwitcher` client component was added, rendering a compact EN and PT pill using the existing cookie mechanism, no new localization system or dependency.
 2. It is placed in the header on the home page, the episode detail page, and the custom 404 page, so it works on `/`, every episode route, the character dossier flow that lives inside the episode page, and the not found page.
-3. Switching writes the `damaged-code-locale` cookie and reloads the current URL in place, so the route is always preserved and the interface updates immediately.
+3. Switching writes the locale cookie and reloads the current URL in place, so the route is always preserved and the interface updates immediately.
 4. The active locale is marked with `aria-current`, and each control carries a localized accessible label.
+5. The locale cookie was renamed from the project specific `damaged-code-locale` to `__session`.
 
 Decisions:
 
 1. A full reload of the current URL was chosen over `router.refresh()` so the fix stays a small, dependency-free change consistent with the existing cookie-based, non prefix-routed locale resolution, and so route preservation is trivially correct rather than something to get right by hand.
 2. The switcher is duplicated into each page's own header, matching the existing pattern where every page already owns its own topbar markup and styles rather than sharing one header component.
+3. The cookie rename to `__session` was not the first attempt. Production validation on `https://zrp.samuelcaetite.dev` showed the selector had no effect, while the identical build worked correctly locally and against the raw Cloud Run URL. The cause was Firebase Hosting's rewrite to Cloud Run: it only forwards the cookie literally named `__session` to the origin and drops every other cookie at the edge, which is documented Firebase Hosting behavior for dynamic content rather than a bug in this application. `__session` is a legitimate name for a small per-viewer preference like locale, not a name reserved for authentication, so the cookie was renamed rather than introducing a second mechanism such as URL based locale routing.
 
 Validation:
 
-1. Focused `LanguageSwitcher` tests cover the active locale for both languages, the cookie write, localized accessible labels, and that switching reloads in place rather than navigating elsewhere.
+1. Focused `LanguageSwitcher` tests cover the active locale for both languages, the cookie write, localized accessible labels, that switching reloads in place rather than navigating elsewhere, and that the cookie name is `__session`.
 2. `pnpm check` and `pnpm build` pass.
 3. Verified in the browser on `/`, an episode route, and the 404 page: switching language updates the interface immediately, the active locale is visually marked, and the route is preserved. Checked at desktop and 375 pixel wide viewports.
-4. Production web was redeployed through the existing Cloud Run and Firebase Hosting pipeline, and the selector was confirmed working on `https://zrp.samuelcaetite.dev`.
+4. Production web was redeployed through the existing Cloud Run and Firebase Hosting pipeline. Switching EN to PT and back was confirmed on `https://zrp.samuelcaetite.dev` itself, including that the choice survives a refresh and a navigation to an episode page, and that the custom 404 page still renders correctly in both locales.
 
 Relevant commits:
 
 1. `feat(web): add language selector`
+2. `fix(web): forward the locale cookie through firebase hosting`

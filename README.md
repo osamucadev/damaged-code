@@ -285,7 +285,7 @@ Responses are cached behind the BFF for one hour. The standard mode keeps entrie
 
 ## Interface languages
 
-The web client ships English and Portuguese, pt-BR, message catalogs, and localization behavior is tested. A compact language selector in the header lets a reviewer switch between them; the choice is stored in the `damaged-code-locale` cookie, which falls back to English, and switching reloads the current route in place.
+The web client ships English and Portuguese, pt-BR, message catalogs, and localization behavior is tested. A compact language selector in the header lets a reviewer switch between them; the choice is stored in the `__session` cookie, which falls back to English, and switching reloads the current route in place. The cookie is named `__session`, not a project specific name, because Firebase Hosting's rewrite to the Cloud Run web service only forwards that one cookie name to the origin.
 
 Episode names and air dates are domain data and stay exactly as the upstream API publishes them.
 
