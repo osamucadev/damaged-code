@@ -5,8 +5,14 @@
   "targets": {
     "samuelcaetitedev": {
       "hosting": {
-        "damaged-code-web": ["damaged-code-web"]
+        "damaged-code-web": [
+          "damaged-code-web"
+        ],
+        "damaged-code-storybook": [
+          "damaged-code-storybook"
+        ]
       }
     }
-  }
+  },
+  "etags": {}
 }

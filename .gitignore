@@ -32,3 +32,6 @@ pnpm-debug.log*
 # Next.js
 *.tsbuildinfo
 next-env.d.ts
+
+# Firebase CLI local cache
+.firebase/
