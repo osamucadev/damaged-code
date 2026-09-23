@@ -18,6 +18,12 @@
     "openEpisode": "Open {code} {name}",
     "footer": "With 💜 by Samuel Caetité"
   },
+  "notFound": {
+    "title": "404 // Signal lost",
+    "description": "The requested transmission could not be located in this dimension.",
+    "returnHome": "Return to archive",
+    "github": "View on GitHub"
+  },
   "apiStatus": {
     "panelTitle": "API status",
     "checking": "Checking",

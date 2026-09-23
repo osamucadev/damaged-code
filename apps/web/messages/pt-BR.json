@@ -18,6 +18,12 @@
     "openEpisode": "Abrir {code} {name}",
     "footer": "With 💜 by Samuel Caetité"
   },
+  "notFound": {
+    "title": "404 // Sinal perdido",
+    "description": "A transmissão solicitada não foi encontrada nesta dimensão.",
+    "returnHome": "Voltar ao arquivo",
+    "github": "Ver no GitHub"
+  },
   "apiStatus": {
     "panelTitle": "Status da API",
     "checking": "Verificando",
