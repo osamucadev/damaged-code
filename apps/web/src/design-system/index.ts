@@ -27,3 +27,7 @@ export {
   EpisodeLinkCard,
   type EpisodeLinkCardProps,
 } from "./molecules/EpisodeLinkCard/EpisodeLinkCard";
+export {
+  EpisodeBoundaryCard,
+  type EpisodeBoundaryCardProps,
+} from "./molecules/EpisodeBoundaryCard/EpisodeBoundaryCard";
